@@ -15,7 +15,7 @@ class TColors {
   static const Color grey2 = Color(0xFF6C6E72);
   static const Color deliveryDetails = Color(0xFF18191A);
 
-  static const Color account = Color(0xFFFCFDFF);
+  static const Color account = Color(0xFFFCFDFF); //Text color
   static const Color personalBackground = Color(0xFFDCE4F5);
 
   static const Color uploadImage = Color(0xFF2C2929);
