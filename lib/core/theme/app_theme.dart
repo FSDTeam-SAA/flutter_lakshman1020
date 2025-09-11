@@ -10,6 +10,6 @@ class AppTheme {
     colorScheme: ColorScheme.light(primary: TColors.primary),
 
     textTheme: GoogleFonts.poppinsTextTheme(),
-    // appBarTheme: AppBarTheme(backgroundColor: Colors.white),
+    appBarTheme: AppBarTheme(backgroundColor: Colors.white),
   );
 }

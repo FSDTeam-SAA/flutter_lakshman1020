@@ -10,4 +10,5 @@ class Images{
   static const String truckOutlineIcon ='assets/images/truck_outline.png';
   static const String user ='assets/images/user.png';
   static const String userOutlineIcon ='assets/images/user_outline.png';
+  static const String accountUser ='assets/images/account_user.png';
 }
