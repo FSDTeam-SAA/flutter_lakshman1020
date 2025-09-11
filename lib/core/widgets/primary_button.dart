@@ -48,4 +48,52 @@ extension ButtonStyleExtensions on BuildContext {
       ),
     );
   }
+  Widget secondaryButton({
+    required VoidCallback onPressed,
+    required Color btnBG,
+    required String text,
+    required Color btnTxtColor,
+    required Color btnBorder,
+    double? width,
+    double? height,
+    bool isLoading = false,
+    double borderRadius = 12.0,
+  }) {
+    return GestureDetector(
+      onTap: isLoading ? null : onPressed,
+      child: AbsorbPointer(
+        absorbing: isLoading,
+        child: Opacity(
+          opacity: isLoading ? 0.6 : 1.0,
+          child: Container(
+            width: width ?? double.infinity,
+            height: height ?? 48,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: btnBG, // 🔹 No background fill
+              borderRadius: BorderRadius.circular(borderRadius),
+              border: Border.all(color: btnBorder, width: 1.5),
+            ),
+            child: isLoading
+                ? SizedBox(
+              width: 24,
+              height: 24,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(btnTxtColor),
+              ),
+            )
+                : Text(
+              text,
+              style: TextStyle(
+                color: btnTxtColor,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

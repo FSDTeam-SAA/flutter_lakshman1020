@@ -22,7 +22,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      centerTitle: false,
+      centerTitle: true,
       leading: IconButton(
         onPressed: onBack,
         icon: Icon(Icons.arrow_back, color: iconColor, size: 16),
