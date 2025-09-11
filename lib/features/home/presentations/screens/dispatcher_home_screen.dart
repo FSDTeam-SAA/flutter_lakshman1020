@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_lakshman1020/features/home/presentation/widgets/dispatcher_home_widgets/header_section.dart';
-import 'package:flutter_lakshman1020/features/home/presentation/widgets/dispatcher_home_widgets/recent_section.dart';
-import 'package:flutter_lakshman1020/features/home/presentation/widgets/dispatcher_home_widgets/stats_section.dart';
+import 'package:flutter_lakshman1020/features/home/presentations/screens/widgets/dispatcher_home_widgets/header_section.dart';
+import 'package:flutter_lakshman1020/features/home/presentations/screens/widgets/dispatcher_home_widgets/recent_section.dart';
+import 'package:flutter_lakshman1020/features/home/presentations/screens/widgets/dispatcher_home_widgets/stats_section.dart';
 
 class DispatcherHomeScreen extends StatelessWidget {
   const DispatcherHomeScreen({super.key});

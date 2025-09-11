@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_lakshman1020/features/home/presentation/widgets/user_home_widgets/banner_section.dart';
-import 'package:flutter_lakshman1020/features/home/presentation/widgets/user_home_widgets/header_section.dart';
-import 'package:flutter_lakshman1020/features/home/presentation/widgets/user_home_widgets/recent_shipment_header.dart';
-import 'package:flutter_lakshman1020/features/home/presentation/widgets/user_home_widgets/shipment_filter_tabs.dart';
-import 'package:flutter_lakshman1020/features/home/presentation/widgets/user_home_widgets/shipment_item.dart';
+import 'package:flutter_lakshman1020/features/home/presentations/screens/widgets/user_home_widgets/banner_section.dart';
+import 'package:flutter_lakshman1020/features/home/presentations/screens/widgets/user_home_widgets/header_section.dart';
+import 'package:flutter_lakshman1020/features/home/presentations/screens/widgets/user_home_widgets/recent_shipment_header.dart';
+import 'package:flutter_lakshman1020/features/home/presentations/screens/widgets/user_home_widgets/shipment_filter_tabs.dart';
+import 'package:flutter_lakshman1020/features/home/presentations/screens/widgets/user_home_widgets/shipment_item.dart';
 
 class UserHomeScreen extends StatelessWidget {
   const UserHomeScreen({super.key});
