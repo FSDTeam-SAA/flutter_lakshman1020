@@ -5,6 +5,7 @@ import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
 import 'package:flutter_lakshman1020/features/home/presentation/screens/dispatcher_home_screen.dart';
 import 'package:flutter_lakshman1020/features/home/presentation/screens/driver_home_screen.dart';
 import 'package:flutter_lakshman1020/features/home/presentation/screens/user_home_screen.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
 
 void main() {
   runApp(const MyApp());
