@@ -17,4 +17,5 @@ class Images {
   static const String resetPassIcon = 'assets/images/ResetPass.png';
   static const String groupIcon = 'assets/images/Group.png';
   static const String informationIcon = 'assets/images/Information.png';
+  static const String accountUser = 'assets/images/Information.png';
 }
