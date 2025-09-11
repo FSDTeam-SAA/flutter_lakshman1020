@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 class TColors {
   TColors._();
 
@@ -13,11 +14,13 @@ class TColors {
   static const Color grey = Color(0xFF303133);
   static const Color grey1 = Color(0xFF555659);
   static const Color grey2 = Color(0xFF6C6E72);
-  static const Color deliveryDetails = Color(0xFF18191A);//nav bar text color
+  static const Color deliveryDetails = Color(0xFF18191A); //nav bar text color
 
   static const Color account = Color(0xFFFCFDFF); //Text color
   static const Color personalBackground = Color(0xFFDCE4F5);
 
   static const Color uploadImage = Color(0xFF2C2929);
   static const Color driverNavigation = Color(0xFFB2CAFF);
+
+  static const Color enableButton = Color(0xFF5ADA0A);
 }
