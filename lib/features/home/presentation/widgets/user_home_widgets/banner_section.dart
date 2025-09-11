@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
 
 class BannerSection extends StatelessWidget {
   const BannerSection({super.key});
@@ -6,12 +7,12 @@ class BannerSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 160,
+      height: 280,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         image: const DecorationImage(
           image: AssetImage(
-            "assets/",
+            "assets/images/truck_home.png",
           ), // replace with API/NetworkImage
           fit: BoxFit.cover,
         ),
@@ -20,14 +21,14 @@ class BannerSection extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           gradient: LinearGradient(
-            colors: [Colors.black.withOpacity(0.3), Colors.transparent],
+            colors: [Colors.black.withValues(alpha: 0.3), Colors.transparent],
             begin: Alignment.bottomCenter,
             end: Alignment.topCenter,
           ),
         ),
         padding: const EdgeInsets.all(16),
         child: Align(
-          alignment: Alignment.bottomLeft,
+          alignment: Alignment.center,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.end,
@@ -47,7 +48,8 @@ class BannerSection extends StatelessWidget {
               const SizedBox(height: 10),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
+                  backgroundColor: TColors.primary,
+                  foregroundColor: TColors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),

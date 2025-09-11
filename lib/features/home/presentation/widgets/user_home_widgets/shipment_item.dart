@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
 
 class ShipmentItem extends StatelessWidget {
   const ShipmentItem({super.key});
@@ -6,14 +7,20 @@ class ShipmentItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 0,
+      color: TColors.white,
       margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: TColors.personalBackground, width: 2.0),
+      ),
       child: ListTile(
         leading: const CircleAvatar(
-          backgroundColor: Colors.blue,
+          backgroundColor: TColors.grey2,
           child: Icon(Icons.inventory_2, color: Colors.white),
         ),
         title: const Text(
+          // <-- Need to make this Dynamic -->
           "#load_45982",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),

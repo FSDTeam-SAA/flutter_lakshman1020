@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_lakshman1020/features/home/presentation/widgets/banner_section.dart';
-import 'package:flutter_lakshman1020/features/home/presentation/widgets/header_section.dart';
-import 'package:flutter_lakshman1020/features/home/presentation/widgets/recent_shipment_header.dart';
-import 'package:flutter_lakshman1020/features/home/presentation/widgets/shipment_filter_tabs.dart';
-import 'package:flutter_lakshman1020/features/home/presentation/widgets/shipment_item.dart';
+import 'package:flutter_lakshman1020/features/home/presentation/widgets/user_home_widgets/banner_section.dart';
+import 'package:flutter_lakshman1020/features/home/presentation/widgets/user_home_widgets/header_section.dart';
+import 'package:flutter_lakshman1020/features/home/presentation/widgets/user_home_widgets/recent_shipment_header.dart';
+import 'package:flutter_lakshman1020/features/home/presentation/widgets/user_home_widgets/shipment_filter_tabs.dart';
+import 'package:flutter_lakshman1020/features/home/presentation/widgets/user_home_widgets/shipment_item.dart';
 
 class UserHomeScreen extends StatelessWidget {
   const UserHomeScreen({super.key});
@@ -16,7 +16,7 @@ class UserHomeScreen extends StatelessWidget {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const HeaderSection(),
               const SizedBox(height: 20),
@@ -26,7 +26,6 @@ class UserHomeScreen extends StatelessWidget {
               const SizedBox(height: 12),
               const ShipmentFilterTabs(),
               const SizedBox(height: 12),
-              // Example list of shipments
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
