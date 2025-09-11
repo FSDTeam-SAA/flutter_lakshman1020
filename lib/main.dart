@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_lakshman1020/core/widgets/primary_button.dart';
-
+import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -17,10 +16,7 @@ class MyApp extends StatelessWidget {
       ),
       home: Scaffold(
         body: Center(
-          child: context.primaryButton(
-            onPressed: (){},
-            text: 'Primary Button',
-          ),
+          child: CustomAppBar(title: 'Demo AppBar', onBack: () { print('Back pressed'); }),
         ),
       ),
     );
