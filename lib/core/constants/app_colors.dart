@@ -20,4 +20,6 @@ class TColors {
 
   static const Color uploadImage = Color(0xFF2C2929);
   static const Color driverNavigation = Color(0xFFB2CAFF);
+
+  static const Color borderColor = Color(0xFFE9EEF9);
 }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
+import 'package:flutter_lakshman1020/core/theme/app_theme.dart';
+import 'package:flutter_lakshman1020/features/acounts/personal_details_screen.dart';
+import 'package:flutter_lakshman1020/features/acounts/widgets/personal_edit_screen.dart';
+import 'package:get/get.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -9,16 +12,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: Scaffold(
-        body: Center(
-          child: CustomAppBar(title: 'Demo AppBar', onBack: () { print('Back pressed'); }),
-        ),
-      ),
+      theme: AppTheme.light,
+      home: PersonalEditScreen()
     );
   }
 }
