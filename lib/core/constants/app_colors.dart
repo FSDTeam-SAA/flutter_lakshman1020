@@ -22,4 +22,6 @@ class TColors {
   static const Color driverNavigation = Color(0xFFB2CAFF);
 
   static const Color borderColor = Color(0xFFE9EEF9);
+  static const Color borderColor1 = Color(0xFFE1E8F6);
+  static const Color textfieldPrefixIconBackground = Color(0xFFEE5EDFF);
 }
