@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_lakshman1020/features/acounts/widgets/reset_password_screen.dart';
+import 'package:flutter_lakshman1020/features/acounts/presentation/widgets/reset_password_screen.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
-import '../../../core/constants/app_colors.dart';
-import '../model/help_and_support_item.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../model/help_and_support_item.dart';
 
 class SupportCard extends StatelessWidget {
   final SupportItem item;

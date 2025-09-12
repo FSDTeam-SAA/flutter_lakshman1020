@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_lakshman1020/core/widgets/app_scaffold.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
 
-import '../../../core/constants/app_colors.dart';
-import '../../../core/widgets/custom_text.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/custom_text.dart';
 import 'highlighted_text.dart';
 
 class ResetPasswordScreen extends StatelessWidget {

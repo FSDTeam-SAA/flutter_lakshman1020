@@ -4,8 +4,8 @@ import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
-import '../../core/constants/app_colors.dart';
-import '../../core/widgets/custom_text.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/custom_text.dart';
 
 class AboutUsScreen extends StatelessWidget {
   const AboutUsScreen({super.key});

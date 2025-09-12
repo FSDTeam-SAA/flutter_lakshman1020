@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/theme/app_theme.dart';
-import 'package:flutter_lakshman1020/features/acounts/about_us_screen.dart';
-import 'package:flutter_lakshman1020/features/acounts/accounts_screen.dart';
-import 'package:flutter_lakshman1020/features/acounts/personal_details_screen.dart';
-import 'package:flutter_lakshman1020/features/acounts/personal_edit_screen.dart';
+import 'package:flutter_lakshman1020/features/acounts/presentation/screens/about_us_screen.dart';
+import 'package:flutter_lakshman1020/features/acounts/presentation/screens/accounts_screen.dart';
+import 'package:flutter_lakshman1020/features/acounts/presentation/screens/personal_details_screen.dart';
+import 'package:flutter_lakshman1020/features/acounts/presentation/screens/personal_edit_screen.dart';
 import 'package:get/get.dart';
 
-import 'features/acounts/widgets/djkg.dart';
+import 'features/acounts/presentation/widgets/djkg.dart';
 void main() {
   runApp(const MyApp());
 }

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
 import 'package:flutter_lakshman1020/core/widgets/app_scaffold.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
-import 'package:flutter_lakshman1020/features/acounts/widgets/edit_personal_info.dart';
+import 'package:flutter_lakshman1020/features/acounts/presentation/widgets/edit_personal_info.dart';
 
-import '../../core/constants/app_images.dart';
+import '../../../../core/constants/app_images.dart';
 
 class PersonalEditScreen extends StatelessWidget {
   const PersonalEditScreen({super.key});

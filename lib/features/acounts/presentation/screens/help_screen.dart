@@ -4,7 +4,7 @@ import 'package:flutter_lakshman1020/core/widgets/app_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_text.dart';
 import 'package:flutter_lakshman1020/features/acounts/model/help_and_support_item.dart';
-import 'package:flutter_lakshman1020/features/acounts/widgets/support_card.dart';
+import 'package:flutter_lakshman1020/features/acounts/presentation/widgets/support_card.dart';
 class HelpScreen extends StatelessWidget {
   const HelpScreen({super.key});
 

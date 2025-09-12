@@ -3,13 +3,13 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/app_images.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_text.dart';
-import 'package:flutter_lakshman1020/features/acounts/help_screen.dart';
-import 'package:flutter_lakshman1020/features/acounts/personal_details_screen.dart';
-import 'package:flutter_lakshman1020/features/acounts/settings_screen.dart';
-import 'package:flutter_lakshman1020/features/acounts/widgets/customCurvedEdges.dart';
+import 'package:flutter_lakshman1020/features/acounts/presentation/screens/help_screen.dart';
+import 'package:flutter_lakshman1020/features/acounts/presentation/screens/personal_details_screen.dart';
+import 'package:flutter_lakshman1020/features/acounts/presentation/screens/settings_screen.dart';
+import 'package:flutter_lakshman1020/features/acounts/presentation/widgets/customCurvedEdges.dart';
 import 'package:get/get.dart';
 
-import '../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_colors.dart';
 
 class AccountsScreen extends StatelessWidget {
   const AccountsScreen({super.key});

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
 import 'package:flutter_lakshman1020/core/widgets/app_scaffold.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
-import 'package:flutter_lakshman1020/features/acounts/widgets/notification_widget.dart';
+import 'package:flutter_lakshman1020/features/acounts/presentation/widgets/notification_widget.dart';
 import 'package:get/get.dart';
 
-import '../../core/constants/appTexts.dart';
-import 'model/notification_setting_model.dart';
+import '../../../../core/constants/appTexts.dart';
+import '../../model/notification_setting_model.dart';
 
 class NotificationSettingsScreen extends StatelessWidget {
   NotificationSettingsScreen({Key? key}) : super(key: key);

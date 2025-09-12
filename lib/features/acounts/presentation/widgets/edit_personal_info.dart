@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/app_images.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_text.dart';
-import 'package:flutter_lakshman1020/features/acounts/widgets/text_field.dart';
+import 'package:flutter_lakshman1020/features/acounts/presentation/widgets/text_field.dart';
 
-import '../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_colors.dart';
 
 class EditPersonalInfo extends StatelessWidget {
   const EditPersonalInfo({super.key});
