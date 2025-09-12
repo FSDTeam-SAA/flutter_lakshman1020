@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_lakshman1020/features/acounts/presentation/screens/reset_password_info_screen.dart';
-import 'package:flutter_lakshman1020/features/acounts/presentation/widgets/reset_password_screen.dart';
+import 'package:flutter_lakshman1020/features/accounts/presentation/screens/reset_password_info_screen.dart';
+import 'package:flutter_lakshman1020/features/accounts/presentation/widgets/reset_password_screen.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 

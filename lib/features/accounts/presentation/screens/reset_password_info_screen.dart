@@ -75,8 +75,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
 import 'package:flutter_lakshman1020/core/widgets/app_scaffold.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
-import 'package:flutter_lakshman1020/features/acounts/presentation/widgets/FAQ_Items.dart';
-import 'package:flutter_lakshman1020/features/acounts/presentation/widgets/highlighted_text.dart';
+import 'package:flutter_lakshman1020/features/accounts/presentation/widgets/FAQ_Items.dart';
+import 'package:flutter_lakshman1020/features/accounts/presentation/widgets/highlighted_text.dart';
 import 'package:get/get.dart';
 
 class ResetPasswordInfoScreen extends StatelessWidget {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_lakshman1020/features/acounts/presentation/widgets/contact_support_widget.dart';
+import 'package:flutter_lakshman1020/features/accounts/presentation/widgets/contact_support_widget.dart';
 import 'package:get/get.dart';
 import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
 

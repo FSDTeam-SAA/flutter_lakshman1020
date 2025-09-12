@@ -3,10 +3,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/app_images.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_text.dart';
-import 'package:flutter_lakshman1020/features/acounts/presentation/screens/help_screen.dart';
-import 'package:flutter_lakshman1020/features/acounts/presentation/screens/personal_details_screen.dart';
-import 'package:flutter_lakshman1020/features/acounts/presentation/screens/settings_screen.dart';
-import 'package:flutter_lakshman1020/features/acounts/presentation/widgets/customCurvedEdges.dart';
+import 'package:flutter_lakshman1020/features/accounts/presentation/screens/help_screen.dart';
+import 'package:flutter_lakshman1020/features/accounts/presentation/screens/personal_details_screen.dart';
+import 'package:flutter_lakshman1020/features/accounts/presentation/screens/settings_screen.dart';
+import 'package:flutter_lakshman1020/features/accounts/presentation/widgets/customCurvedEdges.dart';
 import 'package:get/get.dart';
 
 import '../../../../core/constants/app_colors.dart';
