@@ -1,4 +1,4 @@
-class Images{
+class Images {
   //Bottom Navigation Icon
   static const String activityIcon ='assets/images/activity.png';
   static const String activityOutlineIcon ='assets/images/activity_outline.png';
@@ -30,4 +30,6 @@ class Images{
   static const String technicalIcon ='assets/images/technical.png';
   static const String customerSupport ='assets/images/customer_support.png';
   static const String resetPassword ='assets/images/reset_password.png';
+  static const String groupIcon = 'assets/images/Group.png';
+  static const String informationIcon = 'assets/images/Information.png';
 }

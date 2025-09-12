@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_lakshman1020/features/acounts/presentation/screens/reset_password_info_screen.dart';
 import 'package:flutter_lakshman1020/features/acounts/presentation/widgets/reset_password_screen.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -17,7 +18,7 @@ class SupportCard extends StatelessWidget {
     return GestureDetector(
       onTap: (){
         if (item.title == "How do I reset my password") {
-          Get.to(ResetPasswordScreen());
+          Get.to(ResetPasswordInfoScreen());
         } else if (item.title == "Safety & Policy") {
 
         } else if (item.title == "Delivery & Job Support") {

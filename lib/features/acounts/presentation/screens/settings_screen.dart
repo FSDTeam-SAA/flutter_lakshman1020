@@ -7,6 +7,7 @@ import 'package:flutter_lakshman1020/features/acounts/presentation/screens/about
 import 'package:get/get.dart';
 
 import '../../../../core/constants/appTexts.dart';
+import 'Reset_PassWord_Screen.dart';
 import 'notification_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -40,7 +41,7 @@ class SettingsScreen extends StatelessWidget {
 
                 /// Navigate using GetX
                 _buildListTile(Images.resetPassIcon, "Reset password", () {
-                  // Get.to(() => const ResetPasswordScreen());
+                   Get.to(() => const ResetPasswordScreen());
                 }),
                 Divider(color: TColors.grey2.withOpacity(.4)),
 
