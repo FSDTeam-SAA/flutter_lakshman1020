@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
+import 'package:flutter_lakshman1020/features/home/presentations/screens/request_information.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 class BannerSection extends StatelessWidget {
-  const BannerSection({super.key});
+  const   BannerSection({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -58,8 +61,9 @@ class BannerSection extends StatelessWidget {
                     vertical: 8,
                   ),
                 ),
-                onPressed: () {},
+
                 child: const Text("Request for a Truck"),
+                onPressed: () => Get.to(RequestInformationScreen()),
               ),
             ],
           ),

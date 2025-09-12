@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
+import 'package:flutter_lakshman1020/features/notification/presentations/screens/notification_alert.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 class HeaderSection extends StatelessWidget {
-  const HeaderSection({super.key});
+  const  HeaderSection({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +43,8 @@ class HeaderSection extends StatelessWidget {
               height: 32,
               width: 32,
             ),
-            onPressed: () {},
+            onPressed: () => Get.to(NotificationAlertScreen()),
+
           ),
         ],
       ),
