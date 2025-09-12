@@ -23,4 +23,6 @@ class TColors {
   static const Color driverNavigation = Color(0xFFB2CAFF);
 
   static const Color enableButton = Color(0xFF5ADA0A);
+  static const Color borderButton = Color(0xFFDCE4F5);
+  static const Color red = Color(0xFFF23624);
 }

@@ -28,7 +28,12 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_lakshman1020/core/theme/app_theme.dart';
-import 'package:flutter_lakshman1020/features/settings/settings_screen.dart';
+import 'package:flutter_lakshman1020/features/accounts/presentation/screens/reset_password_info_screen.dart';
+import 'package:flutter_lakshman1020/features/accounts/presentation/screens/contact_support_screen.dart';
+import 'package:flutter_lakshman1020/features/accounts/presentation/screens/custom_support_screen.dart';
+import 'package:flutter_lakshman1020/features/accounts/presentation/screens/safety_policy_screen.dart';
+import 'package:flutter_lakshman1020/features/accounts/presentation/screens/Reset_PassWord_Screen.dart';
+import 'package:flutter_lakshman1020/features/accounts/presentation/screens/settings_screen.dart';
 import 'package:get/get.dart';
 
 void main() {
@@ -44,7 +49,10 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: AppTheme.light,
-      home: SettingsScreen(),
+      // home: SettingsScreen(),
+      // home: ContactScreen(),
+      // home: CustomSupportScreen(),
+      home: ResetPasswordInfoScreen(),
     );
   }
 }
