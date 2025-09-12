@@ -15,6 +15,7 @@ class PersonalDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppScaffold(
       appBar: CustomAppBar(
+        onBack: Get.back,
         title: 'Personal details',
         titleCenter: true,
         titleColor: TColors.deliveryDetails,

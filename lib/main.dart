@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/theme/app_theme.dart';
+import 'package:flutter_lakshman1020/features/acounts/about_us_screen.dart';
 import 'package:flutter_lakshman1020/features/acounts/accounts_screen.dart';
 import 'package:flutter_lakshman1020/features/acounts/personal_details_screen.dart';
 import 'package:flutter_lakshman1020/features/acounts/personal_edit_screen.dart';
@@ -18,7 +19,8 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Flutter Demo',
       theme: AppTheme.light,
-      home: AccountsScreen()
+      home: AccountsScreen(
+      )
     );
   }
 }

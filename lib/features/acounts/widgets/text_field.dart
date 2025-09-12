@@ -41,21 +41,21 @@ class CustomTextField extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(
             color: TColors.borderColor1,
-            width: 2.0,
+            width: 1.0,
           ),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(
             color: Colors.red,
-            width: 1.5,
+            width: 1.0,
           ),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(
             color: Colors.redAccent,
-            width: 2.0,
+            width: 1.0,
           ),
         ),
       ),
