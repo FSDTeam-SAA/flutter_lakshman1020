@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/theme/app_theme.dart';
-import 'package:flutter_lakshman1020/features/dispatcher_company_page/presentation/screens/company_dispatcher_screen.dart';
-import 'package:flutter_lakshman1020/features/driver_company_page/presentation/screens/company_driver_screen.dart';
+import 'features/company_subscription_plans/presentation/screens/subscription_screen.dart';
 
-
-import 'features/test/test_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,7 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: AppTheme.light,
-      home: CompanyDispatcherScreen(),
+      home: SubscriptionScreen(),
     );
   }
 }
