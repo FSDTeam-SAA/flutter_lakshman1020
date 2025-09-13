@@ -30,11 +30,11 @@ class AccountsScreen extends StatelessWidget {
               width: double.infinity,
             ),
           ),
-      
+
           SingleChildScrollView(
             child: Column(
               children: [
-                SizedBox(height: 20,),
+                SizedBox(height: 20),
                 SafeArea(
                   child: CustomText(
                     'Account',
@@ -50,10 +50,10 @@ class AccountsScreen extends StatelessWidget {
                   child: SizedBox(
                     height: 120,
                     width: 120,
-                    child: Image.asset(Images.accountUser),
+                    child: Image.asset(AppImages.accountUser),
                   ),
                 ),
-      
+
                 SizedBox(height: 16),
                 CustomText(
                   'Daniel Gabrel',
@@ -71,9 +71,9 @@ class AccountsScreen extends StatelessWidget {
                     fontWeight: FontWeight.w400,
                   ),
                 ),
-      
+
                 SizedBox(height: 32),
-      
+
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Material(
@@ -89,15 +89,33 @@ class AccountsScreen extends StatelessWidget {
                       ),
                       child: Column(
                         children: [
-                          _buildMenuItem(Images.personal, 'Personal', () { Get.to(PersonalDetailsScreen()); }),
+                          _buildMenuItem(AppImages.personal, 'Personal', () {
+                            Get.to(PersonalDetailsScreen());
+                          }),
                           Divider(color: TColors.grey2.withOpacity(.4)),
-                          _buildMenuItem(Images.paymentMethod, 'Payment Method', () { Get.to('page'); }),
+                          _buildMenuItem(
+                            AppImages.paymentMethod,
+                            'Payment Method',
+                            () {
+                              Get.to('page');
+                            },
+                          ),
                           Divider(color: TColors.grey2.withOpacity(.4)),
-                          _buildMenuItem(Images.settings, 'Settings', () { Get.to(SettingsScreen()); }),
+                          _buildMenuItem(AppImages.settings, 'Settings', () {
+                            Get.to(SettingsScreen());
+                          }),
                           Divider(color: TColors.grey2.withOpacity(.4)),
-                          _buildMenuItem(Images.heloCenter, 'Help Center', () { Get.to(ContactScreen()); }),
+                          _buildMenuItem(
+                            AppImages.heloCenter,
+                            'Help Center',
+                            () {
+                              Get.to(ContactScreen());
+                            },
+                          ),
                           Divider(color: TColors.grey2.withOpacity(.4)),
-                          _buildMenuItem(Images.logout, 'Logout', () { Get.to(RoleController()); }),
+                          _buildMenuItem(AppImages.logout, 'Logout', () {
+                            Get.to(RoleController());
+                          }),
                         ],
                       ),
                     ),

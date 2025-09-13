@@ -81,7 +81,7 @@ class EditPersonalInfo extends StatelessWidget {
                           child: Padding(
                             padding: const EdgeInsets.all(8),
                             child: Image.asset(
-                              Images.flag,
+                              AppImages.flag,
                               height: 20,
                               width: 20,
                             ),
@@ -93,7 +93,7 @@ class EditPersonalInfo extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(width: 16,),
+              SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,7 +120,7 @@ class EditPersonalInfo extends StatelessWidget {
                           child: Padding(
                             padding: const EdgeInsets.all(8),
                             child: Image.asset(
-                              Images.calendar,
+                              AppImages.calendar,
                               height: 20,
                               width: 20,
                             ),
@@ -167,7 +167,7 @@ class EditPersonalInfo extends StatelessWidget {
                           child: Padding(
                             padding: const EdgeInsets.all(8),
                             child: Image.asset(
-                              Images.location,
+                              AppImages.location,
                               height: 20,
                               width: 20,
                             ),
@@ -179,7 +179,7 @@ class EditPersonalInfo extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(width: 16,),
+              SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

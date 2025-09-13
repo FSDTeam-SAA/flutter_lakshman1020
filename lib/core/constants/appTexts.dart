@@ -58,4 +58,7 @@ class appTexts {
   static const String addDriver = "Add Driver";
   static const String addDispatcher = "Add Dispatcher";
   static const String driverDetails = "Driver details";
+
+  static const String Name = "Name";
+  static const String Email = "Email";
 }

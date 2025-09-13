@@ -40,17 +40,17 @@ class SettingsScreen extends StatelessWidget {
                 ),
 
                 /// Navigate using GetX
-                _buildListTile(Images.resetPassIcon, "Reset password", () {
-                   Get.to(() => const ResetPasswordScreen());
+                _buildListTile(AppImages.resetPassIcon, "Reset password", () {
+                  Get.to(() => const ResetPasswordScreen());
                 }),
                 Divider(color: TColors.grey2.withOpacity(.4)),
 
-                _buildListTile(Images.notification, "Notification", () {
+                _buildListTile(AppImages.notification, "Notification", () {
                   Get.to(() => NotificationSettingsScreen());
                 }),
                 Divider(color: TColors.grey2.withOpacity(.4)),
 
-                _buildListTile(Images.about_us, "About us", () {
+                _buildListTile(AppImages.about_us, "About us", () {
                   Get.to(() => const AboutUsScreen());
                 }),
                 Divider(color: TColors.grey2.withOpacity(.4)),
@@ -65,13 +65,13 @@ class SettingsScreen extends StatelessWidget {
                   ),
                 ),
 
-                _buildSwitchTile(Images.callIcon, "Phone calls"),
+                _buildSwitchTile(AppImages.callIcon, "Phone calls"),
                 Divider(color: TColors.grey2.withOpacity(.4)),
 
-                _buildListTile(Images.languageIcon, "Language", () {}),
+                _buildListTile(AppImages.languageIcon, "Language", () {}),
                 Divider(color: TColors.grey2.withOpacity(.4)),
 
-                _buildListTile(Images.currencyIcon, "Currency", () {}),
+                _buildListTile(AppImages.currencyIcon, "Currency", () {}),
                 Divider(color: TColors.grey2.withOpacity(.4)),
 
                 const SizedBox(height: 20),
@@ -103,28 +103,30 @@ class SettingsScreen extends StatelessWidget {
   }
 
   Widget _buildSwitchTile(String imagePath, String title) {
-    return Obx(() => ListTile(
-      leading: _buildLogo(
-        child: Image.asset(imagePath, width: 20, height: 20),
-        bgColor: TColors.white1,
-      ),
-      title: Text(
-        title,
-        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-      ),
-      trailing: Transform.scale(
-        scale: .6,
-        child: Switch(
-          value: phoneCallEnabled.value,
-          onChanged: (value) {
-            phoneCallEnabled.value = value;
-          },
-          activeColor: TColors.enableButton.withOpacity(1),
-          activeTrackColor: TColors.personalBackground,
-          inactiveThumbColor: TColors.enableButton,
+    return Obx(
+      () => ListTile(
+        leading: _buildLogo(
+          child: Image.asset(imagePath, width: 20, height: 20),
+          bgColor: TColors.white1,
+        ),
+        title: Text(
+          title,
+          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+        ),
+        trailing: Transform.scale(
+          scale: .6,
+          child: Switch(
+            value: phoneCallEnabled.value,
+            onChanged: (value) {
+              phoneCallEnabled.value = value;
+            },
+            activeColor: TColors.enableButton.withOpacity(1),
+            activeTrackColor: TColors.personalBackground,
+            inactiveThumbColor: TColors.enableButton,
+          ),
         ),
       ),
-    ));
+    );
   }
 
   Widget _buildLogo({required Widget child, required Color bgColor}) {

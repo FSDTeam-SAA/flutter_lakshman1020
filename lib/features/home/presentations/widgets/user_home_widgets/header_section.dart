@@ -13,7 +13,7 @@ class HeaderSection extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 24,
-            backgroundImage: AssetImage(Images.accountUser),
+            backgroundImage: AssetImage(AppImages.accountUser),
           ),
           const SizedBox(width: 8),
           Container(

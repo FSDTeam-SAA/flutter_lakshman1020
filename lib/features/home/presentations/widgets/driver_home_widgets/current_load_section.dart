@@ -107,7 +107,7 @@ class _LoadCard extends StatelessWidget {
                 TextButton.icon(
                   onPressed: () {},
                   icon: const Image(
-                    image: AssetImage(Images.truckIcon),
+                    image: AssetImage(AppImages.truckIcon),
                     height: 12,
                     width: 12,
                   ),

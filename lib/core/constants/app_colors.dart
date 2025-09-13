@@ -30,7 +30,12 @@ class TColors {
   static const Color redLogout = Color(0xFFFAF5F6);
   static const Color red = Color(0xFFF23624);
 
-
   static const Color borderButton = Color(0xFFDCE4F5);
 
+  static const Color userButton = Color(0xFFCCDCFF);
+  static const Color userName = Color(0xFF303133);
+  static const Color userBorder = Color(0xFFF3F5FC);
+  static const Color subtitleName = Color(0xFF555659);
+  static const Color titleColor = Color(0xFF000000);
+  static const Color subtitleColor = Color(0xFF847C7C);
 }

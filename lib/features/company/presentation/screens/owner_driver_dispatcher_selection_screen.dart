@@ -9,9 +9,9 @@ class RoleController extends GetxController {
 
   final List<String> roles = ["Owner", "Driver", "Dispatcher"];
   final List<String> listImages = [
-    Images.owner,
-    Images.driver,
-    Images.dispatcher,
+    AppImages.owner,
+    AppImages.driver,
+    AppImages.dispatcher,
   ];
 
   void selectRole(int index) {
@@ -32,23 +32,25 @@ class RoleSelectionScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // --- Dot Indicators ---
-            Obx(() => Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: List.generate(
-                controller.roles.length,
-                    (index) => Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  height: 7,
-                  width: 7,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: controller.selectedIndex.value == index
-                        ? Colors.blue
-                        : Colors.grey.shade300,
+            Obx(
+              () => Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: List.generate(
+                  controller.roles.length,
+                  (index) => Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    height: 7,
+                    width: 7,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: controller.selectedIndex.value == index
+                          ? Colors.blue
+                          : Colors.grey.shade300,
+                    ),
                   ),
                 ),
               ),
-            )),
+            ),
 
             // --- Image Stack Section ---
             SizedBox(
@@ -58,7 +60,7 @@ class RoleSelectionScreen extends StatelessWidget {
                 final orderedIndexes = [
                   for (int i = 0; i < controller.listImages.length; i++)
                     if (i != controller.selectedIndex.value) i,
-                  controller.selectedIndex.value
+                  controller.selectedIndex.value,
                 ];
 
                 return Stack(
@@ -81,9 +83,8 @@ class RoleSelectionScreen extends StatelessWidget {
                     return AnimatedPositioned(
                       duration: const Duration(milliseconds: 400),
                       curve: Curves.easeInOut,
-                      left: MediaQuery.of(context).size.width / 2 +
-                          offsetX -
-                          70,
+                      left:
+                          MediaQuery.of(context).size.width / 2 + offsetX - 70,
                       top: 20 + offsetY,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(100), // oval
@@ -102,34 +103,34 @@ class RoleSelectionScreen extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-
             const SizedBox(height: 30),
 
             // --- Buttons ---
-            Obx(() => Column(
-              children: List.generate(controller.roles.length, (index) {
-                return Container(
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                      controller.selectedIndex.value == index
-                          ? Colors.blue.shade100
-                          : Colors.grey.shade200,
-                      foregroundColor: Colors.black,
-                      minimumSize: const Size(180, 45),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
+            Obx(
+              () => Column(
+                children: List.generate(controller.roles.length, (index) {
+                  return Container(
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: controller.selectedIndex.value == index
+                            ? Colors.blue.shade100
+                            : Colors.grey.shade200,
+                        foregroundColor: Colors.black,
+                        minimumSize: const Size(180, 45),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
                       ),
+                      onPressed: () {
+                        controller.selectRole(index);
+                      },
+                      child: Text(controller.roles[index]),
                     ),
-                    onPressed: () {
-                      controller.selectRole(index);
-                    },
-                    child: Text(controller.roles[index]),
-                  ),
-                );
-              }),
-            )),
+                  );
+                }),
+              ),
+            ),
           ],
         ),
       ),
