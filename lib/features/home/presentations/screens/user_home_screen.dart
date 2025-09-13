@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_lakshman1020/features/home/presentations/screens/widgets/user_home_widgets/banner_section.dart';
-import 'package:flutter_lakshman1020/features/home/presentations/screens/widgets/user_home_widgets/header_section.dart';
-import 'package:flutter_lakshman1020/features/home/presentations/screens/widgets/user_home_widgets/recent_shipment_header.dart';
-import 'package:flutter_lakshman1020/features/home/presentations/screens/widgets/user_home_widgets/shipment_filter_tabs.dart';
-import 'package:flutter_lakshman1020/features/home/presentations/screens/widgets/user_home_widgets/shipment_item.dart';
+import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/banner_section.dart';
+import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/header_section.dart';
+import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/recent_shipment_header.dart';
+import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/shipment_filter_tabs.dart';
+import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/shipment_item.dart';
+import 'package:flutter_lakshman1020/dummy_data.dart';
 
 class UserHomeScreen extends StatelessWidget {
   const UserHomeScreen({super.key});
@@ -26,13 +27,11 @@ class UserHomeScreen extends StatelessWidget {
               const SizedBox(height: 12),
               const ShipmentFilterTabs(),
               const SizedBox(height: 12),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: 5,
-                itemBuilder: (context, index) {
-                  return const ShipmentItem();
-                },
+              // Use Column with map
+              Column(
+                children: shipments.map((shipment) {
+                  return ShipmentItem(shipment: shipment);
+                }).toList(),
               ),
             ],
           ),

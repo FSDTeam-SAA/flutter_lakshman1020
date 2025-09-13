@@ -1,25 +1,24 @@
 import 'package:flutter/material.dart';
+// import 'package:flutter_lakshman1020/features/accounts/presentation/screens/reset_password_info_screen.dart';
+// import 'package:flutter_lakshman1020/features/accounts/presentation/widgets/reset_password_screen.dart';
 import 'package:flutter_lakshman1020/features/acounts/model/help_and_support_item.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
 import '../../../../core/constants/app_colors.dart';
 
-
 class SupportCard extends StatelessWidget {
   final SupportItem item;
-
 
   const SupportCard({required this.item});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         if (item.title == "How do I reset my password") {
-          // Get.to(ResetPasswordInfoScreen());
+          //// Get.to(ResetPasswordInfoScreen());
         } else if (item.title == "Safety & Policy") {
-
         } else if (item.title == "Delivery & Job Support") {
           // অন্য স্ক্রিন
         } else if (item.title == "App & Technical Help") {
@@ -43,11 +42,7 @@ class SupportCard extends StatelessWidget {
               ),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Image.asset(
-                  width: 32,
-                  height: 32,
-                  item.image,
-                ),
+                child: Image.asset(width: 32, height: 32, item.image),
               ),
             ),
             const SizedBox(height: 12),
@@ -57,16 +52,15 @@ class SupportCard extends StatelessWidget {
                 item.title,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: TColors.deliveryDetails
-                )
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: TColors.deliveryDetails,
+                ),
               ),
-            )
+            ),
           ],
         ),
       ),
     );
   }
 }
-
