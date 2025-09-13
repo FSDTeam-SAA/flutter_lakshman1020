@@ -25,7 +25,6 @@ class AppAndTechnicalHelpScreen extends StatelessWidget {
         onBack: Get.back,
       ),
       body: Obx((){
-        final isExpanded = controller.isExpanded.value;
         return SafeArea(
           child: Column(
             children: [
