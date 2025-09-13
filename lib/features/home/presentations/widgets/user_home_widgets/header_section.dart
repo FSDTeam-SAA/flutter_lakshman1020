@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
+import 'package:flutter_lakshman1020/core/constants/app_images.dart';
 
 class HeaderSection extends StatelessWidget {
   const HeaderSection({super.key});
@@ -10,24 +11,28 @@ class HeaderSection extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         children: [
-          const SizedBox(width: 12),
-          // Welcome text
+          CircleAvatar(
+            radius: 24,
+            backgroundImage: AssetImage(Images.accountUser),
+          ),
+          const SizedBox(width: 8),
           Container(
             padding: EdgeInsets.all(2),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: const [
                 Text(
                   "Welcome back, Daniel",
                   style: TextStyle(
-                    color: TColors.white,
+                    color: TColors.activityColor,
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
                 ),
                 Text(
                   "@daniel001",
-                  style: TextStyle(color: TColors.white, fontSize: 12),
+                  style: TextStyle(color: TColors.activityColor, fontSize: 12),
                 ),
               ],
             ),

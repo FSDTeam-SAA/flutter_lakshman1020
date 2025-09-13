@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
 import 'package:flutter_lakshman1020/core/constants/app_images.dart';
-import 'package:flutter_lakshman1020/features/home/presentations/screens/widgets/driver_home_widgets/load_stop.dart';
+import 'package:flutter_lakshman1020/features/home/presentations/widgets/driver_home_widgets/load_stop.dart';
 
 class CurrentLoadSection extends StatelessWidget {
   const CurrentLoadSection({super.key});
