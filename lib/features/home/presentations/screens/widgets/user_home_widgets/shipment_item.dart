@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
+import 'package:flutter_lakshman1020/features/home/models/shipment_model.dart';
 
 class ShipmentItem extends StatelessWidget {
-  const ShipmentItem({super.key});
+  final Shipment shipment;
+
+  const ShipmentItem({super.key, required this.shipment});
 
   @override
   Widget build(BuildContext context) {
@@ -15,24 +18,27 @@ class ShipmentItem extends StatelessWidget {
         side: BorderSide(color: TColors.personalBackground, width: 2.0),
       ),
       child: ListTile(
-        leading: const CircleAvatar(
-          backgroundColor: TColors.grey2,
-          child: Icon(Icons.inventory_2, color: Colors.white),
+        leading: SizedBox(
+          width: 32,
+          height: 32,
+          child: Image.asset('assets/images/frame.png', fit: BoxFit.contain),
         ),
-        title: const Text(
-          // <-- Need to make this Dynamic -->
-          "#load_45982",
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          shipment.title,
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-        subtitle: const Text("Medical equipment for students"),
+        subtitle: Text(shipment.description),
         trailing: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Text("Chicago, IL", style: TextStyle(fontWeight: FontWeight.w500)),
+          children: [
             Text(
-              "Indianapolis, IN",
-              style: TextStyle(color: Colors.grey, fontSize: 12),
+              shipment.origin,
+              style: const TextStyle(fontWeight: FontWeight.w500),
+            ),
+            Text(
+              shipment.destination,
+              style: const TextStyle(color: Colors.grey, fontSize: 12),
             ),
           ],
         ),
