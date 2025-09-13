@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 class CustomBottomNavBar extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTap;
@@ -16,11 +17,7 @@ class CustomBottomNavBar extends StatelessWidget {
     return Container(
       height: 80,
       decoration: const BoxDecoration(
-        color: Color(0xFFF8F6F0),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
+        color: Color(0xFFFB2CAFF),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -28,7 +25,7 @@ class CustomBottomNavBar extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: List.generate(
             items.length,
-            (index) => _buildNavItem(
+                (index) => _buildNavItem(
               index: index,
               item: items[index],
               isSelected: currentIndex == index,
@@ -57,19 +54,19 @@ class CustomBottomNavBar extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: Colors.yellow,
+            color: const Color(0xFFFFCFDFF),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, color: Colors.blue, size: 20),
+              Icon(icon, color: const Color(0xFF004DF5), size: 20),
               if (item.label != null) ...[
                 const SizedBox(width: 6),
                 Text(
                   item.label!,
                   style: const TextStyle(
-                    color: Colors.blue,
+                    color: Color(0xFF004DF5),
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
                   ),
@@ -88,7 +85,7 @@ class CustomBottomNavBar extends StatelessWidget {
       },
       child: Container(
         padding: const EdgeInsets.all(8),
-        child: Icon(icon, color: Colors.blue, size: 24),
+        child: Icon(icon, color: const Color(0xFF2F80ED), size: 24),
       ),
     );
   }
