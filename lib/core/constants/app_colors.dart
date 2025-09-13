@@ -22,14 +22,20 @@ class TColors {
   static const Color uploadImage = Color(0xFF2C2929);
   static const Color driverNavigation = Color(0xFFB2CAFF);
 
+  static const Color enableButton = Color(0xFF5ADA0A);
+
   static const Color borderColor = Color(0xFFE9EEF9);
   static const Color borderColor1 = Color(0xFFE1E8F6);
   static const Color textfieldPrefixIconBackground = Color(0xFFEE5EDFF);
   static const Color redLogout = Color(0xFFFAF5F6);
   static const Color red = Color(0xFFF23624);
-  static const Color enableButton = Color(0xFF5ADA0A);
-
 
   static const Color borderButton = Color(0xFFDCE4F5);
 
+  static const Color userButton = Color(0xFFCCDCFF);
+  static const Color userName = Color(0xFF303133);
+  static const Color userBorder = Color(0xFFF3F5FC);
+  static const Color subtitleName = Color(0xFF555659);
+  static const Color titleColor = Color(0xFF000000);
+  static const Color subtitleColor = Color(0xFF847C7C);
 }

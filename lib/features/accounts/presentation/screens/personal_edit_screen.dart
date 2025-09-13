@@ -41,8 +41,19 @@ class PersonalEditScreen extends StatelessWidget {
                           color: TColors.white.withOpacity(.9),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.only(top: 20, left:25, right: 20),
-                          child: Text('Upload Image', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: TColors.uploadImage),),
+                          padding: const EdgeInsets.only(
+                            top: 20,
+                            left: 25,
+                            right: 20,
+                          ),
+                          child: Text(
+                            'Upload Image',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: TColors.uploadImage,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -52,8 +63,8 @@ class PersonalEditScreen extends StatelessWidget {
             ),
           ),
 
-          SizedBox(height: 48,),
-          EditPersonalInfo()
+          SizedBox(height: 48),
+          EditPersonalInfo(),
         ],
       ),
     );

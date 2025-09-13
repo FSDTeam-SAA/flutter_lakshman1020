@@ -41,7 +41,7 @@ class SettingsScreen extends StatelessWidget {
 
                 /// Navigate using GetX
                 _buildListTile(Images.resetPassIcon, "Reset password", () {
-                   Get.to(() => const ResetPasswordScreen());
+                  Get.to(() => const ResetPasswordScreen());
                 }),
                 Divider(color: TColors.grey2.withOpacity(.4)),
 
@@ -103,28 +103,30 @@ class SettingsScreen extends StatelessWidget {
   }
 
   Widget _buildSwitchTile(String imagePath, String title) {
-    return Obx(() => ListTile(
-      leading: _buildLogo(
-        child: Image.asset(imagePath, width: 20, height: 20),
-        bgColor: TColors.white1,
-      ),
-      title: Text(
-        title,
-        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-      ),
-      trailing: Transform.scale(
-        scale: .6,
-        child: Switch(
-          value: phoneCallEnabled.value,
-          onChanged: (value) {
-            phoneCallEnabled.value = value;
-          },
-          activeColor: TColors.enableButton.withOpacity(1),
-          activeTrackColor: TColors.personalBackground,
-          inactiveThumbColor: TColors.enableButton,
+    return Obx(
+      () => ListTile(
+        leading: _buildLogo(
+          child: Image.asset(imagePath, width: 20, height: 20),
+          bgColor: TColors.white1,
+        ),
+        title: Text(
+          title,
+          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+        ),
+        trailing: Transform.scale(
+          scale: .6,
+          child: Switch(
+            value: phoneCallEnabled.value,
+            onChanged: (value) {
+              phoneCallEnabled.value = value;
+            },
+            activeColor: TColors.enableButton.withOpacity(1),
+            activeTrackColor: TColors.personalBackground,
+            inactiveThumbColor: TColors.enableButton,
+          ),
         ),
       ),
-    ));
+    );
   }
 
   Widget _buildLogo({required Widget child, required Color bgColor}) {

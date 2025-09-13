@@ -16,7 +16,7 @@ class NotificationSettingsScreen extends StatelessWidget {
     NotificationSettingModel(
       title: "Job Alerts",
       subtitle:
-      "Get notified when new delivery requests are \n available near you.",
+          "Get notified when new delivery requests are \n available near you.",
       isEnabled: true,
     ),
     NotificationSettingModel(
@@ -27,13 +27,13 @@ class NotificationSettingsScreen extends StatelessWidget {
     NotificationSettingModel(
       title: "Promotions & Announcements",
       subtitle:
-      "Be the first to know about new features, \n offers, and driver incentives.",
+          "Be the first to know about new features, \n offers, and driver incentives.",
       isEnabled: true,
     ),
     NotificationSettingModel(
       title: "App Alerts & Warnings",
       subtitle:
-      "Important app updates, route issues, or \n account notifications.",
+          "Important app updates, route issues, or \n account notifications.",
       isEnabled: false,
     ),
   ].obs;
@@ -62,7 +62,7 @@ class NotificationSettingsScreen extends StatelessWidget {
 
           // 🔹 Build switches reactively
           Obx(
-                () => Column(
+            () => Column(
               children: titles.asMap().entries.map((entry) {
                 final index = entry.key;
                 final setting = entry.value;
@@ -72,8 +72,9 @@ class NotificationSettingsScreen extends StatelessWidget {
                   subtitle: setting.subtitle,
                   value: setting.isEnabled,
                   onChanged: (val) {
-                    titles[index] =
-                        setting.copyWith(isEnabled: val); // update value
+                    titles[index] = setting.copyWith(
+                      isEnabled: val,
+                    ); // update value
                   },
                 );
               }).toList(),
