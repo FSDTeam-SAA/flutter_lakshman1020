@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/features/others/presentation/widgets/company_appbar.dart';
+import 'package:flutter_lakshman1020/features/others/presentation/widgets/company_drawer.dart';
 import 'package:flutter_lakshman1020/features/others/presentation/widgets/revenue_graph.dart';
 
 class DashboardScreen extends StatelessWidget {
@@ -66,6 +67,7 @@ class DashboardScreen extends StatelessWidget {
           ],
         ),
       ),
+      drawer: CompanyDrawer(),
     );
   }
 
