@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
 import 'package:flutter_lakshman1020/core/widgets/app_scaffold.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
-import 'package:flutter_lakshman1020/features/acounts/widgets/personal%20details.dart';
-import 'package:flutter_lakshman1020/features/acounts/widgets/personal_edit_screen.dart';
+import 'package:flutter_lakshman1020/features/accounts/presentation/screens/personal_edit_screen.dart';
+import 'package:flutter_lakshman1020/features/acounts/presentation/widgets/personal%20details.dart';
 import 'package:get/get.dart';
 
-import '../../core/constants/app_images.dart';
+import '../../../../core/constants/app_images.dart';
 
 class PersonalDetailsScreen extends StatelessWidget {
   const PersonalDetailsScreen({super.key});
@@ -15,6 +15,7 @@ class PersonalDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppScaffold(
       appBar: CustomAppBar(
+        onBack: Get.back,
         title: 'Personal details',
         titleCenter: true,
         titleColor: TColors.deliveryDetails,

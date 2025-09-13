@@ -20,4 +20,19 @@ class Images {
   static const String notification2 = "assets/images/notification2.png";
   static const String notification1 = 'assets/images/notification1.png';
   static const String jhon = 'assets/images/Jhon.jpg';
+  static const String calendar ='assets/images/calendar.png';
+  static const String flag ='assets/images/flag.png';
+  static const String location ='assets/images/location.png';
+  static const String heloCenter ='assets/images/help_center.png';
+  static const String logout ='assets/images/logout.png';
+  static const String paymentMethod ='assets/images/payment_method.png';
+  static const String personal ='assets/images/personal.png';
+  static const String settings ='assets/images/settings.png';
+  static const String notification ='assets/images/notification.png';
+  static const String about_us ='assets/images/about_us.png';
+  static const String safetyIcon ='assets/images/safety.png';
+  static const String deliveryIcon ='assets/images/delivery.png';
+  static const String technicalIcon ='assets/images/technical.png';
+  static const String customerSupport ='assets/images/customer_support.png';
+  static const String resetPassword ='assets/images/reset_password.png';
 }

@@ -25,4 +25,9 @@ class TColors {
   static const Color enableButton = Color(0xFF5ADA0A);
 
   static const Color borderColor = Color(0xFFE9EEF9);
+  static const Color borderColor1 = Color(0xFFE1E8F6);
+  static const Color textfieldPrefixIconBackground = Color(0xFFEE5EDFF);
+  static const Color redLogout = Color(0xFFFAF5F6);
+  static const Color red = Color(0xFFF23624);
+
 }
