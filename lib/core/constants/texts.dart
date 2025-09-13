@@ -35,7 +35,7 @@ class appTexts {
   static const String moreOption = "More options";
   static const String abouUs = "About Us";
   static const String contactSupport = "Contact support";
-  static const String safetyPolicy = "Safety & Plicy";
+  static const String safetyPolicy = "Safety & Policy";
   static const String deliveryJobSupport = "Delivery & Job Support";
   static const String appTechnicalHelp = "App & Technical Help";
   static const String customerSuppoert = "Customer Support";

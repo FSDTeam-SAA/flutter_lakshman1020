@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_lakshman1020/features/acounts/presentation/widgets/text_field.dart';
+import 'package:flutter_lakshman1020/core/constants/custom_text_field.dart';
 import 'package:get/get.dart';
 import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
 import 'package:flutter_lakshman1020/core/constants/texts.dart';
@@ -56,17 +56,17 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 CustomTextField(
                   label: '',
                   controller: _passwordController,
-                  
-                  // helperText: "Must be at least 8 characters",
-                  // validator: (value) {
-                  //   if (value == null || value.isEmpty) {
-                  //     return 'Password cannot be empty';
-                  //   }
-                  //   if (value.length < 8) {
-                  //     return 'Password must be at least 8 characters';
-                  //   }
-                  //   return null;
-                  // },
+                  obscureText: true,
+                  helperText: "Must be at least 8 characters",
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Password cannot be empty';
+                    }
+                    if (value.length < 8) {
+                      return 'Password must be at least 8 characters';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16),
 
@@ -83,17 +83,17 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 CustomTextField(
                   label: '',
                   controller: _confirmPasswordController,
-                  // obscureText: true,
-                  // helperText: "Both password must match",
-                  // validator: (value) {
-                  //   if (value == null || value.isEmpty) {
-                  //     return 'Confirm password cannot be empty';
-                  //   }
-                  //   if (value != _passwordController.text) {
-                  //     return 'Passwords do not match';
-                  //   }
-                  //   return null;
-                  // },
+                  obscureText: true,
+                  helperText: "Both password must match",
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Confirm password cannot be empty';
+                    }
+                    if (value != _passwordController.text) {
+                      return 'Passwords do not match';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 32),
 
@@ -110,7 +110,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Password reset successful'),
-                        ),//obscureText: true,
+                        ),
                       );
                       Get.back();
                     }

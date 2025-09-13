@@ -1,30 +1,32 @@
 import 'package:flutter/material.dart';
-// import 'package:flutter_lakshman1020/features/accounts/presentation/screens/reset_password_info_screen.dart';
-// import 'package:flutter_lakshman1020/features/accounts/presentation/widgets/reset_password_screen.dart';
-import 'package:flutter_lakshman1020/features/acounts/model/help_and_support_item.dart';
+import 'package:flutter_lakshman1020/features/accounts/presentation/screens/app_and_technical_help_screen.dart';
+import 'package:flutter_lakshman1020/features/accounts/presentation/screens/customer_support_screen.dart';
+import 'package:flutter_lakshman1020/features/accounts/presentation/screens/delivery_and_job_support_screen.dart';
+import 'package:flutter_lakshman1020/features/accounts/presentation/screens/reset_password_info_screen.dart';
+import 'package:flutter_lakshman1020/features/accounts/presentation/screens/safety_policy_screen.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-
 import '../../../../core/constants/app_colors.dart';
+import '../../model/help_and_support_item.dart';
 
 class SupportCard extends StatelessWidget {
   final SupportItem item;
 
-  const SupportCard({required this.item});
+  const SupportCard({super.key, required this.item});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         if (item.title == "How do I reset my password") {
-          //// Get.to(ResetPasswordInfoScreen());
+          Get.to(ResetPasswordInfoScreen());
         } else if (item.title == "Safety & Policy") {
+          Get.to(SafetyPolicyScreen());
         } else if (item.title == "Delivery & Job Support") {
-          // অন্য স্ক্রিন
+          Get.to(DeliveryAndJobSupportScreen());
         } else if (item.title == "App & Technical Help") {
-          // অন্য স্ক্রিন
+          Get.to(AppAndTechnicalHelpScreen());
         } else if (item.title == "Customer support") {
-          // অন্য স্ক্রিন
+          Get.to(CustomerSupportScreen());
         }
       },
       child: Container(

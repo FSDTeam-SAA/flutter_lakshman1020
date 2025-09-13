@@ -2,22 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
 import 'package:flutter_lakshman1020/core/widgets/app_scaffold.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
-import 'package:flutter_lakshman1020/features/acounts/model/notification_setting_model.dart';
-import 'package:flutter_lakshman1020/features/acounts/presentation/widgets/notification_widget.dart';
+import 'package:flutter_lakshman1020/features/accounts/presentation/widgets/notification_widget.dart';
 import 'package:get/get.dart';
 
 import '../../../../core/constants/appTexts.dart';
-
+import '../../model/notification_setting_model.dart';
 
 class NotificationSettingsScreen extends StatelessWidget {
-  NotificationSettingsScreen({Key? key}) : super(key: key);
+  NotificationSettingsScreen({super.key});
 
   // 🔹 Use RxList for reactive updates
   final RxList<NotificationSettingModel> titles = <NotificationSettingModel>[
     NotificationSettingModel(
       title: "Job Alerts",
       subtitle:
-      "Get notified when new delivery requests are \n available near you.",
+          "Get notified when new delivery requests are \n available near you.",
       isEnabled: true,
     ),
     NotificationSettingModel(
@@ -28,13 +27,13 @@ class NotificationSettingsScreen extends StatelessWidget {
     NotificationSettingModel(
       title: "Promotions & Announcements",
       subtitle:
-      "Be the first to know about new features, \n offers, and driver incentives.",
+          "Be the first to know about new features, \n offers, and driver incentives.",
       isEnabled: true,
     ),
     NotificationSettingModel(
       title: "App Alerts & Warnings",
       subtitle:
-      "Important app updates, route issues, or \n account notifications.",
+          "Important app updates, route issues, or \n account notifications.",
       isEnabled: false,
     ),
   ].obs;
@@ -63,7 +62,7 @@ class NotificationSettingsScreen extends StatelessWidget {
 
           // 🔹 Build switches reactively
           Obx(
-                () => Column(
+            () => Column(
               children: titles.asMap().entries.map((entry) {
                 final index = entry.key;
                 final setting = entry.value;
@@ -73,8 +72,9 @@ class NotificationSettingsScreen extends StatelessWidget {
                   subtitle: setting.subtitle,
                   value: setting.isEnabled,
                   onChanged: (val) {
-                    titles[index] =
-                        setting.copyWith(isEnabled: val); // update value
+                    titles[index] = setting.copyWith(
+                      isEnabled: val,
+                    ); // update value
                   },
                 );
               }).toList(),

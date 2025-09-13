@@ -3,8 +3,8 @@ import 'package:flutter_lakshman1020/core/constants/app_images.dart';
 import 'package:flutter_lakshman1020/core/widgets/app_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_text.dart';
+import 'package:flutter_lakshman1020/features/accounts/model/help_and_support_item.dart';
 import 'package:flutter_lakshman1020/features/accounts/presentation/widgets/support_card.dart';
-import 'package:flutter_lakshman1020/features/acounts/model/help_and_support_item.dart';
 class HelpScreen extends StatelessWidget {
   const HelpScreen({super.key});
 
