@@ -114,7 +114,7 @@ class CompanyDrawer extends StatelessWidget {
               height: 24,
               width: 24,
             ),
-            title: Text("Settings", style: TextStyle(color: TColors.grey)),
+            title: Text("Log out", style: TextStyle(color: TColors.grey)),
             onTap: () {},
           ),
           SizedBox(height: 80),

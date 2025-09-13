@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/dummy_data.dart';
+import 'package:flutter_lakshman1020/features/others/presentation/widgets/company_appbar.dart';
 import 'package:flutter_lakshman1020/features/others/presentation/widgets/pending_request_filter.dart';
 import 'package:flutter_lakshman1020/features/others/presentation/widgets/pending_request_item.dart';
 
@@ -9,7 +10,7 @@ class PendingReqScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: CompanyAppbar(),
 
       body: Container(
         padding: EdgeInsets.all(20),

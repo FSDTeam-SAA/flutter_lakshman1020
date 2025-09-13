@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/dummy_data.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/shipment_item.dart';
+import 'package:flutter_lakshman1020/features/others/presentation/widgets/company_appbar.dart';
 
 class NavigateScreen extends StatelessWidget {
   const NavigateScreen({super.key});
@@ -10,7 +11,7 @@ class NavigateScreen extends StatelessWidget {
     // TODO: implement build
 
     return Scaffold(
-      appBar: AppBar(),
+      appBar: CompanyAppbar(),
       body: Container(
         padding: EdgeInsets.all(16),
         child: Expanded(
