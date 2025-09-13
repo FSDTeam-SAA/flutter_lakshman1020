@@ -33,6 +33,8 @@ import 'package:flutter_lakshman1020/features/accounts/presentation/screens/pers
 import 'package:flutter_lakshman1020/features/accounts/presentation/screens/personal_edit_screen.dart';
 import 'package:get/get.dart';
 
+import 'features/company/presentation/screens/owner_driver_dispatcher_selection_screen.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -45,7 +47,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Flutter Demo',
       theme: AppTheme.light,
-      home: AccountsScreen(
+      home: RoleSelectionScreen(
       )
     );
   }

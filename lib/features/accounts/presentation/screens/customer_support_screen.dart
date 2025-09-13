@@ -3,8 +3,8 @@ import 'package:flutter_lakshman1020/features/accounts/presentation/widgets/cont
 import 'package:get/get.dart';
 import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
 
-class CustomSupportScreen extends StatelessWidget {
-  const CustomSupportScreen({super.key});
+class CustomerSupportScreen extends StatelessWidget {
+  const CustomerSupportScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

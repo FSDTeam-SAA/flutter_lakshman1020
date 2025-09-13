@@ -1,33 +1,35 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
-import 'package:flutter_lakshman1020/core/constants/texts.dart';
 import 'package:flutter_lakshman1020/core/widgets/app_scaffold.dart';
-import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
-import 'package:flutter_lakshman1020/features/accounts/presentation/widgets/FAQ_Items.dart';
-import 'package:flutter_lakshman1020/features/accounts/presentation/widgets/custom_shadow_title.dart';
-import 'package:flutter_lakshman1020/features/accounts/presentation/widgets/highlighted_text.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
+import '../../../../core/constants/appTexts.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/custom_appbar.dart';
 import '../../controller/box_controller.dart';
+import '../widgets/FAQ_Items.dart';
+import '../widgets/custom_shadow_title.dart';
+import '../widgets/highlighted_text.dart';
 
-class SafetyPolicyScreen extends StatelessWidget {
-   SafetyPolicyScreen({super.key});
+class DeliveryAndJobSupportScreen extends StatelessWidget {
+   DeliveryAndJobSupportScreen({super.key});
 
   final FAQController controller = Get.put(FAQController());
 
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      appBar: CustomAppBar(title: (appTexts.safetyPolicy), titleCenter: true,onBack: Get.back,),
+      appBar: CustomAppBar(
+        title: (appTexts.deliveryJobSupport),
+        titleCenter: true,
+        onBack: Get.back,
+      ),
       body: SafeArea(
         child: Column(
           children: [
             SizedBox(height: 48,),
-        
-            CustomShadowTile(title: 'Accident or Damage Reporting', onPressed: () {  },),
-            SizedBox(height: 16,),
-            CustomShadowTile(title: 'Emergency Contact', onPressed: (){},),
+
+            CustomShadowTile(title: 'How to Accept or Reject Jobs', onPressed: () {  },),
             SizedBox(height: 16,),
 
 
@@ -39,7 +41,7 @@ class SafetyPolicyScreen extends StatelessWidget {
 
               // 🔹 Show container when expanded
               return Container(
-                height: 400,
+                height: 350,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: TColors.white1,
@@ -51,14 +53,13 @@ class SafetyPolicyScreen extends StatelessWidget {
                     const SizedBox(height: 8),
 
                     FAQItem(
-                      question: "Customer Misconduct",
+                      question: "Pickup & Drop-off Issues",
                       description:
-                      "If a customer behaves inappropriately or violates our policy:",
+                      "If you can’t find the pickup or drop location:",
                       bulletPoints: const [
-                        "End the trip only if it’s safe to do so.",
-                        "Go to Help & Support > Report a Customer Issue.",
-                        "Provide a brief description of what happened (with time and location).",
-                        "Our team will investigate and take appropriate action.",
+                        "Use the “Call Customer” button to get directions.",
+                        "Double-check the address pinned on the map.",
+                        "Still having trouble? Tap “Report Issue” for assistance."
                       ],
                       descriptionColor: TColors.deliveryDetails,
                       onPressed: controller.collapse,
@@ -68,17 +69,23 @@ class SafetyPolicyScreen extends StatelessWidget {
 
                     const HighlightedTextBox(
                       text:
-                      "All reports are confidential and taken seriously. Your safety is our priority.",
+                      "Wait up to 10 minutes at pickup or drop points before reporting no-show.",
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      height: 80,
-                      barHeight: 60,
+                      height: 60,
+                      barHeight: 40,
                       barWidth: 4,
                     ),
                   ],
                 ),
               );
             }),
+
+            SizedBox(height: 16,),
+
+            CustomShadowTile(title: 'Navigation & Route Help', onPressed: (){},),
+            SizedBox(height: 16,),
+            CustomShadowTile(title: 'Customer Not Available', onPressed: (){},)
           ],
         ),
       ),

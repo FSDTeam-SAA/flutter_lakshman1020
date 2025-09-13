@@ -32,4 +32,7 @@ class Images {
   static const String resetPassword ='assets/images/reset_password.png';
   static const String groupIcon = 'assets/images/Group.png';
   static const String informationIcon = 'assets/images/Information.png';
+  static const String driver = 'assets/images/driver.png';
+  static const String owner = 'assets/images/owner.png';
+  static const String dispatcher = 'assets/images/dispatcher.png';
 }
