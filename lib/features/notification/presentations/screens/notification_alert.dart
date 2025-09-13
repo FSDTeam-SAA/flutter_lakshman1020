@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/app_icons.dart';
 import 'package:flutter_lakshman1020/core/widgets/primary_button.dart';
+import 'package:flutter_lakshman1020/features/accounts/presentation/screens/notification_screen.dart';
+import 'package:flutter_lakshman1020/features/home/presentations/screens/user_home_screen.dart';
 import 'package:get/get.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -8,7 +10,7 @@ import '../../../../core/constants/app_images.dart';
 import '../../../home/models/app_text_styles.dart';
 import 'notification_empty.dart';
 import 'notification_list.dart';
-
+import '../../../../features/notification/presentations/widgets/notification_alert_widget.dart';
 class NotificationAlertScreen extends StatelessWidget {
   const NotificationAlertScreen({super.key});
 
@@ -74,7 +76,9 @@ class NotificationAlertScreen extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                const SizedBox(height: 118),
+
+
 
                 // Info text
                 Text(
@@ -115,7 +119,7 @@ class NotificationAlertScreen extends StatelessWidget {
                       child: context.primaryButton(
                         text: "Get notified",
                         onPressed: () =>
-                            Get.to(const NotificationListScreen()),
+                            Get.to( NotificationListScreen()),
                       ),
                     ),
                   ],
@@ -130,29 +134,4 @@ class NotificationAlertScreen extends StatelessWidget {
   }
 }
 
-class BulletItem extends StatelessWidget {
-  final String iconPath;
-  final String text;
 
-  const BulletItem({super.key, required this.iconPath, required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        children: [
-          Image.asset(iconPath, width: 14, height: 14),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(
-                  fontSize: 14, fontWeight: FontWeight.w400),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

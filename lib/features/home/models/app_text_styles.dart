@@ -29,4 +29,14 @@ class TTextStyles {
     fontWeight: FontWeight.w400,
     color: TColors.grey2,
   );
+
+  static const TextStyle no_subtitle = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+    color: TColors.deliveryDetails,
+  );
+
+
+
+
 }

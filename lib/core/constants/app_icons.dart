@@ -8,6 +8,9 @@ class AppIcons {
   static const String notification = 'assets/icons/notification.png';
   static const String promotion = 'assets/icons/promotion.png';
   static const String technicalissue = 'assets/icons/technicalissue.png';
+  static const String subscription = 'assets/icons/subscription.png';
+  static const String s_mail = 'assets/icons/s_mail.png';
+  static const String link = 'assets/icons/link.png';
 
 
 }

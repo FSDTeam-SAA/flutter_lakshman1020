@@ -35,4 +35,5 @@ class Images {
   static const String technicalIcon ='assets/images/technical.png';
   static const String customerSupport ='assets/images/customer_support.png';
   static const String resetPassword ='assets/images/reset_password.png';
+  static const String admin ='assets/images/admin.jpg';
 }

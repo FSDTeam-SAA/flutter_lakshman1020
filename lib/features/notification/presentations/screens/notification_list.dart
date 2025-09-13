@@ -25,7 +25,7 @@ class NotificationListScreen extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
-              // future action (settings / filter etc.)
+              // future action for setting
             },
             icon: Image.asset(
               AppIcons.notification, // 👉 right side icon from assets
@@ -38,20 +38,54 @@ class NotificationListScreen extends StatelessWidget {
       ),
       body: ListView(
         children: const [
+
           NotificationTile(
             avatar: Images.jhon,
             title: "Jhon Alphabet",
             subtitle: "Contact Customer as soon as possible",
             time: "8:45am",
           ),
+
+          SizedBox(width: 16),
+
           NotificationTile(
             avatar: Images.jhon,
             title: "Admin",
             subtitle: "There's a technical error",
             time: "8:45am",
           ),
+
+          SizedBox(width: 16),
+
           NotificationTile(
-            avatar: Images.jhon,
+            avatar: Images.admin,
+            title: "Admin",
+            subtitle: "There's a technical error",
+            time: "8:45am",
+          ),
+
+          SizedBox(width: 16),
+
+          NotificationTile(
+            avatar: Images.admin,
+            title: "Admin",
+            subtitle: "There's a technical error",
+            time: "8:45am",
+          ),
+
+          SizedBox(width: 16),
+
+          NotificationTile(
+            avatar: Images.admin,
+            title: "Admin",
+            subtitle: "There's a technical error",
+            time: "8:45am",
+          ),
+
+          SizedBox(width: 16),
+
+          NotificationTile(
+            avatar: Images.admin,
             title: "Admin",
             subtitle: "There's a technical error",
             time: "8:45am",
