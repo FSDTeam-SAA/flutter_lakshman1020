@@ -92,7 +92,8 @@ class CustomTextField extends StatelessWidget {
         helperText: helperText,
         helperStyle: const TextStyle(
           fontSize: 12,
-          color: TColors.deliveryDetails,
+          fontWeight: FontWeight.w400,
+          color: TColors.grey2,
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),

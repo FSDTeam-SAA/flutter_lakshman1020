@@ -40,17 +40,17 @@ class SettingsScreen extends StatelessWidget {
                 ),
 
                 /// Navigate using GetX
-                _buildListTile(Images.resetPassIcon, "Reset password", () {
+                _buildListTile(AppImages.resetPassIcon, "Reset password", () {
                   Get.to(() => const ResetPasswordScreen());
                 }),
                 Divider(color: TColors.grey2.withOpacity(.4)),
 
-                _buildListTile(Images.notification, "Notification", () {
+                _buildListTile(AppImages.notification, "Notification", () {
                   Get.to(() => NotificationSettingsScreen());
                 }),
                 Divider(color: TColors.grey2.withOpacity(.4)),
 
-                _buildListTile(Images.about_us, "About us", () {
+                _buildListTile(AppImages.about_us, "About us", () {
                   Get.to(() => const AboutUsScreen());
                 }),
                 Divider(color: TColors.grey2.withOpacity(.4)),
@@ -65,13 +65,13 @@ class SettingsScreen extends StatelessWidget {
                   ),
                 ),
 
-                _buildSwitchTile(Images.callIcon, "Phone calls"),
+                _buildSwitchTile(AppImages.callIcon, "Phone calls"),
                 Divider(color: TColors.grey2.withOpacity(.4)),
 
-                _buildListTile(Images.languageIcon, "Language", () {}),
+                _buildListTile(AppImages.languageIcon, "Language", () {}),
                 Divider(color: TColors.grey2.withOpacity(.4)),
 
-                _buildListTile(Images.currencyIcon, "Currency", () {}),
+                _buildListTile(AppImages.currencyIcon, "Currency", () {}),
                 Divider(color: TColors.grey2.withOpacity(.4)),
 
                 const SizedBox(height: 20),

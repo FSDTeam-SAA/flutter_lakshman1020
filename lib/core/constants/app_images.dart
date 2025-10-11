@@ -1,8 +1,7 @@
-class Images {
+class AppImages {
   //Bottom Navigation Icon
   static const String activityIcon = 'assets/images/activity.png';
-  static const String activityOutlineIcon =
-      'assets/images/activity_outline.png';
+  static const String activityOutlineIcon = 'assets/images/activity_outline.png';
   static const String homeIcon = 'assets/images/home.png';
   static const String homeOutlineIcon = 'assets/images/home_outline.png';
   static const String message = 'assets/images/msg.png';
@@ -36,4 +35,11 @@ class Images {
   static const String customerSupport = 'assets/images/customer_support.png';
   static const String resetPassword = 'assets/images/reset_password.png';
   static const String authUser = 'assets/images/authUser.png';
+  static const String owner = 'assets/images/owner.png';
+  static const String driver = 'assets/images/driver.png';
+  static const String dispatcher = 'assets/images/dispatcher.png';
+  static const String notification2 = "assets/images/notification2.png";
+  static const String notification1 = 'assets/images/notification1.png';
+  static const String jhon = 'assets/images/Jhon.jpg';
+  static const String admin ='assets/images/admin.jpg';
 }

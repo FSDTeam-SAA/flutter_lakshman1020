@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/features/accounts/presentation/widgets/custom_text_box.dart';
 import 'package:flutter_lakshman1020/features/accounts/presentation/widgets/highlighted_text.dart';
+import 'package:get/get.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/app_scaffold.dart';
 import '../../../../core/widgets/custom_appbar.dart';
 
+import '../../controller/box_controller.dart'; // your controller
+
 class ResetPasswordInfoScreen extends StatelessWidget {
-  const ResetPasswordInfoScreen({super.key});
+  ResetPasswordInfoScreen({super.key});
+
+  final FAQController controller = Get.put(FAQController());
 
   @override
   Widget build(BuildContext context) {

@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/features/accounts/presentation/screens/Reset_PassWord_Screen.dart';
 
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-
 import '../../../../core/constants/app_colors.dart';
 import '../../model/help_and_support_item.dart';
+import '../screens/app_and_technical_help_screen.dart';
+import '../screens/customer_support_screen.dart';
+import '../screens/delivery_and_job_support_screen.dart';
 
 class SupportCard extends StatelessWidget {
   final SupportItem item;
@@ -20,11 +21,11 @@ class SupportCard extends StatelessWidget {
           Get.to(ResetPasswordScreen());
         } else if (item.title == "Safety & Policy") {
         } else if (item.title == "Delivery & Job Support") {
-          // অন্য স্ক্রিন
+          Get.to(DeliveryAndJobSupportScreen());
         } else if (item.title == "App & Technical Help") {
-          // অন্য স্ক্রিন
+          Get.to(AppAndTechnicalHelpScreen());
         } else if (item.title == "Customer support") {
-          // অন্য স্ক্রিন
+          Get.to(CustomerSupportScreen());
         }
       },
       child: Container(

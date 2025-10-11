@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
 
 class FAQItem extends StatelessWidget {
   final String question;
   final String description;
   final List<String> bulletPoints;
-  final Color questionColor;
   final Color descriptionColor;
-  final Color bulletColor;
+  final VoidCallback onPressed;
+
 
   const FAQItem({
     super.key,
     required this.question,
     required this.description,
     required this.bulletPoints,
-    required this.questionColor,
-    required this.descriptionColor,
-    required this.bulletColor,
+    required this.descriptionColor, required this.onPressed,
+
   });
 
   @override
@@ -24,13 +24,20 @@ class FAQItem extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Question
-        Text(
-          question,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: questionColor,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              question,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: TColors.deliveryDetails,
+              ),
+            ),
+            
+            IconButton(onPressed: onPressed, icon: Icon(Icons.close, color: TColors.red,))
+          ],
         ),
         const SizedBox(height: 12),
 
@@ -53,15 +60,15 @@ class FAQItem extends StatelessWidget {
 
   Widget _buildBulletPoint(String text) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(left:  10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("• ", style: TextStyle(fontSize: 14, color: bulletColor)),
+          Text("• ", style: TextStyle(fontSize: 14, color: TColors.grey1)),
           Expanded(
             child: Text(
               text,
-              style: TextStyle(fontSize: 14, color: bulletColor),
+              style: TextStyle(fontSize: 14, color: TColors.grey1),
             ),
           ),
         ],

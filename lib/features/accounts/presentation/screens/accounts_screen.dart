@@ -10,6 +10,8 @@ import 'package:flutter_lakshman1020/features/accounts/presentation/widgets/cust
 import 'package:get/get.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../company/presentation/screens/owner_driver_dispatcher_selection_screen.dart';
+import 'contact_support_screen.dart';
 
 class AccountsScreen extends StatelessWidget {
   const AccountsScreen({super.key});
@@ -18,22 +20,23 @@ class AccountsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       //appBar: AppBar(backgroundColor: TColors.primary),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            ClipPath(
-              clipper: CustomCurvedEdges(),
-              child: Container(
-                decoration: BoxDecoration(color: TColors.primary),
-                height: 428,
-                width: double.infinity,
-              ),
+      body: Stack(
+        children: [
+          ClipPath(
+            clipper: CustomCurvedEdges(),
+            child: Container(
+              decoration: BoxDecoration(color: TColors.primary),
+              height: 500,
+              width: double.infinity,
             ),
+          ),
 
-            SingleChildScrollView(
-              child: Column(
-                children: [
-                  CustomText(
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(height: 20),
+                SafeArea(
+                  child: CustomText(
                     'Account',
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
@@ -41,76 +44,87 @@ class AccountsScreen extends StatelessWidget {
                       color: TColors.account,
                     ),
                   ),
-                  SizedBox(height: 40),
-                  Center(
-                    child: SizedBox(
-                      height: 120,
-                      width: 120,
-                      child: Image.asset(Images.accountUser),
-                    ),
+                ),
+                SizedBox(height: 30),
+                Center(
+                  child: SizedBox(
+                    height: 120,
+                    width: 120,
+                    child: Image.asset(AppImages.accountUser),
                   ),
-              
-                  SizedBox(height: 16),
-                  CustomText(
-                    'Daniel Gabrel',
-                    style: TextStyle(
-                      color: TColors.account,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w500,
-                    ),
+                ),
+
+                SizedBox(height: 16),
+                CustomText(
+                  'Daniel Gabrel',
+                  style: TextStyle(
+                    color: TColors.account,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w500,
                   ),
-                  CustomText(
-                    '@daniel001',
-                    style: TextStyle(
-                      color: TColors.white1,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                    ),
+                ),
+                CustomText(
+                  '@daniel001',
+                  style: TextStyle(
+                    color: TColors.white1,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
                   ),
-              
-                  SizedBox(height: 32),
-              
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: TColors.white,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Column(
-                          children: [
-                            _buildMenuItem(Images.personal, 'Personal', () {
-                              Get.to(PersonalDetailsScreen());
-                            }),
-              
-                            Divider(color: TColors.grey2.withOpacity(.4)),
-                            _buildMenuItem(
-                              Images.paymentMethod,
-                              'Payment Method', () {Get.to('page');}
-                            ),
-              
-                            Divider(color: TColors.grey2.withOpacity(.4)),
-                            _buildMenuItem(Images.settings, 'Settings', (){Get.to(SettingsScreen());}),
-              
-                            Divider(color: TColors.grey2.withOpacity(.4)),
-                            _buildMenuItem(Images.heloCenter, 'Help Center', (){Get.to(HelpScreen());}),
-              
-                            Divider(color: TColors.grey2.withOpacity(.4)),
-                            _buildMenuItem(Images.logout, 'Logout', (){Get.to(PersonalDetailsScreen());}),
-                          ],
-                        ),
+                ),
+
+                SizedBox(height: 32),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Material(
+                    elevation: 6, // controls shadow strength
+                    borderRadius: BorderRadius.circular(8),
+                    shadowColor: Colors.black.withOpacity(0.15), // shadow color
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: TColors.white,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        children: [
+                          _buildMenuItem(AppImages.personal, 'Personal', () {
+                            Get.to(PersonalDetailsScreen());
+                          }),
+                          Divider(color: TColors.grey2.withOpacity(.4)),
+                          _buildMenuItem(
+                            AppImages.paymentMethod,
+                            'Payment Method',
+                            () {
+                              Get.to('page');
+                            },
+                          ),
+                          Divider(color: TColors.grey2.withOpacity(.4)),
+                          _buildMenuItem(AppImages.settings, 'Settings', () {
+                            Get.to(SettingsScreen());
+                          }),
+                          Divider(color: TColors.grey2.withOpacity(.4)),
+                          _buildMenuItem(
+                            AppImages.heloCenter,
+                            'Help Center',
+                            () {
+                              Get.to(ContactScreen());
+                            },
+                          ),
+                          Divider(color: TColors.grey2.withOpacity(.4)),
+                          _buildMenuItem(AppImages.logout, 'Logout', () {
+                            Get.to(RoleController());
+                          }),
+                        ],
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

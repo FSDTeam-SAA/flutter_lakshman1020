@@ -62,11 +62,11 @@ class HelpScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<SupportItem> supportItems = [
-      SupportItem(Images.resetPassword, "How do I reset my password"),
-      SupportItem(Images.safetyIcon, "Safety & Policy"),
-      SupportItem(Images.deliveryIcon, "Delivery & Job Support"),
-      SupportItem(Images.technicalIcon, "App & Technical Help"),
-      SupportItem(Images.customerSupport, "Customer support"),
+      SupportItem(AppImages.resetPassword, "How do I reset my password"),
+      SupportItem(AppImages.safetyIcon, "Safety & Policy"),
+      SupportItem(AppImages.deliveryIcon, "Delivery & Job Support"),
+      SupportItem(AppImages.technicalIcon, "App & Technical Help"),
+      SupportItem(AppImages.customerSupport, "Customer support"),
     ];
 
     return AppScaffold(

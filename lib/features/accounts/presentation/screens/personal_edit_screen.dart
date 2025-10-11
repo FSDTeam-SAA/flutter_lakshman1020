@@ -29,7 +29,7 @@ class PersonalEditScreen extends StatelessWidget {
                 width: 160,
                 child: Stack(
                   children: [
-                    Image.asset(Images.accountUser),
+                    Image.asset(AppImages.accountUser),
                     Positioned(
                       bottom: -80,
                       left: 0,

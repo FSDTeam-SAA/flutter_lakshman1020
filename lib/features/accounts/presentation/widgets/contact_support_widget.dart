@@ -139,7 +139,7 @@ class ContactSupportWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
 
         children: [
-          const SizedBox(height: 20),
+          const SizedBox(height: 48),
 
           Text(
             heading,
@@ -162,7 +162,7 @@ class ContactSupportWidget extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           Center(
-            child: Container(
+            child: SizedBox(
               width: 166,
               height: 35,
               child: context.primaryButton(
