@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
 import 'package:flutter_lakshman1020/core/widgets/app_scaffold.dart';
+import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/sign_up_screen.dart';
 import 'package:flutter_lakshman1020/features/auth/users/presentation/widgets/login_form_widget.dart';
+import 'package:get/get.dart';
+
+import '../../../../company_package/presantation/screens/signup_screen.dart';
+import '../controller/auth_controller.dart';
 
 class LoginRoleScreen extends StatelessWidget {
+
+
+
   const LoginRoleScreen({super.key});
 
   @override
@@ -55,7 +63,9 @@ class LoginRoleScreen extends StatelessWidget {
                   children: [
                     const Text("Don’t have an account? "),
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        Get.to(() => SignupScreen());
+                      },
                       child: const Text(
                         "Sign up",
                         style: TextStyle(

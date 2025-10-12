@@ -7,8 +7,8 @@ import 'package:flutter_lakshman1020/core/widgets/primary_button.dart';
 import '../../../../core/constants/appTexts.dart';
 import '../../../home/models/app_text_styles.dart';
 
-class SignUpScreen extends StatelessWidget {
-  const SignUpScreen({super.key});
+class SignUpCompanyScreen extends StatelessWidget {
+  const SignUpCompanyScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
