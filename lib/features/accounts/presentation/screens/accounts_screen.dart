@@ -1,9 +1,6 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/app_images.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_text.dart';
-import 'package:flutter_lakshman1020/features/accounts/presentation/screens/help_screen.dart';
 import 'package:flutter_lakshman1020/features/accounts/presentation/screens/personal_details_screen.dart';
 import 'package:flutter_lakshman1020/features/accounts/presentation/screens/settings_screen.dart';
 import 'package:flutter_lakshman1020/features/accounts/presentation/widgets/customCurvedEdges.dart';
@@ -89,10 +86,13 @@ class AccountsScreen extends StatelessWidget {
                       ),
                       child: Column(
                         children: [
+
                           _buildMenuItem(AppImages.personal, 'Personal', () {
                             Get.to(PersonalDetailsScreen());
                           }),
+
                           Divider(color: TColors.grey2.withOpacity(.4)),
+
                           _buildMenuItem(
                             AppImages.paymentMethod,
                             'Payment Method',
@@ -100,11 +100,15 @@ class AccountsScreen extends StatelessWidget {
                               Get.to('page');
                             },
                           ),
+
                           Divider(color: TColors.grey2.withOpacity(.4)),
+
                           _buildMenuItem(AppImages.settings, 'Settings', () {
                             Get.to(SettingsScreen());
                           }),
+
                           Divider(color: TColors.grey2.withOpacity(.4)),
+
                           _buildMenuItem(
                             AppImages.heloCenter,
                             'Help Center',
@@ -112,6 +116,7 @@ class AccountsScreen extends StatelessWidget {
                               Get.to(ContactScreen());
                             },
                           ),
+
                           Divider(color: TColors.grey2.withOpacity(.4)),
                           _buildMenuItem(AppImages.logout, 'Logout', () {
                             Get.to(RoleController());

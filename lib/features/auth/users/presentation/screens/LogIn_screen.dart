@@ -5,9 +5,6 @@ import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/si
 import 'package:flutter_lakshman1020/features/auth/users/presentation/widgets/login_form_widget.dart';
 import 'package:get/get.dart';
 
-import '../../../../company_package/presantation/screens/signup_screen.dart';
-import '../controller/auth_controller.dart';
-
 class LoginRoleScreen extends StatelessWidget {
 
 
