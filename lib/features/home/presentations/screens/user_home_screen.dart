@@ -5,12 +5,24 @@ import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_ho
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/shipment_filter_tabs.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/shipment_item.dart';
 import 'package:flutter_lakshman1020/dummy_data.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
-class UserHomeScreen extends StatelessWidget {
+import '../../../../core/widgets/custom_bottom_nav.dart';
+
+class UserHomeScreen extends StatefulWidget {
+
   const UserHomeScreen({super.key});
 
   @override
+  State<UserHomeScreen> createState() => _UserHomeScreenState();
+}
+
+class _UserHomeScreenState extends State<UserHomeScreen> {
+  @override
   Widget build(BuildContext context) {
+    int _currentIndex = 0;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -36,6 +48,38 @@ class UserHomeScreen extends StatelessWidget {
             ],
           ),
         ),
+      ),
+      bottomNavigationBar: CustomBottomNavBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        items: [
+          NavItemData(
+            icon: Icons.home_outlined,
+            selectedIcon: Icons.home,
+            label: 'Home',
+            onPressed: () {
+              Get.to(() => UserHomeScreen());
+            },
+          ),
+          NavItemData(
+            icon: Icons.search,
+            label: 'Search',
+          ),
+          NavItemData(
+            icon: Icons.favorite_border,
+            selectedIcon: Icons.favorite,
+            label: 'Favorites',
+          ),
+          NavItemData(
+            icon: Icons.person_outline,
+            selectedIcon: Icons.person,
+            label: 'Profile',
+          ),
+        ],
       ),
     );
   }

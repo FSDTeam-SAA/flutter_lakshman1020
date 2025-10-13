@@ -34,6 +34,8 @@ class ApiConstants {
   static TeamEndpointcs get team => TeamEndpointcs();
   static LeagueEndpoints get league => LeagueEndpoints();
 
+  static GetProfile get getProfile => GetProfile();
+
 }
 
 
@@ -49,6 +51,11 @@ class AuthEndpoints {
   final String otpVerify = '$_base/verify-reset-otp';
   final String otpVerifyRegister = '$_base/verify-otp';
   final String setNewPass = '$_base/reset-password';
+}
+
+class GetProfile{
+  static const String _base = '${ApiConstants.baseUrl}/user';
+  final String fetchProfile = '$_base/profile';
 }
 
 class UserEndpoints {

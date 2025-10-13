@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
 import 'package:flutter_lakshman1020/core/widgets/app_scaffold.dart';
 import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/LogIn_screen.dart';
 
@@ -67,7 +66,7 @@ class SignupScreen extends StatelessWidget {
               //   Get.to(() => LoginRoleScreen());
               // }),
                SignupForm(
-                role: selectedRole, // 👈 Pass the selected role here
+                role: selectedRole, //Pass the selected role here
                 onSignup: () {
                   Get.to(() => UserHomeScreen());
                 },

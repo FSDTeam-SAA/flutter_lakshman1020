@@ -15,7 +15,7 @@ class AccountRepositoryImpl implements AccountRepository {
   @override
   NetworkResult<FetchProfileResponseModel> fetchProfile() {
     return _apiClient.get(
-        ApiConstants.user.getUserProfile,
+        ApiConstants.getProfile.fetchProfile,
         fromJsonT: (json) =>
             FetchProfileResponseModel.fromJson(json as Map<String, dynamic>));
   }

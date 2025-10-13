@@ -21,7 +21,7 @@ class _SignInRoleScreenState extends State<SignInRoleScreen> {
     return AppScaffold(
       body: SafeArea(
         child: Center(
-          // 🔑 Centers everything vertically + horizontally
+          //Centers everything vertically + horizontally
           child: Column(
             // mainAxisSize: MainAxisSize.min, // shrink to fit content
             children: [
