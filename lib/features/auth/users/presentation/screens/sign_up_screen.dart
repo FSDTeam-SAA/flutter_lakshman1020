@@ -9,7 +9,8 @@ import 'package:get/get.dart';
 import '../../../../home/presentations/screens/user_home_screen.dart';
 
 class SignupScreen extends StatelessWidget {
-  const SignupScreen({super.key});
+  final String selectedRole;
+  const SignupScreen({super.key, required this.selectedRole});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +31,7 @@ class SignupScreen extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Get.to(() => LoginRoleScreen());
+                      Get.to(() => LoginRoleScreen(selectedRole: selectedRole,));
                     },
                     child: const Text(
                       "Skip",
@@ -60,11 +61,20 @@ class SignupScreen extends StatelessWidget {
               const SizedBox(height: 24),
 
               /// SIGNUP FORM
-              SignupForm(onSignup: () {
-                Get.to(() => UserHomeScreen());
-              }, onSignin: () {
-                Get.to(() => LoginRoleScreen());
-              }),
+              // SignupForm(onSignup: () {
+              //   Get.to(() => UserHomeScreen());
+              // }, onSignin: () {
+              //   Get.to(() => LoginRoleScreen());
+              // }),
+               SignupForm(
+                role: selectedRole, // 👈 Pass the selected role here
+                onSignup: () {
+                  Get.to(() => UserHomeScreen());
+                },
+                onSignin: () {
+                  Get.to(() => LoginRoleScreen(selectedRole: selectedRole,));
+                },
+              ),
             ],
           ),
         ),
