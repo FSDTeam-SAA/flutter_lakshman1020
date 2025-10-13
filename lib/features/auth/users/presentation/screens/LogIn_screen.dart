@@ -10,9 +10,12 @@ import '../controller/auth_controller.dart';
 
 class LoginRoleScreen extends StatelessWidget {
 
+  final String selectedRole;
 
 
-  const LoginRoleScreen({super.key});
+
+
+  const LoginRoleScreen({super.key, required this.selectedRole});
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +67,7 @@ class LoginRoleScreen extends StatelessWidget {
                     const Text("Don’t have an account? "),
                     GestureDetector(
                       onTap: () {
-                        Get.to(() => SignupScreen());
+                        Get.to(() => SignupScreen(selectedRole: selectedRole,));
                       },
                       child: const Text(
                         "Sign up",

@@ -13,7 +13,8 @@ class SignInRoleScreen extends StatefulWidget {
 }
 
 class _SignInRoleScreenState extends State<SignInRoleScreen> {
-  String selectedRole = "User"; // Default selection
+  // String selectedRole = "User"; // Default selection
+  String selectedRole = "";
 
   @override
   Widget build(BuildContext context) {
@@ -64,31 +65,45 @@ class _SignInRoleScreenState extends State<SignInRoleScreen> {
               /// ROLE BUTTONS
               RoleButton(
                 title: "User",
-                isSelected: selectedRole == "User",
+                isSelected: selectedRole == "user",
                 isUser: true,
                 onTap: () {
-                  setState(() => selectedRole = "User");
-                  Get.to(() => const SignupScreen());
+                  setState(() {
+                    selectedRole = "user";
+                  });
+                  // Get.to(() => SignupScreen(selectedRole: selectedRole));
                 },
               ),
               RoleButton(
                 title: "Company",
-                isSelected: selectedRole == "Company",
+                isSelected: selectedRole == "company",
                 isUser: false,
                 onTap: () {
-                  setState(() => selectedRole = "Company");
+                  setState(() {
+                    selectedRole = "company";
+                  });
+                  // Get.to(() => SignupScreen(selectedRole: selectedRole));
                 },
               ),
               const SizedBox(height: 110),
 
               /// NEXT BUTTON
               GestureDetector(
+                
+                // onTap: () {
+                  
+                //   if (selectedRole == "User") {
+                //     Get.to(() => const SignupScreen(selectedRole: ,));
+                //   } else {
+                //     // Navigate to company screen
+                //   }
+                // },
+
                 onTap: () {
-                  if (selectedRole == "User") {
-                    Get.to(() => const SignupScreen());
-                  } else {
-                    // Navigate to company screen
-                  }
+
+                  Get.to(() =>  SignupScreen(selectedRole: selectedRole));
+                  
+                  
                 },
                 child: Container(
                   padding: const EdgeInsets.all(16),
