@@ -2,7 +2,7 @@ class ApiConstants {
   /// [Base Configuration]
   // static const String baseDomain = 'https://karlfive223-backend.onrender.com';
 
-  static const String baseDomain = 'http://10.10.5.53:8001';
+  static const String baseDomain = 'http://10.10.5.33:8001';
   static const String baseUrl = '$baseDomain/api/v1';
 
   /// soykot ip
@@ -51,11 +51,14 @@ class AuthEndpoints {
   final String otpVerify = '$_base/verify-reset-otp';
   final String otpVerifyRegister = '$_base/verify-otp';
   final String setNewPass = '$_base/reset-password';
+
+  final String changePass = '$_base/change-password';
 }
 
 class GetProfile{
   static const String _base = '${ApiConstants.baseUrl}/user';
   final String fetchProfile = '$_base/profile';
+  final String updateProfile = '$_base/update-profile';
 }
 
 class UserEndpoints {

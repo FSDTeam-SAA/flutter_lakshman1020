@@ -1,13 +1,14 @@
-import 'dart:convert';
 import 'dart:developer' as DPrint;
 import 'dart:io';
 
 
+import 'package:flutter_lakshman1020/features/accounts/data/models/change_password_request_model.dart';
 import 'package:flutter_lakshman1020/features/accounts/data/models/fetch_profile_response_model.dart';
 import 'package:flutter_lakshman1020/features/accounts/domain/repo/account_repo.dart';
 import 'package:get/get.dart';
 import '../../../../core/base/base_controller.dart';
 import '../../../../core/network/services/multiple_form_data_manager.dart';
+import '../presentation/screens/accounts_screen.dart';
 
 class AccountController extends BaseController {
   final AccountRepository _accountRepository;
@@ -46,64 +47,75 @@ class AccountController extends BaseController {
   }
 
 
-  // Future<void> updatePersonalInfo(
-  //     String name,
-  //     String mail,
-  //     String gender,
-  //     String nationality,) async {
-  //   setLoading(true);
-  //   setError('');
-  //
-  //   DPrint.log('Nationality: $nationality');
-  //
-  //   // _multiFormDataManager.addTextData("name", name);
-  //   // _multiFormDataManager.addTextData("age", age);
-  //   // _multiFormDataManager.addTextData("gender", gender);
-  //   // _multiFormDataManager.addTextData("nationality", nationality);
-  //
-  //
-  //   final formRequest = await _multiFormDataManager.toFormDataAsync();
-  //
-  //   // final result = await _profileRepository.updatePersonalInfo(formRequest);
-  //
-  //   result.fold(
-  //         (fail) {
-  //       setError(fail.message);
-  //       DPrint.log('Personal info: ${fail.message}');
-  //       isLoading(false);
-  //     },
-  //         (success) async {
-  //       DPrint.log('Personal info: ${success.message}');
-  //       await fetchProfile();
-  //       Get.back();
-  //       isLoading(false);
-  //       setError(success.message);
-  //     },
-  //   );
-  // }
+  Future<void> updatePersonalInfo(
+      File? image,
+      String name,
+      String mail,
+      String mobile,
+      String dob,
+      String address,
+      String nationality
+      ) async {
+    setLoading(true);
+    setError('');
+
+    if (image != null) _multiFormDataManager.addImageFile(image, key: "avatar");
+    _multiFormDataManager.addTextData("name", name);
+    _multiFormDataManager.addTextData("email", mail);
+    _multiFormDataManager.addTextData("phone", mobile);
+    _multiFormDataManager.addTextData("dob", dob);
+    _multiFormDataManager.addTextData("address", address);
+    _multiFormDataManager.addTextData("nationality", nationality);
+
+    final formRequest = await _multiFormDataManager.toFormDataAsync();
+
+    final result = await _accountRepository.updatePersonalInfo(formRequest);
+
+    result.fold(
+          (fail) {
+        setError(fail.message);
+        DPrint.log('Personal info update failed: ${fail.message}');
+        setLoading(false);
+      },
+          (success) async {
+        DPrint.log('Personal info updated: ${success.message}');
+
+        // Fetch the updated profile
+        await fetchProfile();
+
+        // Navigate back to PersonalDetailsScreen
+        Get.to(() => AccountsScreen());
+
+        setError(success.message);
+        setLoading(false);
+      },
+    );
+  }
 
 
-  // Future<void> changePassword(String oldPassword, String newPassword) async{
-  //   setLoading(true);
-  //   setError('');
-  //
-  //   final request = ChangePasswordRequest(oldPassword: oldPassword, newPassword: newPassword);
-  //   final result = await _profileRepository.changePass(request);
-  //
-  //   result.fold(
-  //         (fail) {
-  //       setError(fail.message);
-  //       DPrint.log("change pass success result : ${fail.message}");
-  //       setLoading(false);
-  //     },
-  //         (success) {
-  //       DPrint.log("change pass success result : ${success.message}");
-  //       Get.back();
-  //       setLoading(false);
-  //     },
-  //   );
-  // }
-  //
+
+Future<void> changePassword(String oldPassword, String newPassword) async{
+    setLoading(true);
+    setError('');
+
+
+    final request = ChangePasswordRequestModel(oldPassword: oldPassword, newPassword: newPassword);
+    final result = await _accountRepository.changePassword(request);
+
+    result.fold(
+          (fail) {
+        setError(fail.message);
+        DPrint.log("change pass success result : ${fail.message}");
+        setLoading(false);
+      },
+          (success) {
+        DPrint.log("change pass success result : ${success.message}");
+        Get.back();
+        setLoading(false);
+      },
+    );
+  }
+
   // Future<void> uploadPhoto(File image) async {
   //   setLoading(true);
   //   setError('');

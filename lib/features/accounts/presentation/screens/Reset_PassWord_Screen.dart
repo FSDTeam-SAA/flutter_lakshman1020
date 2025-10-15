@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/custom_text_field.dart';
+import 'package:flutter_lakshman1020/features/accounts/controller/account_controller.dart';
 import 'package:get/get.dart';
 import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
 import 'package:flutter_lakshman1020/core/constants/texts.dart';
@@ -16,9 +17,14 @@ class ResetPasswordScreen extends StatefulWidget {
 
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+
+  final AccountController _accountController = Get.find<AccountController>();
   final _formKey = GlobalKey<FormState>();
+
+  void _submit(){
+    _accountController.changePassword(_passwordController.text, _confirmPasswordController.text);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +62,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   ),
                   textAlign: TextAlign.start,
                 ),
-                // ✅ Password field
+                // Password field
                 CustomTextField(
                   label: '',
                   controller: _passwordController,
@@ -74,7 +80,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // ✅ Confirm Password field
+                // Confirm Password field
                 const Text(
                   appTexts.confirmPassword,
                   style: TextStyle(
@@ -93,15 +99,15 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     if (value == null || value.isEmpty) {
                       return 'Confirm password cannot be empty';
                     }
-                    if (value != _passwordController.text) {
-                      return 'Passwords do not match';
-                    }
+                    // if (value != _passwordController.text) {
+                    //   return 'Passwords do not match';
+                    // }
                     return null;
                   },
                 ),
                 const SizedBox(height: 32),
 
-                // ✅ Save Button
+                // Save Button
                 context.primaryButton(
                   text: "Save",
                   width: double.infinity,
@@ -111,12 +117,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   borderRadius: 8.0,
                   onPressed: () {
                     if (_formKey.currentState?.validate() ?? false) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Password reset successful'),
-                        ),
-                      );
-                      Get.back();
+                     _submit();
                     }
                   },
                 ),

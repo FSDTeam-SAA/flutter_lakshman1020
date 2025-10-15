@@ -14,7 +14,7 @@ class HeaderSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Get.to(() => AccountsScreen()), // no await here
+      onTap: (){Get.to(() => AccountsScreen());} ,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12),
         child: Row(

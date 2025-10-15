@@ -21,7 +21,6 @@ class UserHomeScreen extends StatefulWidget {
 class _UserHomeScreenState extends State<UserHomeScreen> {
   @override
   Widget build(BuildContext context) {
-    int _currentIndex = 0;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -48,38 +47,6 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: CustomBottomNavBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        items: [
-          NavItemData(
-            icon: Icons.home_outlined,
-            selectedIcon: Icons.home,
-            label: 'Home',
-            onPressed: () {
-              Get.to(() => UserHomeScreen());
-            },
-          ),
-          NavItemData(
-            icon: Icons.search,
-            label: 'Search',
-          ),
-          NavItemData(
-            icon: Icons.favorite_border,
-            selectedIcon: Icons.favorite,
-            label: 'Favorites',
-          ),
-          NavItemData(
-            icon: Icons.person_outline,
-            selectedIcon: Icons.person,
-            label: 'Profile',
-          ),
-        ],
       ),
     );
   }

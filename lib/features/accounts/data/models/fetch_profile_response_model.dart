@@ -1,68 +1,90 @@
-class FetchProfileResponseModel{
+class FetchProfileResponseModel {
   final String id;
   final String name;
   final String email;
   final String role;
-  final bool isStripeOnboarded;
+  final String address;
+  final String dob;
+  final String nationality;
+  final String phone;
   final String stripeAccountId;
+  final bool isStripeOnboarded;
+  final String passwordResetToken;
+  final String createdAt;
+  final String updatedAt;
   final Avatar avatar;
-  final Address address;
   final VerificationInfo verificationInfo;
-  final String refreshToken;
-  final String accessToken;
-  final DateTime createdAt;
-  final DateTime updatedAt;
 
   FetchProfileResponseModel({
     required this.id,
     required this.name,
     required this.email,
     required this.role,
-    required this.isStripeOnboarded,
-    required this.stripeAccountId,
-    required this.avatar,
     required this.address,
-    required this.verificationInfo,
-    required this.refreshToken,
-    required this.accessToken,
+    required this.dob,
+    required this.nationality,
+    required this.phone,
+    required this.stripeAccountId,
+    required this.isStripeOnboarded,
+    required this.passwordResetToken,
     required this.createdAt,
     required this.updatedAt,
+    required this.avatar,
+    required this.verificationInfo,
   });
 
   factory FetchProfileResponseModel.fromJson(Map<String, dynamic> json) {
+    final data = json.containsKey('data') ? json['data'] : json;
+
+    // Handle avatar being either a String or Map
+    Avatar parseAvatar(dynamic avatar) {
+      if (avatar is String) {
+        return Avatar(publicId: '', url: avatar);
+      } else if (avatar is Map<String, dynamic>) {
+        return Avatar.fromJson(avatar);
+      } else {
+        return Avatar(publicId: '', url: '');
+      }
+    }
+
     return FetchProfileResponseModel(
-      id: json['_id'] ?? '',
-      name: json['name'] ?? '',
-      email: json['email'] ?? '',
-      role: json['role'] ?? '',
-      isStripeOnboarded: json['isStripeOnboarded'] ?? false,
-      stripeAccountId: json['stripeAccountId'] ?? '',
-      avatar: Avatar.fromJson(json['avatar'] ?? {}),
-      address: Address.fromJson(json['address'] ?? {}),
-      verificationInfo:
-      VerificationInfo.fromJson(json['verificationInfo'] ?? {}),
-      refreshToken: json['refreshToken'] ?? '',
-      accessToken: json['accessToken'] ?? '',
-      createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
-      updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ?? DateTime.now(),
+      id: data['_id'] ?? '',
+      name: data['name'] ?? '',
+      email: data['email'] ?? '',
+      role: data['role'] ?? '',
+      address: data['address'] ?? '',
+      dob: data['dob'] ?? '',
+      nationality: data['nationality'] ?? '',
+      phone: data['phone'] ?? '',
+      stripeAccountId: data['stripeAccountId'] ?? '',
+      isStripeOnboarded: data['isStripeOnboarded'] ?? false,
+      passwordResetToken: data['password_reset_token'] ?? '',
+      createdAt: data['createdAt'] ?? '',
+      updatedAt: data['updatedAt'] ?? '',
+      avatar: parseAvatar(data['avatar']),
+      verificationInfo: VerificationInfo.fromJson(data['verificationInfo'] ?? {}),
     );
   }
 
+
+
   Map<String, dynamic> toJson() {
     return {
-      '_id': id,
-      'name': name,
-      'email': email,
-      'role': role,
-      'isStripeOnboarded': isStripeOnboarded,
-      'stripeAccountId': stripeAccountId,
+      "_id": id,
+      "name": name,
+      "email": email,
+      "role": role,
+      "stripeAccountId": stripeAccountId,
+      "isStripeOnboarded": isStripeOnboarded,
+      "password_reset_token": passwordResetToken,
+      "createdAt": createdAt,
+      "updatedAt": updatedAt,
       'avatar': avatar.toJson(),
-      'address': address.toJson(),
-      'verificationInfo': verificationInfo.toJson(),
-      'refreshToken': refreshToken,
-      'accessToken': accessToken,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
+      'address': address,
+      'dob': dob,
+      'nationality': nationality,
+      'phone': phone,
+      "verificationInfo": verificationInfo.toJson(),
     };
   }
 }
@@ -85,40 +107,8 @@ class Avatar {
 
   Map<String, dynamic> toJson() {
     return {
-      'public_id': publicId,
-      'url': url,
-    };
-  }
-}
-
-class Address {
-  final String street;
-  final String city;
-  final String state;
-  final String zipCode;
-
-  Address({
-    required this.street,
-    required this.city,
-    required this.state,
-    required this.zipCode,
-  });
-
-  factory Address.fromJson(Map<String, dynamic> json) {
-    return Address(
-      street: json['street'] ?? '',
-      city: json['city'] ?? '',
-      state: json['state'] ?? '',
-      zipCode: json['zipCode'] ?? '',
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'street': street,
-      'city': city,
-      'state': state,
-      'zipCode': zipCode,
+      "public_id": publicId,
+      "url": url,
     };
   }
 }
@@ -141,8 +131,8 @@ class VerificationInfo {
 
   Map<String, dynamic> toJson() {
     return {
-      'verified': verified,
-      'token': token,
+      "verified": verified,
+      "token": token,
     };
   }
 }

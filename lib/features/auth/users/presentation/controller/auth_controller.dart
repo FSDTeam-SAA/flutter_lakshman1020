@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_lakshman1020/core/base/base_controller.dart';
 import 'package:flutter_lakshman1020/core/network/services/auth_storage_service.dart';
 import 'package:flutter_lakshman1020/core/utils/debug_print.dart';
+import 'package:flutter_lakshman1020/features/accounts/data/models/fetch_profile_response_model.dart';
 import 'package:flutter_lakshman1020/features/auth/users/domain/repo/auth_repo.dart';
 import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/LogIn_screen.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/screens/user_home_screen.dart';
@@ -38,15 +39,22 @@ class AuthController extends BaseController {
         setLoading(false);
       },
       (success) async {
+        String role = success.data.role;
+
         debugPrint("✅ API Hit Successful!");
         await _authStorageService.storeAuthData(
           accessToken: success.data.accessToken,
           refreshToken: success.data.refreshToken,
           userId: success.data.user.id,
         );
-        Get.to(() => UserHomeScreen());
 
         setLoading(false);
+
+        // if(role == UserRole.user.value) {
+          Get.to(() => UserHomeScreen());
+        // }
+
+
       },
     );
   }
@@ -87,4 +95,6 @@ class AuthController extends BaseController {
       },
     );
   }
+
+
 }
