@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_lakshman1020/features/accounts/data/models/fetch_profile_response_model.dart';
+import 'package:flutter_lakshman1020/features/auth/users/presentation/controller/auth_controller.dart';
 import 'package:flutx_core/core/theme/extensions/string_extension.dart';
 import 'package:get/get.dart';
 import 'package:flutter_lakshman1020/core/constants/app_images.dart';
@@ -125,7 +125,7 @@ class AccountsScreen extends StatelessWidget {
 
                             Divider(color: TColors.grey2.withOpacity(.4)),
                             _buildMenuItem(AppImages.logout, 'Logout', () {
-                              // implement logout
+                              Get.find<AuthController>().logout();
                             }),
                           ],
                         ),

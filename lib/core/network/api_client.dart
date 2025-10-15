@@ -5,16 +5,17 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/LogIn_screen.dart';
 import 'package:flutx_core/flutx_core.dart';
+import 'package:get/get.dart' hide FormData;
 
 import 'constants/api_constants.dart';
-import 'constants/key_constants.dart';
 import 'dio_error_handler.dart';
 import 'interceptor/custom_cache_interceptor.dart';
 import 'models/base_response.dart';
 import 'models/network_failure.dart';
+import 'services/auth_storage_service.dart';
 import 'services/connectivity_service.dart';
-import 'services/secure_store_services.dart';
 
 import '/core/network/models/network_success.dart';
 
@@ -28,7 +29,8 @@ class ApiClient {
 
   // Singleton instance
   static ApiClient? _instance;
-  final SecureStoreServices _secureStoreServices = SecureStoreServices();
+  // final SecureStoreServices _secureStoreServices = SecureStoreServices();
+  final AuthStorageService _authStorageService = AuthStorageService();
 
   factory ApiClient() {
     _instance ??= ApiClient._internal();
@@ -51,14 +53,14 @@ class ApiClient {
     _dio = Dio(
       BaseOptions(
         baseUrl: ApiConstants.baseDomain,
-        connectTimeout: const Duration(seconds: 60),
-        receiveTimeout: const Duration(seconds: 60),
-        sendTimeout: const Duration(seconds: 60),
+        connectTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 30),
+        sendTimeout: const Duration(seconds: 30),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        validateStatus: (status) => status != null && status < 500,
+        validateStatus: (status) => status != null && status < 400,
       ),
     );
 
@@ -92,16 +94,15 @@ class ApiClient {
   /// Refresh token method
   Future<bool> _refreshToken() async {
     try {
-      final refreshToken = await _secureStoreServices.retrieveData(
-        KeyConstants.refreshToken,
-      );
+      final refreshToken = await _authStorageService.getRefreshToken();
+      DPrint.info("Refreshing ...");
 
       if (refreshToken == null) {
         return false;
       }
 
       final response = await _dio.post(
-        '${ApiConstants.baseUrl}${ApiConstants.auth.refreshToken}',
+        ApiConstants.auth.refreshToken,
         data: {'refreshToken': refreshToken},
       );
 
@@ -110,28 +111,40 @@ class ApiClient {
         (json) => json,
       );
 
+      DPrint.log(
+        "🔄 Refresh Token Response -> ${ApiConstants.auth.refreshToken} ${response.statusCode} ${response.data}",
+      );
+
       if (baseResponse.success && baseResponse.data != null) {
         final newAccessToken = baseResponse.data!['accessToken'] as String;
         final newRefreshToken = baseResponse.data!['refreshToken'] as String;
 
-        await _secureStoreServices.storeData(
-          KeyConstants.accessToken,
-          newAccessToken,
-        );
-        await _secureStoreServices.storeData(
-          KeyConstants.refreshToken,
-          newRefreshToken,
-        );
+        await _authStorageService.storeAccessToken(newAccessToken);
+        await _authStorageService.storeRefreshToken(newRefreshToken);
 
         return true;
       }
 
       // Navigate to login screen - you'll need to implement this based on your navigation
-      // Go.freshStartTo(LoginScreen());
+      await _logout();
       return false;
     } catch (e) {
-      if (kDebugMode) DPrint.log("Refresh token error: $e");
+      DPrint.log("Refresh token error: $e");
+      await _logout();
       return false;
+    }
+  }
+
+  Future<void> _logout() async {
+    try {
+      // Clear stored tokens
+      await _authStorageService.clearAuthData();
+
+      // Delay navigation slightly to ensure UI is ready
+      await Future.delayed(Duration.zero);
+      Get.offAll(() => LoginRoleScreen(), transition: Transition.leftToRight);
+    } catch (e) {
+      DPrint.error("Logout error: $e");
     }
   }
 
@@ -147,7 +160,6 @@ class ApiClient {
     CancelToken? cancelToken,
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
-    bool isFormData = false,
   }) async {
     final connectivityCheck = await _checkConnectivity();
     if (connectivityCheck.isLeft()) {
@@ -196,19 +208,8 @@ class ApiClient {
 
       options = await _addAuthHeader(options);
 
-      // Set headers for FormData if applicable
-      if (isFormData) {
-        options.headers ??= {};
-        options.headers!.addAll(ApiConstants.multipartHeaders);
-      }
-
       if (kDebugMode) {
-        DPrint.log(
-          "🛜 Api Endpoint -> $endpoint ${options.contentType} $method",
-        );
-        DPrint.log(
-          "🛜 Request payload -> FormData: ${fromData != null}, Data: $data",
-        );
+        DPrint.log("🛜 Api Endpoint -> $method ||=> $endpoint");
       }
 
       final requestData = fromData ?? data;
@@ -223,32 +224,38 @@ class ApiClient {
         onReceiveProgress: onReceiveProgress,
       );
 
-      if (kDebugMode) DPrint.log("☁️  BASE Response -> ${response.data}");
+      if (kDebugMode) {
+        DPrint.log(
+          "☁️  BASE Response -> ${response.statusCode} ${response.data}",
+        );
+      }
 
       final baseResponse = BaseResponse<T>.fromJson(response.data, fromJsonT);
-      if (!baseResponse.success) {
-        return Left(
-          ServerFailure(
-            message: baseResponse.combinedErrorMessage,
-            statusCode: response.statusCode ?? 400,
+
+      // final data = (baseResponse.data as T);
+
+      if (baseResponse.success) {
+        // Ensure message and statusCode are non-null
+        final message = baseResponse.message;
+        final statusCode = response.statusCode ?? 0;
+
+        return Right(
+          NetworkSuccess<T>(
+            data: baseResponse.data as T,
+            message: message,
+            statusCode: statusCode,
           ),
         );
       }
 
-      // final data = (baseResponse.data as T);
-
-      // Ensure message and statusCode are non-null
-      final message = baseResponse.message;
-      final statusCode = response.statusCode ?? 0;
-
-      return Right(
-        NetworkSuccess<T>(
-          data: baseResponse.data as T,
-          message: message,
-          statusCode: statusCode,
+      return Left(
+        ServerFailure(
+          message: baseResponse.combinedErrorMessage,
+          statusCode: response.statusCode ?? 400,
         ),
       );
     } on DioException catch (error) {
+      DPrint.error("Api DioException : $error");
       if (error.response?.statusCode == 401 && !_isRefreshing) {
         _isRefreshing = true;
         try {
@@ -263,7 +270,6 @@ class ApiClient {
               cancelToken: cancelToken,
               onSendProgress: onSendProgress,
               onReceiveProgress: onReceiveProgress,
-              isFormData: isFormData,
             );
           }
         } finally {
@@ -286,12 +292,12 @@ class ApiClient {
   /// HTTP Methods using Either
   Future<Either<NetworkFailure, NetworkSuccess<T>>> get<T>(
     String endpoint, {
+
     Map<String, dynamic>? queryParameters,
     required T Function(dynamic) fromJsonT,
     Options? options,
     CancelToken? cancelToken,
     ProgressCallback? onReceiveProgress,
-    bool isFormData = false,
   }) => _request(
     method: 'GET',
     endpoint: endpoint,
@@ -300,18 +306,17 @@ class ApiClient {
     options: options,
     cancelToken: cancelToken,
     onReceiveProgress: onReceiveProgress,
-    isFormData: isFormData,
   );
 
   Future<Either<NetworkFailure, NetworkSuccess<T>>> post<T>(
     String endpoint, {
+
     dynamic data,
     required T Function(dynamic) fromJsonT,
     Options? options,
     CancelToken? cancelToken,
     ProgressCallback? onSendProgress,
     FormData? formData,
-    bool isFormData = false,
   }) => _request(
     method: 'POST',
     endpoint: endpoint,
@@ -320,18 +325,17 @@ class ApiClient {
     options: options,
     cancelToken: cancelToken,
     onSendProgress: onSendProgress,
-    isFormData: isFormData,
     fromData: formData,
   );
 
   Future<Either<NetworkFailure, NetworkSuccess<T>>> patch<T>(
     String endpoint, {
+
     dynamic data,
     required T Function(dynamic) fromJsonT,
     Options? options,
     CancelToken? cancelToken,
     FormData? formData,
-    bool isFormData = false,
   }) => _request(
     method: 'PATCH',
     endpoint: endpoint,
@@ -340,17 +344,16 @@ class ApiClient {
     options: options,
     cancelToken: cancelToken,
     fromData: formData,
-    isFormData: isFormData,
   );
 
   Future<Either<NetworkFailure, NetworkSuccess<T>>> put<T>(
     String endpoint, {
+
     dynamic data,
     required T Function(dynamic) fromJsonT,
     Options? options,
     CancelToken? cancelToken,
     FormData? formData,
-    bool isFormData = false,
   }) => _request(
     method: 'PUT',
     endpoint: endpoint,
@@ -359,17 +362,16 @@ class ApiClient {
     options: options,
     cancelToken: cancelToken,
     fromData: formData,
-    isFormData: isFormData,
   );
 
   Future<Either<NetworkFailure, NetworkSuccess<T>>> delete<T>(
     String endpoint, {
+
     dynamic data,
     required T Function(dynamic) fromJsonT,
     Options? options,
     CancelToken? cancelToken,
     FormData? formData,
-    bool isFormData = false,
   }) => _request(
     method: 'DELETE',
     endpoint: endpoint,
@@ -378,34 +380,13 @@ class ApiClient {
     options: options,
     cancelToken: cancelToken,
     fromData: formData,
-    isFormData: isFormData,
-  );
-
-  Future<Either<NetworkFailure, NetworkSuccess<T>>> postFormData<T>(
-    String endpoint, {
-    required FormData formData,
-    required T Function(dynamic) fromJsonT,
-    Options? options,
-    CancelToken? cancelToken,
-    ProgressCallback? onSendProgress,
-  }) => _request(
-    method: 'POST',
-    endpoint: endpoint,
-    fromJsonT: fromJsonT,
-    data: formData,
-    options: options ?? Options(headers: ApiConstants.multipartHeaders),
-    cancelToken: cancelToken,
-    onSendProgress: onSendProgress,
-    isFormData: true,
   );
 
   /// Helper Methods
   Future<Options> _addAuthHeader(Options? options) async {
     options ??= Options();
 
-    final accessToken = await _secureStoreServices.retrieveData(
-      KeyConstants.accessToken,
-    );
+    final accessToken = await _authStorageService.getAccessToken();
 
     if (kDebugMode) DPrint.log("Current Access Token: $accessToken");
 
@@ -492,4 +473,3 @@ class ApiClient {
   /// Get connectivity service instance
   ConnectivityService get connectivityService => _connectivityService;
 }
-

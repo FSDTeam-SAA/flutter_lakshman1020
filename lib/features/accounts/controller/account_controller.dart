@@ -54,7 +54,7 @@ class AccountController extends BaseController {
       String mobile,
       String dob,
       String address,
-      String nationality
+      String nationality,
       ) async {
     setLoading(true);
     setError('');
@@ -68,7 +68,6 @@ class AccountController extends BaseController {
     _multiFormDataManager.addTextData("nationality", nationality);
 
     final formRequest = await _multiFormDataManager.toFormDataAsync();
-
     final result = await _accountRepository.updatePersonalInfo(formRequest);
 
     result.fold(
@@ -79,12 +78,10 @@ class AccountController extends BaseController {
       },
           (success) async {
         DPrint.log('Personal info updated: ${success.message}');
-
-        // Fetch the updated profile
         await fetchProfile();
 
-        // Navigate back to PersonalDetailsScreen
-        Get.to(() => AccountsScreen());
+        // ✅ Go back one or two screens instead of removing all
+        Get.close(2); // or Get.back(); if only one screen should close
 
         setError(success.message);
         setLoading(false);
@@ -94,7 +91,8 @@ class AccountController extends BaseController {
 
 
 
-Future<void> changePassword(String oldPassword, String newPassword) async{
+
+  Future<void> changePassword(String oldPassword, String newPassword) async{
     setLoading(true);
     setError('');
 

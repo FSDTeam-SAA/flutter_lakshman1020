@@ -1,5 +1,5 @@
 class UpdateProfileResponseModel {
-  final String avatar;
+  final Avatar avatar;
   final VerificationInfo verificationInfo;
   final String id;
   final String name;
@@ -12,8 +12,9 @@ class UpdateProfileResponseModel {
   final String createdAt;
   final String updatedAt;
   final String address;
-  final String phone;
+  final String dob;
   final String nationality;
+  final String phone;
 
   UpdateProfileResponseModel({
     required this.avatar,
@@ -29,13 +30,25 @@ class UpdateProfileResponseModel {
     required this.createdAt,
     required this.updatedAt,
     required this.address,
+    required this.dob,
+    required this.nationality,
     required this.phone,
-    required this.nationality
   });
 
   factory UpdateProfileResponseModel.fromJson(Map<String, dynamic> json) {
+    dynamic avatarData = json['avatar'];
+
+    Avatar avatar;
+    if (avatarData is Map<String, dynamic>) {
+      avatar = Avatar.fromJson(avatarData);
+    } else if (avatarData is String) {
+      avatar = Avatar(publicId: '', url: avatarData);
+    } else {
+      avatar = Avatar(publicId: '', url: '');
+    }
+
     return UpdateProfileResponseModel(
-      avatar: json['avatar'] ?? '',
+      avatar: avatar,
       verificationInfo: VerificationInfo.fromJson(json['verificationInfo'] ?? {}),
       id: json['_id'] ?? '',
       name: json['name'] ?? '',
@@ -47,28 +60,34 @@ class UpdateProfileResponseModel {
       refreshToken: json['refreshToken'] ?? '',
       createdAt: json['createdAt'] ?? '',
       updatedAt: json['updatedAt'] ?? '',
-      address: json['address'] ?? '',
+      address: json['address']?.toString().replaceAll('"', '').trim() ?? '',
+      dob: json['dob'] ?? '',
+      nationality: json['nationality'] ?? '',
       phone: json['phone'] ?? '',
-      nationality: json['nationality'] ?? ''
+    );
+  }
+}
+
+class Avatar {
+  final String publicId;
+  final String url;
+
+  Avatar({
+    required this.publicId,
+    required this.url,
+  });
+
+  factory Avatar.fromJson(Map<String, dynamic> json) {
+    return Avatar(
+      publicId: json['public_id'] ?? '',
+      url: json['url'] ?? '',
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'avatar': avatar,
-      'verificationInfo': verificationInfo.toJson(),
-      '_id': id,
-      'name': name,
-      'email': email,
-      'role': role,
-      'stripeAccountId': stripeAccountId,
-      'isStripeOnboarded': isStripeOnboarded,
-      'password_reset_token': passwordResetToken,
-      'refreshToken': refreshToken,
-      'createdAt': createdAt,
-      'updatedAt': updatedAt,
-      'address': address,
-      'phone': phone,
+      'public_id': publicId,
+      'url': url,
     };
   }
 }

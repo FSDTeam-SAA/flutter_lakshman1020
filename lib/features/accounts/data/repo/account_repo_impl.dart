@@ -28,7 +28,6 @@ class AccountRepositoryImpl implements AccountRepository {
         ApiConstants.getProfile.updateProfile,
         formData: request,
         fromJsonT: (json) => UpdateProfileResponseModel.fromJson(json),
-        isFormData: true
     );
   }
 

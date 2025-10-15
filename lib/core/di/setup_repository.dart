@@ -7,6 +7,8 @@ import '../../features/auth/users/domain/repo/auth_repo.dart';
 
 
 void setupRepository() {
-  Get.lazyPut<AuthRepository>(() => AuthRepositoryImpl(apiClient: Get.find()));
-  Get.lazyPut<AccountRepository>(() => AccountRepositoryImpl(apiClient: Get.find()));
+  Get.lazyPut<AuthRepository>(() => AuthRepositoryImpl(apiClient: Get.find()),fenix: true);
+  Get.lazyPut<AccountRepository>(() => AccountRepositoryImpl(apiClient: Get.find()), fenix: true);
+  
+
 }
