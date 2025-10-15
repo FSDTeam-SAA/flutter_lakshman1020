@@ -5,7 +5,9 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/login_screen.dart';
 import 'package:flutx_core/flutx_core.dart';
+import 'package:get/get.dart' hide FormData;
 
 import 'constants/api_constants.dart';
 import 'constants/key_constants.dart';
@@ -58,7 +60,7 @@ class ApiClient {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        validateStatus: (status) => status != null && status < 500,
+        validateStatus: (status) => status != null && status < 400,
       ),
     );
 
@@ -91,6 +93,7 @@ class ApiClient {
 
   /// Refresh token method
   Future<bool> _refreshToken() async {
+    print("refreshing ...");
     try {
       final refreshToken = await _secureStoreServices.retrieveData(
         KeyConstants.refreshToken,
@@ -104,6 +107,7 @@ class ApiClient {
         '${ApiConstants.baseUrl}${ApiConstants.auth.refreshToken}',
         data: {'refreshToken': refreshToken},
       );
+      print("refresh token response: ${response.data}");
 
       final baseResponse = BaseResponse<Map<String, dynamic>>.fromJson(
         response.data,
@@ -127,7 +131,7 @@ class ApiClient {
       }
 
       // Navigate to login screen - you'll need to implement this based on your navigation
-      // Go.freshStartTo(LoginScreen());
+      Get.offAll(LoginRoleScreen());
       return false;
     } catch (e) {
       if (kDebugMode) DPrint.log("Refresh token error: $e");
@@ -492,4 +496,3 @@ class ApiClient {
   /// Get connectivity service instance
   ConnectivityService get connectivityService => _connectivityService;
 }
-

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/Login_text_field.dart';
 import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
 import 'package:flutter_lakshman1020/core/widgets/primary_button.dart';
+import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/forgot_email_screen.dart';
 import 'package:get/get.dart';
 
 import '../controller/auth_controller.dart';
@@ -61,7 +62,9 @@ class _LoginFormState extends State<LoginForm> {
         Align(
           alignment: Alignment.centerRight,
           child: GestureDetector(
-            onTap: () {},
+            onTap: () {
+              Get.to(()=>EmailVerifyScreen());
+            },
             child: const Text(
               "Forgot password?",
               style: TextStyle(color: TColors.primary),
