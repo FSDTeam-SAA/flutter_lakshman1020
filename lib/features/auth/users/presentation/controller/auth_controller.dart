@@ -11,6 +11,7 @@ import 'package:flutter_lakshman1020/features/auth/users/data/model/verify_otp_r
 import 'package:flutter_lakshman1020/features/auth/users/domain/repo/auth_repo.dart';
 import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/LogIn_screen.dart';
 import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/Otp_verify_screen.dart';
+import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/SignInRoleScreen.dart';
 import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/set_new_password_screen.dart';
 import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/sign_up_screen.dart';
 import 'package:flutter_lakshman1020/features/company_subscription_plans/presentation/screens/subscription_screen.dart';
@@ -328,47 +329,47 @@ class AuthController extends BaseController {
     );
   }
 
-  // Future<void> refreshToken() async {
-  //   setLoading(true);
+  Future refreshToken() async {
+    setLoading(true);
 
-  //   final refreshToken = await _authStorageService.getRefreshToken();
-  //   DPrint.log("🐞 DEBUG: Got refresh token: $refreshToken");
+    final refreshToken = await _authStorageService.getRefreshToken();
+    DPrint.log("🐞 DEBUG: Got refresh token: $refreshToken");
 
-  //   if (refreshToken == null || refreshToken.isEmpty) {
-  //     DPrint.log("❌ No refresh token stored");
-  //     setLoading(false);
-  //     Get.offAll(() => LoginRoleScreen());
-  //     return;
-  //   }
+    if (refreshToken == null || refreshToken.isEmpty) {
+      DPrint.log("❌ No refresh token stored");
+      setLoading(false);
+      Get.offAll(() => LoginRoleScreen());
+      return;
+    }
 
-  //   final request = RefreshTokenRequestModel(refreshToken: refreshToken);
-  //   final result = await _authRepository.refreshToken(request);
+    final request = RefreshTokenRequestModel(refreshToken: refreshToken);
+    final result = await _authRepository.refreshToken(request);
 
-  //   result.fold(
-  //     (fail) async {
-  //       DPrint.log("❌ Refresh token failed: ${fail.message}");
-  //       await _authStorageService.clearAuthData(); // clear invalid token
-  //       setLoading(false);
-  //       Get.offAll(() => SignupScreen()); // go to login
-  //     },
-  //     (success) async {
-  //       DPrint.log("✅ Refresh token success: ${success.message}");
-  //       await _authStorageService.storeAccessToken(success.data.accessToken);
-  //       await _authStorageService.storeRefreshToken(success.data.refreshToken);
-  //       setLoading(false);
+    result.fold(
+      (fail) async {
+        DPrint.log("❌ Refresh token failed: ${fail.message}");
+        await _authStorageService.clearAuthData(); // clear invalid token
+        setLoading(false);
+        Get.offAll(() => SignInRoleScreen()); // go to login
+      },
+      (success) async {
+        DPrint.log("✅ Refresh token success: ${success.message}");
+        await _authStorageService.storeAccessToken(success.data.accessToken);
+        await _authStorageService.storeRefreshToken(success.data.refreshToken);
+        setLoading(false);
 
-  //       // Navigate automatically based on role
-  //       final role = await _authStorageService.getRole();
-  //       if (role == "user") {
-  //         Get.offAll(() => UserHomeScreen());
-  //       } else if (role == "company") {
-  //         Get.offAll(() => SubscriptionScreen());
-  //       } else {
-  //         Get.offAll(() => SignupScreen());
-  //       }
-  //     },
-  //   );
-  // }
+        // Navigate automatically based on role
+        final role = await _authStorageService.getRole();
+        if (role == "user") {
+          Get.offAll(() => UserHomeScreen());
+        } else if (role == "company") {
+          Get.offAll(() => SubscriptionScreen());
+        } else {
+          Get.offAll(() => SignInRoleScreen());
+        }
+      },
+    );
+  }
 
   Future<void> logout() async {
     await _authStorageService.clearAuthData();
