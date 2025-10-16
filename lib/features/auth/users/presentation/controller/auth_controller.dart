@@ -11,6 +11,7 @@ import 'package:flutter_lakshman1020/features/auth/users/data/model/verify_otp_r
 import 'package:flutter_lakshman1020/features/auth/users/domain/repo/auth_repo.dart';
 import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/LogIn_screen.dart';
 import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/Otp_verify_screen.dart';
+import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/SignInRoleScreen.dart';
 import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/set_new_password_screen.dart';
 import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/sign_up_screen.dart';
 import 'package:flutter_lakshman1020/features/company_subscription_plans/presentation/screens/subscription_screen.dart';
@@ -336,7 +337,7 @@ class AuthController extends BaseController {
     );
   }
 
-  Future<void> refreshToken() async {
+  Future refreshToken() async {
     setLoading(true);
 
     final refreshToken = await _authStorageService.getRefreshToken();
@@ -357,7 +358,7 @@ class AuthController extends BaseController {
         DPrint.log("❌ Refresh token failed: ${fail.message}");
         await _authStorageService.clearAuthData(); // clear invalid token
         setLoading(false);
-        Get.offAll(() => SignupScreen()); // go to login
+        Get.offAll(() => SignInRoleScreen()); // go to login
       },
       (success) async {
         DPrint.log("✅ Refresh token success: ${success.message}");
@@ -372,7 +373,7 @@ class AuthController extends BaseController {
         } else if (role == "company") {
           Get.offAll(() => SubscriptionScreen());
         } else {
-          Get.offAll(() => SignupScreen());
+          Get.offAll(() => SignInRoleScreen());
         }
       },
     );

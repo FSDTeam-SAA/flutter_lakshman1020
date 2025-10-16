@@ -16,7 +16,7 @@ class SignInRoleScreen extends StatefulWidget {
 class _SignInRoleScreenState extends State<SignInRoleScreen> {
   String selectedRole = "";
 
-  final controller = Get.put(SignInRoleController());
+  
 
   @override
   Widget build(BuildContext context) {
