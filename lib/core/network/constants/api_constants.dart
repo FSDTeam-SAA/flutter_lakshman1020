@@ -2,7 +2,7 @@ class ApiConstants {
   /// [Base Configuration]
   // static const String baseDomain = 'https://karlfive223-backend.onrender.com';
 
-  static const String baseDomain = 'http://10.10.5.33:8001';
+  static const String baseDomain = 'http://10.10.5.3:8001';
   static const String baseUrl = '$baseDomain/api/v1';
 
   /// soykot ip
@@ -33,9 +33,9 @@ class ApiConstants {
 
   static TeamEndpointcs get team => TeamEndpointcs();
   static LeagueEndpoints get league => LeagueEndpoints();
+  static LoadEndpoints get load => LoadEndpoints();
 
   static GetProfile get getProfile => GetProfile();
-
 }
 
 /// [Authentication Endpoints]
@@ -56,7 +56,7 @@ class AuthEndpoints {
   final String changePass = '$_base/change-password';
 }
 
-class GetProfile{
+class GetProfile {
   static const String _base = '${ApiConstants.baseUrl}/user';
   final String fetchProfile = '$_base/profile';
   final String updateProfile = '$_base/update-profile';
@@ -86,4 +86,10 @@ class LeagueEndpoints {
   static const String _base = '${ApiConstants.baseUrl}/league';
 
   final String getAllLeagues = '$_base/all-league';
+}
+
+class LoadEndpoints {
+  static const String _base = '${ApiConstants.baseUrl}/load';
+
+  final String getLoads = _base;
 }
