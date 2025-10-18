@@ -2,7 +2,7 @@ class ApiConstants {
   /// [Base Configuration]
   // static const String baseDomain = 'https://karlfive223-backend.onrender.com';
 
-  static const String baseDomain = 'http://10.10.5.53:8001';
+  static const String baseDomain = 'http://10.10.5.33:8001';
   static const String baseUrl = '$baseDomain/api/v1';
 
   /// soykot ip
@@ -34,21 +34,32 @@ class ApiConstants {
   static TeamEndpointcs get team => TeamEndpointcs();
   static LeagueEndpoints get league => LeagueEndpoints();
 
-}
+  static GetProfile get getProfile => GetProfile();
 
+}
 
 /// [Authentication Endpoints]
 class AuthEndpoints {
   static const String _base = '${ApiConstants.baseUrl}/auth';
 
   final String login = '$_base/login';
-  
+
   final String register = '$_base/register';
-  final String resetPass = '$_base/send-reset-otp';
+  final String forgotPass = '$_base/forget';
+  final String resrtPass = '$_base/reset-password';
+  final String verifyMailOtp = '$_base/verify-otp';
+
   final String refreshToken = '$_base/refresh-token';
-  final String otpVerify = '$_base/verify-reset-otp';
-  final String otpVerifyRegister = '$_base/verify-otp';
+
   final String setNewPass = '$_base/reset-password';
+
+  final String changePass = '$_base/change-password';
+}
+
+class GetProfile{
+  static const String _base = '${ApiConstants.baseUrl}/user';
+  final String fetchProfile = '$_base/profile';
+  final String updateProfile = '$_base/update-profile';
 }
 
 class UserEndpoints {

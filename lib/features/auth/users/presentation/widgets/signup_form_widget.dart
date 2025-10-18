@@ -34,6 +34,8 @@ class _SignupFormState extends State<SignupForm> {
   void _submit() {
     // if (!_formKey.currentState!.validate()) return;
     authController.register(nameController.text, emailController.text, passwordController.text, confirmPasswordController.text, widget.role );
+
+    
   }
 
 

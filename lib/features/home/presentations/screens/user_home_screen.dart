@@ -5,12 +5,23 @@ import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_ho
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/shipment_filter_tabs.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/shipment_item.dart';
 import 'package:flutter_lakshman1020/dummy_data.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
-class UserHomeScreen extends StatelessWidget {
+import '../../../../core/widgets/custom_bottom_nav.dart';
+
+class UserHomeScreen extends StatefulWidget {
+
   const UserHomeScreen({super.key});
 
   @override
+  State<UserHomeScreen> createState() => _UserHomeScreenState();
+}
+
+class _UserHomeScreenState extends State<UserHomeScreen> {
+  @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
