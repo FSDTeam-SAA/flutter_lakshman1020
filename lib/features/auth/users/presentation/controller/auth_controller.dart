@@ -16,6 +16,7 @@ import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/se
 import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/sign_up_screen.dart';
 import 'package:flutter_lakshman1020/features/company_subscription_plans/presentation/screens/subscription_screen.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/screens/user_home_screen.dart';
+import 'package:flutter_lakshman1020/features/others/presentation/screen/dashboard_overview_scren.dart';
 import 'package:get/get.dart';
 
 import '../../data/model/login_request_model.dart';
@@ -93,16 +94,14 @@ class AuthController extends BaseController {
         if (user.role == 'user') {
           Get.offAll(() => UserHomeScreen());
         } else if (user.role == 'company') {
-          Get.offAll(() => SubscriptionScreen());
+          Get.offAll(() => DashboardScreen());
         }
 
         setLoading(false);
 
         // if(role == UserRole.user.value) {
-          Get.to(() => UserHomeScreen());
+        Get.to(() => UserHomeScreen());
         // }
-
-
       },
     );
   }
@@ -371,7 +370,7 @@ class AuthController extends BaseController {
         if (role == "user") {
           Get.offAll(() => UserHomeScreen());
         } else if (role == "company") {
-          Get.offAll(() => SubscriptionScreen());
+          Get.offAll(() => DashboardScreen());
         } else {
           Get.offAll(() => SignInRoleScreen());
         }
