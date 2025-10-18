@@ -1,5 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
+import 'package:flutter_lakshman1020/features/accounts/presentation/screens/settings_screen.dart';
+import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/LogIn_screen.dart';
+import 'package:flutter_lakshman1020/features/company_subscription_plans/presentation/screens/subscription_screen.dart';
+import 'package:flutter_lakshman1020/features/dispatcher_company_page/presentation/screens/company_dispatcher_screen.dart';
+import 'package:flutter_lakshman1020/features/driver_company_page/model/dariver_model.dart';
+import 'package:flutter_lakshman1020/features/driver_company_page/presentation/screens/company_driver_screen.dart';
+import 'package:flutter_lakshman1020/features/others/presentation/screen/pending_req_screen.dart';
+import 'package:flutter_lakshman1020/features/others/presentation/screen/running_load_screen.dart';
+import 'package:get/get.dart';
+
+import '../screen/dashboard_overview_scren.dart';
 
 class CompanyDrawer extends StatelessWidget {
   const CompanyDrawer({super.key});
@@ -30,7 +41,12 @@ class CompanyDrawer extends StatelessWidget {
               image: AssetImage("assets/images/dashboard_icon.png"),
             ),
             title: Text("Dashboard", style: TextStyle(color: TColors.grey)),
-            onTap: () {},
+            onTap: () {
+              Get.to(
+                () => const DashboardScreen(),
+                transition: Transition.rightToLeft,
+              );
+            },
           ),
           SizedBox(height: 16),
           ListTile(
@@ -40,7 +56,12 @@ class CompanyDrawer extends StatelessWidget {
               image: AssetImage("assets/images/running_load_icon.png"),
             ),
             title: Text("Running load", style: TextStyle(color: TColors.grey)),
-            onTap: () {},
+            onTap: () {
+              Get.to(
+                () => const RunningLoadScreen(),
+                transition: Transition.rightToLeft,
+              );
+            },
           ),
           SizedBox(height: 16),
           ListTile(
@@ -53,7 +74,12 @@ class CompanyDrawer extends StatelessWidget {
               "Pneding Request",
               style: TextStyle(color: TColors.grey),
             ),
-            onTap: () {},
+            onTap: () {
+              Get.to(
+                () => const PendingReqScreen(),
+                transition: Transition.rightToLeft,
+              );
+            },
           ),
           SizedBox(height: 16),
           ListTile(
@@ -63,7 +89,12 @@ class CompanyDrawer extends StatelessWidget {
               width: 18,
             ),
             title: Text("Driver", style: TextStyle(color: TColors.grey)),
-            onTap: () {},
+            onTap: () {
+              Get.to(
+                () => const CompanyDriverScreen(),
+                transition: Transition.rightToLeft,
+              );
+            },
           ),
           SizedBox(height: 16),
           ListTile(
@@ -73,7 +104,12 @@ class CompanyDrawer extends StatelessWidget {
               width: 18,
             ),
             title: Text("Dispatcher", style: TextStyle(color: TColors.grey)),
-            onTap: () {},
+            onTap: () {
+              Get.to(
+                () => const CompanyDispatcherScreen(),
+                transition: Transition.rightToLeft,
+              );
+            },
           ),
           SizedBox(height: 16),
           ListTile(
@@ -93,7 +129,12 @@ class CompanyDrawer extends StatelessWidget {
               width: 18,
             ),
             title: Text("Subscription", style: TextStyle(color: TColors.grey)),
-            onTap: () {},
+            onTap: () {
+              Get.to(
+                () => const SubscriptionScreen(),
+                transition: Transition.rightToLeft,
+              );
+            },
           ),
           SizedBox(height: 16),
           ListTile(
@@ -103,7 +144,12 @@ class CompanyDrawer extends StatelessWidget {
               width: 18,
             ),
             title: Text("Settings", style: TextStyle(color: TColors.grey)),
-            onTap: () {},
+            onTap: () {
+              Get.to(
+                () => SettingsScreen(),
+                transition: Transition.rightToLeft,
+              );
+            },
           ),
           Spacer(),
 
@@ -115,7 +161,9 @@ class CompanyDrawer extends StatelessWidget {
               width: 24,
             ),
             title: Text("Log out", style: TextStyle(color: TColors.grey)),
-            onTap: () {},
+            onTap: () {
+              Get.offAll(LoginRoleScreen());
+            },
           ),
           SizedBox(height: 80),
         ],
