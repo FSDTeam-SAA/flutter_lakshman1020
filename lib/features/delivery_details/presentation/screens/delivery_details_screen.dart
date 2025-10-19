@@ -89,43 +89,76 @@ class DeliveryDetailsScreen extends StatelessWidget {
                         child: Row(
                           children: [
                             Expanded(
-                              child: OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  side: BorderSide(color: Colors.redAccent),
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 14,
+                              child: Obx(
+                                () => OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(color: Colors.redAccent),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 14,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
                                   ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                                onPressed: () {
-                                  // TODO: implement reject action
-                                },
-                                child: const Text(
-                                  'Reject',
-                                  style: TextStyle(color: Colors.redAccent),
+                                  onPressed: controller.isActionLoading.value
+                                      ? null
+                                      : () {
+                                          controller.sendPriceAction(
+                                            'rejected',
+                                          );
+                                        },
+                                  child: controller.isActionLoading.value
+                                      ? const SizedBox(
+                                          height: 16,
+                                          width: 16,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                          ),
+                                        )
+                                      : const Text(
+                                          'Reject',
+                                          style: TextStyle(
+                                            color: Colors.redAccent,
+                                          ),
+                                        ),
                                 ),
                               ),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.green,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 14,
+                              child: Obx(
+                                () => ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.green,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 14,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
                                   ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                                onPressed: () {
-                                  controller.acceptPressed();
-                                },
-                                child: const Text(
-                                  'Accept',
-                                  style: TextStyle(color: Colors.white),
+                                  onPressed: controller.isActionLoading.value
+                                      ? null
+                                      : () {
+                                          controller.sendPriceAction(
+                                            'accepted',
+                                          );
+                                        },
+                                  child: controller.isActionLoading.value
+                                      ? const SizedBox(
+                                          height: 16,
+                                          width: 16,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            valueColor: AlwaysStoppedAnimation(
+                                              Colors.white,
+                                            ),
+                                          ),
+                                        )
+                                      : const Text(
+                                          'Accept',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
                                 ),
                               ),
                             ),

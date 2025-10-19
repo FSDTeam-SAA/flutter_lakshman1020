@@ -98,4 +98,6 @@ class LoadEndpoints {
 
   final String getLoads = _base;
   String getById(String id) => '$_base/$id';
+  String priceAction(String id) => '$_base/$id/price-action';
+  String askPrice(String id) => '$_base/$id/ask-price';
 }
