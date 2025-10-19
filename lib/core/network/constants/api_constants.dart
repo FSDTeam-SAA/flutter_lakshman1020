@@ -6,6 +6,10 @@ class ApiConstants {
   static const String baseDomain = 'http://10.10.5.88:8001'; //added by zafor
   static const String baseUrl = '$baseDomain/api/v1';
 
+  /// Optional Google Maps API key. Leave empty to use simulated addresses.
+  /// Add your API key here when you want real geocoding.
+  static const String googleMapsApiKey = '';
+
   /// soykot ip
 
   static const String soyDomain = 'http://10.10.5.91:5002';

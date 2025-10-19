@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
 import 'package:get/get.dart';
-import '../../controllers/delivery_details_controller.dart';
+import '../controllers/delivery_details_controller.dart';
 import '../widgets/delivery_info_card.dart' show DeliveryInfoCard;
 import '../widgets/delivery_triple_dot.dart';
 import '../widgets/products_details_card.dart'; // Adjust import path as needed
@@ -16,15 +16,16 @@ class DeliveryDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: "Delivery Details"),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: Obx(() => CustomAppBar(title: controller.currentTitle.value)),
+      ),
       body: Obx(() {
         if (controller.deliveryList.isEmpty) {
           return const Center(child: CircularProgressIndicator());
         }
-        final selectedDelivery = controller.deliveryList[controller.selectedIndex.value];
-        if (selectedDelivery == null) {
-          return const Center(child: Text('No delivery data available'));
-        }
+        final selectedDelivery =
+            controller.deliveryList[controller.selectedIndex.value];
         // Explicitly cast to Map<String, String> to match the expected type
         final deliveryDetails = Map<String, String>.from(selectedDelivery)
           ..remove('productDescription');
@@ -32,10 +33,7 @@ class DeliveryDetailsScreen extends StatelessWidget {
         return Column(
           children: [
             const SizedBox(height: 15),
-            Divider(
-              color: Color(0xffDCE4F5),
-              thickness: 1,
-            ),
+            Divider(color: Color(0xffDCE4F5), thickness: 1),
             Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -51,20 +49,22 @@ class DeliveryDetailsScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    DeliveryInfoCard(
-                      details: deliveryDetails,
-                    ),
+                    DeliveryInfoCard(details: deliveryDetails),
                     const SizedBox(height: 16),
                     Padding(
                       padding: const EdgeInsets.only(left: 24),
-                      child: Text("Product Description",style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-
-                      ),),
+                      child: Text(
+                        "Product Description",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
                     ProductDetailsCard(
-                      description: selectedDelivery['productDescription'] ?? 'No description available',
+                      description:
+                          selectedDelivery['productDescription'] ??
+                          'No description available',
                     ),
                   ],
                 ),
