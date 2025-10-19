@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
 import 'package:flutter_lakshman1020/features/home/models/shipment_model.dart';
 import '../../../domain/entities/load_entity.dart';
+import 'package:get/get.dart';
+import '../../../../delivery_details/presentation/screens/delivery_details_screen.dart';
 
 class ShipmentItem extends StatelessWidget {
   final Shipment? shipment;
@@ -38,6 +40,12 @@ class ShipmentItem extends StatelessWidget {
         ),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text(description),
+        onTap: () {
+          final id = load?.id ?? '';
+          if (id.isNotEmpty) {
+            Get.to(() => DeliveryDetailsScreen(), arguments: id);
+          }
+        },
         trailing: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisAlignment: MainAxisAlignment.center,

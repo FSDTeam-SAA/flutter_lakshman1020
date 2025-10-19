@@ -9,12 +9,20 @@ import '../widgets/products_details_card.dart'; // Adjust import path as needed
 class DeliveryDetailsScreen extends StatelessWidget {
   DeliveryDetailsScreen({super.key});
 
-  final DeliveryDetailsController controller = Get.put(
-    DeliveryDetailsController(),
-  );
+  static String? _resolveIdFromArgs() {
+    final args = Get.arguments;
+    if (args == null) return null;
+    if (args is String) return args;
+    if (args is Map && args['id'] != null) return args['id'].toString();
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(
+      DeliveryDetailsController(initialLoadId: _resolveIdFromArgs()),
+    );
+
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
@@ -37,10 +45,12 @@ class DeliveryDetailsScreen extends StatelessWidget {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 16.0),
-              child: TripleZeroIndicator(
-                size: 32.0,
-                color: Colors.blue,
-                currentStep: 0,
+              child: Obx(
+                () => TripleZeroIndicator(
+                  size: 32.0,
+                  color: Colors.blue,
+                  currentStep: controller.currentStep.value,
+                ),
               ),
             ),
             Expanded(

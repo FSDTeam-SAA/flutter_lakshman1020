@@ -97,4 +97,5 @@ class LoadEndpoints {
   static const String _base = '${ApiConstants.baseUrl}/load';
 
   final String getLoads = _base;
+  String getById(String id) => '$_base/$id';
 }
