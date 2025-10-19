@@ -41,7 +41,7 @@ class DeliveryDetailsScreen extends StatelessWidget {
         return Column(
           children: [
             const SizedBox(height: 15),
-            Divider(color: Color(0xffDCE4F5), thickness: 1),
+            // Divider(color: Color(0xffDCE4F5), thickness: 1),
             Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -49,7 +49,11 @@ class DeliveryDetailsScreen extends StatelessWidget {
                 () => TripleZeroIndicator(
                   size: 32.0,
                   color: Colors.blue,
-                  currentStep: controller.currentStep.value,
+                  orderStatus: controller.orderStatus.value,
+                  // If user has accepted locally, advance the visual step by 1
+                  currentStep:
+                      controller.currentStep.value +
+                      (controller.accepted.value ? 1 : 0),
                 ),
               ),
             ),
@@ -76,6 +80,113 @@ class DeliveryDetailsScreen extends StatelessWidget {
                           selectedDelivery['productDescription'] ??
                           'No description available',
                     ),
+                    // Show action buttons only when backend orderStatus is 'asked'
+                    if (controller.orderStatus.value.toLowerCase() == 'asked' &&
+                        !controller.accepted.value) ...[
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  side: BorderSide(color: Colors.redAccent),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  // TODO: implement reject action
+                                },
+                                child: const Text(
+                                  'Reject',
+                                  style: TextStyle(color: Colors.redAccent),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.green,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  controller.acceptPressed();
+                                },
+                                child: const Text(
+                                  'Accept',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                    // After accepting, show Contact Driver and Pay buttons
+                    if (controller.accepted.value) ...[
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  side: BorderSide(color: Color(0xffE5EDFF)),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  // TODO: contact driver
+                                },
+                                child: const Text(
+                                  'Contact Driver',
+                                  style: TextStyle(color: Colors.black87),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Color(0xff1E66FF),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  // TODO: implement pay action
+                                },
+                                child: const Text(
+                                  'Pay',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
                   ],
                 ),
               ),

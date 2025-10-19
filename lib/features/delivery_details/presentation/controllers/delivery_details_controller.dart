@@ -17,6 +17,13 @@ class DeliveryDetailsController extends GetxController {
 
   final pickupDateString = ''.obs;
 
+  /// The raw order status string as returned by the backend (e.g. 'pending', 'processing', 'asked').
+  final orderStatus = ''.obs;
+
+  /// Local UI flag when user taps Accept to progress visually, without
+  /// changing the server-side orderStatus (remains processing).
+  final accepted = false.obs;
+
   final String? initialLoadId;
 
   DeliveryDetailsController({this.initialLoadId});
@@ -62,6 +69,9 @@ class DeliveryDetailsController extends GetxController {
       };
 
       final data = apiResponse['data'] ?? {};
+
+      // capture raw order status from dummy response
+      orderStatus.value = (data['orderStatus'] ?? '').toString();
 
       // If API returned an ID, attempt to fetch the full load details from backend
       final serverId = data['_id']?.toString();
@@ -141,16 +151,18 @@ class DeliveryDetailsController extends GetxController {
           final load = LoadModel.fromJson(data);
 
           // Map orderStatus to step
-          switch (load.orderStatus.toLowerCase()) {
-            case 'pending':
-              currentStep.value = 0;
-              break;
-            case 'processing':
+          // Keep the raw orderStatus so the UI can make decisions (e.g., 'asked')
+          orderStatus.value = load.orderStatus.toString();
+
+          switch (orderStatus.value.toLowerCase()) {
+            case 'asked':
+              // 'asked' means the first dot is completed (tick) and the second is active.
               currentStep.value = 1;
               break;
             case 'delivered':
               currentStep.value = 2;
               break;
+            // 'processing' and other statuses are treated as pending for now
             default:
               currentStep.value = 0;
           }
@@ -193,6 +205,12 @@ class DeliveryDetailsController extends GetxController {
     } catch (e) {
       print('Error fetching load by id: $e');
     }
+  }
+
+  /// Called when the user taps Accept — toggles a local accepted flag which
+  /// updates the UI (buttons + indicator) but does not change server status.
+  void acceptPressed() {
+    accepted.value = true;
   }
 
   String _formatDateSafe(String? iso) {
