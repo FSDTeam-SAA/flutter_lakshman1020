@@ -107,7 +107,7 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          // padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -174,7 +174,7 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
                 hint: "Green Road, Panthopath",
                 suffixAsset: AppIcons.location,
                 controller: _pickupController,
-                readOnly: true,
+                // readOnly: true,
                 openMapOnSuffixTap: true,
                 // also open map when tapping the field itself
                 onTap: () =>
@@ -187,7 +187,7 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
                 label: "Delivery Location",
                 hint: "Sayednagar B block, Vatara",
                 suffixAsset: AppIcons.location,
-                readOnly: true,
+                // readOnly: true,
                 controller: _deliveryController,
                 openMapOnSuffixTap: true,
                 onTap: () => _openMapAndSetController(
@@ -299,20 +299,45 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
 
                     try {
                       await loadController.createLoad(payload);
+
+                      // Show success message
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Load created successfully'),
-                        ),
+                        const SnackBar(content: Text('Load created successfully ')),
                       );
-                      // Optionally clear form or navigate
+
+                      // Reset form fields to default state
+                      setState(() {
+                        _titleController.clear();
+                        _descriptionController.clear();
+                        _pickupController.clear();
+                        _deliveryController.clear();
+                        _noteController.clear();
+                        _dateController.clear();
+                        _timeController.clear();
+
+                        // Reset dropdown selections
+                        _categorySelected = 'Medicine';
+                        _companySelected = 'Default';
+
+                        // Reset stored LatLngs and date/time
+                        _pickupLatLng = null;
+                        _deliveryLatLng = null;
+                        selectedDate = null;
+                        selectedTime = null;
+                      });
+
+                      // Hide keyboard if open
+                      FocusScope.of(context).unfocus();
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Failed to create load: $e')),
                       );
                     }
+
                   },
                 );
-              }),
+              }
+              ),const SizedBox(height: 30,),
             ],
           ),
         ),
@@ -371,7 +396,7 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
                   )
                 : null,
 
-            // 👇 Fixed Suffix Icon Part
+            // Suffix Icon Part
             suffixIcon: suffixAsset != null
                 ? Padding(
                     padding: const EdgeInsets.all(8),
@@ -405,18 +430,21 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
   }
 
   Future<void> _openMapAndSetController(
-    TextEditingController controller, {
-    required bool isPickup,
-  }) async {
-    // parse existing coords if available
+      TextEditingController controller, {
+        required bool isPickup,
+      }) async {
+    // Parse existing coordinates if available
     LatLng? initial;
     if (controller.text.isNotEmpty && controller.text.contains(',')) {
       final parts = controller.text.split(',');
       final lat = double.tryParse(parts[0].trim());
       final lng = double.tryParse(parts[1].trim());
-      if (lat != null && lng != null) initial = LatLng(lat, lng);
+      if (lat != null && lng != null) {
+        initial = LatLng(lat, lng);
+      }
     }
 
+    // Wait for result from LocationPickerScreen
     final result = await Navigator.of(context).push<LatLng?>(
       MaterialPageRoute(
         builder: (_) => LocationPickerScreen(initialLocation: initial),
@@ -424,31 +452,59 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
     );
 
     if (result != null) {
-      // store latlng
-      if (isPickup)
-        _pickupLatLng = result;
-      else
-        _deliveryLatLng = result;
+      // Save the result
+      setState(() {
+        if (isPickup) {
+          _pickupLatLng = result;
+        } else {
+          _deliveryLatLng = result;
+        }
+      });
 
+      // Update controller text
       try {
         final placemarks = await placemarkFromCoordinates(
           result.latitude,
           result.longitude,
         );
-        final p = placemarks.first;
-        setState(() {
-          controller.text =
-              '${p.name ?? ''}, ${p.locality ?? ''}, ${p.country ?? ''}';
-        });
+        if (placemarks.isNotEmpty) {
+          final p = placemarks.first;
+          setState(() {
+            controller.text =
+            '${p.name ?? ''}, ${p.locality ?? ''}, ${p.country ?? ''}';
+          });
+        } else {
+          setState(() {
+            controller.text =
+            '${result.latitude.toStringAsFixed(5)}, ${result.longitude.toStringAsFixed(5)}';
+          });
+        }
+
+        FocusScope.of(context).unfocus();
       } catch (_) {
         setState(() {
-          controller.text = '${result.latitude}, ${result.longitude}';
+          controller.text =
+          '${result.latitude.toStringAsFixed(5)}, ${result.longitude.toStringAsFixed(5)}';
         });
+        FocusScope.of(context).unfocus();
       }
-    }
-  }
 
-  Widget _buildDropdown({
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            isPickup
+                ? 'Pickup location updated '
+                : 'Delivery location updated ',
+          ),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+}
+
+
+
+    Widget _buildDropdown({
     required String label,
     required List<String> items,
     String? value,
