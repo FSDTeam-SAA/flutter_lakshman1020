@@ -225,7 +225,9 @@ class DeliveryDetailsController extends GetxController {
     }
 
     // Determine load id: prefer initialLoadId, otherwise use Delivered ID from deliveryList
-    final loadId = initialLoadId ?? (deliveryList.isNotEmpty ? deliveryList[0]['Delivered ID'] : null);
+    final loadId =
+        initialLoadId ??
+        (deliveryList.isNotEmpty ? deliveryList[0]['Delivered ID'] : null);
     if (loadId == null || loadId.isEmpty) {
       print('No load id available to perform price-action');
       return;
@@ -248,148 +250,198 @@ class DeliveryDetailsController extends GetxController {
       );
 
       // Handle response: if POST fails with API Not Found (400), retry with PATCH
-      response.fold((failure) async {
-        print('Price action POST failed: ${failure.message} (${failure.statusCode})');
-        // If server reports API Not Found, retry with PATCH (some servers expect PATCH)
-        if (failure.statusCode == 400 && (failure.message.toLowerCase().contains('api not found') || failure.message.toLowerCase().contains('not found'))) {
-          try {
-            print('Retrying price action with PATCH due to API Not Found');
-            final patchResp = await apiClient.patch<Map<String, dynamic>>(
-              endpoint,
-              data: body,
-              fromJsonT: (json) => json as Map<String, dynamic>,
-            );
-
-            patchResp.fold((pf) {
-              // still failed
-              print('Price action PATCH failed: ${pf.message} (${pf.statusCode})');
-              try {
-                Get.snackbar('Action failed', pf.message.isNotEmpty ? pf.message : 'Unknown error (${pf.statusCode})', snackPosition: SnackPosition.BOTTOM, duration: const Duration(seconds: 4));
-              } catch (_) {}
-            }, (psuccess) async {
-              // reuse success handling below by copying logic
-              final raw = psuccess.data;
-              final data = raw.containsKey('data') && raw['data'] is Map<String, dynamic> ? Map<String, dynamic>.from(raw['data'] as Map) : Map<String, dynamic>.from(raw as Map);
-              // Normalize fields that may be returned as plain id strings instead of objects
-              if (data['companyToken'] != null && data['companyToken'] is String) {
-                data['companyToken'] = {'_id': data['companyToken']};
-              }
-              if (data['loadBy'] != null && data['loadBy'] is String) {
-                data['loadBy'] = {'_id': data['loadBy']};
-              }
-              final load = LoadModel.fromJson(data);
-
-              orderStatus.value = load.orderStatus.toString();
-              switch (orderStatus.value.toLowerCase()) {
-                case 'asked':
-                  currentStep.value = 1;
-                  break;
-                case 'delivered':
-                  currentStep.value = 2;
-                  break;
-                default:
-                  currentStep.value = 0;
-              }
-
-              pickupDateString.value = _formatDateSafe(load.pickupDate.toIso8601String());
-
-              final geocoding = GeocodingService();
-              final results = await Future.wait([
-                geocoding.getAddressFromLatLng(load.pickupLocation),
-                geocoding.getAddressFromLatLng(load.deliveryLocation),
-              ]);
-
-              final pickupAddress = results[0].formattedAddress;
-              final deliveryAddress = results[1].formattedAddress;
-
-              final mapped = <String, String>{
-                'title': load.title,
-                'Driver Name': 'Michael ken',
-                'Mobile': '+7853665363',
-                'Pickup Address': pickupAddress,
-                'Delivery Address': deliveryAddress,
-                'Delivered Date': pickupDateString.value,
-                'Delivered ID': load.id,
-                'productDescription': load.description,
-              };
-
-              currentTitle.value = load.title;
-              deliveryList.value = [mapped];
-              accepted.value = action == 'accepted';
-            });
-          } catch (e) {
-            print('PATCH retry error: $e');
+      response.fold(
+        (failure) async {
+          print(
+            'Price action POST failed: ${failure.message} (${failure.statusCode})',
+          );
+          // If server reports API Not Found, retry with PATCH (some servers expect PATCH)
+          if (failure.statusCode == 400 &&
+              (failure.message.toLowerCase().contains('api not found') ||
+                  failure.message.toLowerCase().contains('not found'))) {
             try {
-              Get.snackbar('Action failed', e.toString(), snackPosition: SnackPosition.BOTTOM, duration: const Duration(seconds: 4));
-            } catch (_) {}
+              print('Retrying price action with PATCH due to API Not Found');
+              final patchResp = await apiClient.patch<Map<String, dynamic>>(
+                endpoint,
+                data: body,
+                fromJsonT: (json) => json as Map<String, dynamic>,
+              );
+
+              patchResp.fold(
+                (pf) {
+                  // still failed
+                  print(
+                    'Price action PATCH failed: ${pf.message} (${pf.statusCode})',
+                  );
+                  try {
+                    Get.snackbar(
+                      'Action failed',
+                      pf.message.isNotEmpty
+                          ? pf.message
+                          : 'Unknown error (${pf.statusCode})',
+                      snackPosition: SnackPosition.BOTTOM,
+                      duration: const Duration(seconds: 4),
+                    );
+                  } catch (_) {}
+                },
+                (psuccess) async {
+                  // reuse success handling below by copying logic
+                  final raw = psuccess.data;
+                  final data =
+                      raw.containsKey('data') &&
+                          raw['data'] is Map<String, dynamic>
+                      ? Map<String, dynamic>.from(raw['data'] as Map)
+                      : Map<String, dynamic>.from(raw as Map);
+                  // Normalize fields that may be returned as plain id strings instead of objects
+                  if (data['companyToken'] != null &&
+                      data['companyToken'] is String) {
+                    data['companyToken'] = {'_id': data['companyToken']};
+                  }
+                  if (data['loadBy'] != null && data['loadBy'] is String) {
+                    data['loadBy'] = {'_id': data['loadBy']};
+                  }
+                  final load = LoadModel.fromJson(data);
+
+                  orderStatus.value = load.orderStatus.toString();
+                  switch (orderStatus.value.toLowerCase()) {
+                    case 'asked':
+                      currentStep.value = 1;
+                      break;
+                    case 'delivered':
+                      currentStep.value = 2;
+                      break;
+                    default:
+                      currentStep.value = 0;
+                  }
+
+                  pickupDateString.value = _formatDateSafe(
+                    load.pickupDate.toIso8601String(),
+                  );
+
+                  final geocoding = GeocodingService();
+                  final results = await Future.wait([
+                    geocoding.getAddressFromLatLng(load.pickupLocation),
+                    geocoding.getAddressFromLatLng(load.deliveryLocation),
+                  ]);
+
+                  final pickupAddress = results[0].formattedAddress;
+                  final deliveryAddress = results[1].formattedAddress;
+
+                  final mapped = <String, String>{
+                    'title': load.title,
+                    'Driver Name': 'Michael ken',
+                    'Mobile': '+7853665363',
+                    'Pickup Address': pickupAddress,
+                    'Delivery Address': deliveryAddress,
+                    'Delivered Date': pickupDateString.value,
+                    'Delivered ID': load.id,
+                    'productDescription': load.description,
+                  };
+
+                  currentTitle.value = load.title;
+                  deliveryList.value = [mapped];
+                  accepted.value = action == 'accepted';
+                },
+              );
+            } catch (e) {
+              print('PATCH retry error: $e');
+              try {
+                Get.snackbar(
+                  'Action failed',
+                  e.toString(),
+                  snackPosition: SnackPosition.BOTTOM,
+                  duration: const Duration(seconds: 4),
+                );
+              } catch (_) {}
+            }
+            return;
           }
-          return;
-        }
 
-        // Log failure and show a snackbar for easier debugging
-        print('Price action failed: ${failure.message} (${failure.statusCode})');
-        try {
-          final title = 'Action failed';
-          final msg = failure.message.isNotEmpty ? failure.message : 'Unknown error (${failure.statusCode})';
-          Get.snackbar(title, msg, snackPosition: SnackPosition.BOTTOM, duration: const Duration(seconds: 4));
-        } catch (_) {}
-      }, (success) async {
-  final raw = success.data;
-        final data = raw.containsKey('data') && raw['data'] is Map<String, dynamic> ? Map<String, dynamic>.from(raw['data'] as Map) : Map<String, dynamic>.from(raw as Map);
-        // Normalize companyToken/loadBy if server returned id strings
-        if (data['companyToken'] != null && data['companyToken'] is String) {
-          data['companyToken'] = {'_id': data['companyToken']};
-        }
-        if (data['loadBy'] != null && data['loadBy'] is String) {
-          data['loadBy'] = {'_id': data['loadBy']};
-        }
-        final load = LoadModel.fromJson(data);
+          // Log failure and show a snackbar for easier debugging
+          print(
+            'Price action failed: ${failure.message} (${failure.statusCode})',
+          );
+          try {
+            final title = 'Action failed';
+            final msg = failure.message.isNotEmpty
+                ? failure.message
+                : 'Unknown error (${failure.statusCode})';
+            Get.snackbar(
+              title,
+              msg,
+              snackPosition: SnackPosition.BOTTOM,
+              duration: const Duration(seconds: 4),
+            );
+          } catch (_) {}
+        },
+        (success) async {
+          final raw = success.data;
+          final data =
+              raw.containsKey('data') && raw['data'] is Map<String, dynamic>
+              ? Map<String, dynamic>.from(raw['data'] as Map)
+              : Map<String, dynamic>.from(raw as Map);
+          // Normalize companyToken/loadBy if server returned id strings
+          if (data['companyToken'] != null && data['companyToken'] is String) {
+            data['companyToken'] = {'_id': data['companyToken']};
+          }
+          if (data['loadBy'] != null && data['loadBy'] is String) {
+            data['loadBy'] = {'_id': data['loadBy']};
+          }
+          final load = LoadModel.fromJson(data);
 
-        // Update raw order status and computed step
-        orderStatus.value = load.orderStatus.toString();
-        switch (orderStatus.value.toLowerCase()) {
-          case 'asked':
-            currentStep.value = 1;
-            break;
-          case 'delivered':
-            currentStep.value = 2;
-            break;
-          default:
-            currentStep.value = 0;
-        }
+          // Update raw order status and computed step
+          orderStatus.value = load.orderStatus.toString();
+          switch (orderStatus.value.toLowerCase()) {
+            case 'asked':
+              currentStep.value = 1;
+              break;
+            case 'delivered':
+              currentStep.value = 2;
+              break;
+            default:
+              currentStep.value = 0;
+          }
 
-        pickupDateString.value = _formatDateSafe(load.pickupDate.toIso8601String());
+          pickupDateString.value = _formatDateSafe(
+            load.pickupDate.toIso8601String(),
+          );
 
-        // Update deliveryList map with fresh addresses (geocoding) and title
-        final geocoding = GeocodingService();
-        final results = await Future.wait([
-          geocoding.getAddressFromLatLng(load.pickupLocation),
-          geocoding.getAddressFromLatLng(load.deliveryLocation),
-        ]);
+          // Update deliveryList map with fresh addresses (geocoding) and title
+          final geocoding = GeocodingService();
+          final results = await Future.wait([
+            geocoding.getAddressFromLatLng(load.pickupLocation),
+            geocoding.getAddressFromLatLng(load.deliveryLocation),
+          ]);
 
-        final pickupAddress = results[0].formattedAddress;
-        final deliveryAddress = results[1].formattedAddress;
+          final pickupAddress = results[0].formattedAddress;
+          final deliveryAddress = results[1].formattedAddress;
 
-        final mapped = <String, String>{
-          'title': load.title,
-          'Driver Name': 'Michael ken',
-          'Mobile': '+7853665363',
-          'Pickup Address': pickupAddress,
-          'Delivery Address': deliveryAddress,
-          'Delivered Date': pickupDateString.value,
-          'Delivered ID': load.id,
-          'productDescription': load.description,
-        };
+          final mapped = <String, String>{
+            'title': load.title,
+            'Driver Name': 'Michael ken',
+            'Mobile': '+7853665363',
+            'Pickup Address': pickupAddress,
+            'Delivery Address': deliveryAddress,
+            'Delivered Date': pickupDateString.value,
+            'Delivered ID': load.id,
+            'productDescription': load.description,
+          };
 
-        currentTitle.value = load.title;
-        deliveryList.value = [mapped];
-        // If action was accepted, flip local accepted flag so UI updates
-        accepted.value = action == 'accepted';
-      });
+          currentTitle.value = load.title;
+          deliveryList.value = [mapped];
+          // If action was accepted, flip local accepted flag so UI updates
+          accepted.value = action == 'accepted';
+        },
+      );
     } catch (e) {
       print('Error sending price action: $e');
       try {
-        Get.snackbar('Action failed', e.toString(), snackPosition: SnackPosition.BOTTOM, duration: const Duration(seconds: 4));
+        Get.snackbar(
+          'Action failed',
+          e.toString(),
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 4),
+        );
       } catch (_) {}
     } finally {
       isActionLoading.value = false;

@@ -57,11 +57,24 @@ class LoadController extends GetxController {
     if (filter == 'All') {
       filteredLoads.value = loads;
     } else {
-      filteredLoads.value = loads
-          .where(
-            (load) => load.orderStatus.toLowerCase() == filter.toLowerCase(),
-          )
-          .toList();
+      // Normalize orderStatus and map UI filter names to backend status values.
+      final f = filter.trim();
+      final lowerFilter = f.toLowerCase();
+
+      // Define acceptable backend status values for each UI filter
+      final Map<String, List<String>> filterMap = {
+        'pending': ['pending'],
+        'processing': ['processing'],
+        // sometimes backend uses 'completed' or 'delivered' interchangeably
+        'delivered': ['delivered', 'completed'],
+      };
+
+      final allowed = filterMap[lowerFilter] ?? [lowerFilter];
+
+      filteredLoads.value = loads.where((load) {
+        final status = load.orderStatus.toString().trim().toLowerCase();
+        return allowed.contains(status);
+      }).toList();
     }
   }
 
