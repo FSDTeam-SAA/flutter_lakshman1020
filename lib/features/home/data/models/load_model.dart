@@ -16,20 +16,20 @@ class LoadModel extends LoadEntity {
     required DateTime createdAt,
     required DateTime updatedAt,
   }) : super(
-          id: id,
-          title: title,
-          description: description,
-          category: category,
-          pickupLocation: pickupLocation,
-          deliveryLocation: deliveryLocation,
-          companyToken: companyToken,
-          loadBy: loadBy,
-          orderStatus: orderStatus,
-          pickupDate: pickupDate,
-          note: note,
-          createdAt: createdAt,
-          updatedAt: updatedAt,
-        );
+         id: id,
+         title: title,
+         description: description,
+         category: category,
+         pickupLocation: pickupLocation,
+         deliveryLocation: deliveryLocation,
+         companyToken: companyToken,
+         loadBy: loadBy,
+         orderStatus: orderStatus,
+         pickupDate: pickupDate,
+         note: note,
+         createdAt: createdAt,
+         updatedAt: updatedAt,
+       );
 
   factory LoadModel.fromJson(Map<String, dynamic> json) {
     DateTime? parseDate(String? s) => s == null ? null : DateTime.tryParse(s);

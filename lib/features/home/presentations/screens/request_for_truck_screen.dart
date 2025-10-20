@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
 import 'package:flutter_lakshman1020/core/widgets/app_scaffold.dart';
@@ -8,12 +9,15 @@ import '../../../../core/constants/app_icons.dart';
 import '../../models/app_text_styles.dart';
 import '../controllers/load_controller.dart';
 import '../../data/repositories/load_repository_impl.dart';
+import 'location_picker_screen.dart';
+import 'package:latlong2/latlong.dart';
 
 class RequestInformationScreen extends StatefulWidget {
   const RequestInformationScreen({super.key});
 
   @override
-  State<RequestInformationScreen> createState() => _RequestInformationScreenState();
+  State<RequestInformationScreen> createState() =>
+      _RequestInformationScreenState();
 }
 
 class _RequestInformationScreenState extends State<RequestInformationScreen> {
@@ -29,9 +33,10 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
   final TextEditingController _deliveryController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
 
-  late final LoadController _loadController;
   String _categorySelected = 'Medicine';
   String _companySelected = 'Default';
+  LatLng? _pickupLatLng;
+  LatLng? _deliveryLatLng;
 
   Future<void> _pickDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -56,14 +61,16 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
       setState(() {
         selectedDate = picked;
         _dateController.text =
-        "${picked.day.toString().padLeft(2, '0')} ${_monthName(picked.month)} ${picked.year}";
+            "${picked.day.toString().padLeft(2, '0')} ${_monthName(picked.month)} ${picked.year}";
       });
     }
   }
 
   Future<void> _pickTime(BuildContext context) async {
-    final TimeOfDay? picked =
-    await showTimePicker(context: context, initialTime: selectedTime ?? TimeOfDay.now());
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: selectedTime ?? TimeOfDay.now(),
+    );
     if (picked != null && picked != selectedTime) {
       setState(() {
         selectedTime = picked;
@@ -74,17 +81,25 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
 
   String _monthName(int month) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return months[month - 1];
   }
 
   @override
   Widget build(BuildContext context) {
-    // initialize controller lazily
-    _loadController = Get.put(LoadController(repository: LoadRepositoryImpl()));
-
+    final loadController = Get.find<LoadController>();
     return AppScaffold(
       appBar: CustomAppBar(
         title: "Request for a truck",
@@ -125,18 +140,32 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
               _buildTextField(
                 label: "Description",
                 hint:
-                "Ex: 3 sealed cartons of medical supplies. Fragile and time-sensitive. Handle with care",
+                    "Ex: 3 sealed cartons of medical supplies. Fragile and time-sensitive. Handle with care",
                 maxLines: 3,
                 controller: _descriptionController,
               ),
               const SizedBox(height: 16),
 
               // Category
-              _buildDropdown(label: "Category", items: ["Medicine", "Furniture"], value: _categorySelected, onChanged: (v){ if(v!=null) setState(()=>_categorySelected=v); }),
+              _buildDropdown(
+                label: "Category",
+                items: ["Medicine", "Furniture"],
+                value: _categorySelected,
+                onChanged: (v) {
+                  if (v != null) setState(() => _categorySelected = v);
+                },
+              ),
               const SizedBox(height: 16),
 
               // Company
-              _buildDropdown(label: "Company", items: ["Default", "Company A"], value: _companySelected, onChanged: (v){ if(v!=null) setState(()=>_companySelected=v); }),
+              _buildDropdown(
+                label: "Company",
+                items: ["Default", "Company A"],
+                value: _companySelected,
+                onChanged: (v) {
+                  if (v != null) setState(() => _companySelected = v);
+                },
+              ),
               const SizedBox(height: 32),
 
               // Pickup Location
@@ -145,6 +174,11 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
                 hint: "Green Road, Panthopath",
                 suffixAsset: AppIcons.location,
                 controller: _pickupController,
+                readOnly: true,
+                openMapOnSuffixTap: true,
+                // also open map when tapping the field itself
+                onTap: () =>
+                    _openMapAndSetController(_pickupController, isPickup: true),
               ),
               const SizedBox(height: 12),
 
@@ -153,7 +187,13 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
                 label: "Delivery Location",
                 hint: "Sayednagar B block, Vatara",
                 suffixAsset: AppIcons.location,
+                readOnly: true,
                 controller: _deliveryController,
+                openMapOnSuffixTap: true,
+                onTap: () => _openMapAndSetController(
+                  _deliveryController,
+                  isPickup: false,
+                ),
               ),
               const SizedBox(height: 16),
 
@@ -197,22 +237,106 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
               _buildTextField(
                 label: "Special note",
                 hint:
-                "This delivery contains fragile and time-sensitive medical supplies. Ensure temperature control if required, avoid…",
+                    "This delivery contains fragile and time-sensitive medical supplies. Ensure temperature control if required, avoid…",
                 maxLines: 3,
                 controller: _noteController,
               ),
               const SizedBox(height: 20),
 
               // Submit Button
-              context.primaryButton(
-                text: "Request for a Truck",
-                onPressed: () {},
-              ),
+              Obx(() {
+                return context.primaryButton(
+                  text: "Request for a Truck",
+                  isLoading: loadController.isLoading.value,
+                  onPressed: () async {
+                    final title = _titleController.text.trim();
+                    final pickup = _pickupController.text.trim();
+                    final delivery = _deliveryController.text.trim();
+
+                    if (title.isEmpty || pickup.isEmpty || delivery.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Please enter title, pickup and delivery locations',
+                          ),
+                        ),
+                      );
+                      return;
+                    }
+
+                    // Build pickupDate ISO if user picked date/time
+                    String? pickupDateIso;
+                    if (selectedDate != null) {
+                      final date = selectedDate!;
+                      final time =
+                          selectedTime ?? const TimeOfDay(hour: 12, minute: 0);
+                      final dt = DateTime(
+                        date.year,
+                        date.month,
+                        date.day,
+                        time.hour,
+                        time.minute,
+                      );
+                      pickupDateIso = dt.toUtc().toIso8601String();
+                    }
+
+                    final payload = {
+                      'title': title,
+                      'description': _descriptionController.text.trim(),
+                      'category': _categorySelected.toLowerCase(),
+                      'pickupLocation': _pickupLatLng != null
+                          ? '${_pickupLatLng!.latitude}, ${_pickupLatLng!.longitude}'
+                          : pickup,
+                      'deliveryLocation': _deliveryLatLng != null
+                          ? '${_deliveryLatLng!.latitude}, ${_deliveryLatLng!.longitude}'
+                          : delivery,
+                      'companyToken': '68e9cee3c24ab343ad8335b1', // placeholder
+                      'loadBy': '68f3387fa6174ce77995a604', // placeholder
+                      'orderStatus': 'pending',
+                      if (pickupDateIso != null) 'pickupDate': pickupDateIso,
+                      'note': _noteController.text.trim(),
+                    };
+
+                    try {
+                      await loadController.createLoad(payload);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Load created successfully'),
+                        ),
+                      );
+                      // Optionally clear form or navigate
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Failed to create load: $e')),
+                      );
+                    }
+                  },
+                );
+              }),
             ],
           ),
         ),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize controller once to avoid re-creating ApiClient/_dio multiple times
+    Get.put(LoadController(repository: LoadRepositoryImpl()));
+  }
+
+  @override
+  void dispose() {
+    _dateController.dispose();
+    _timeController.dispose();
+    _titleController.dispose();
+    _descriptionController.dispose();
+    _pickupController.dispose();
+    _deliveryController.dispose();
+    _noteController.dispose();
+    super.dispose();
   }
 
   Widget _buildTextField({
@@ -224,6 +348,7 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
     TextEditingController? controller,
     bool readOnly = false,
     VoidCallback? onTap,
+    bool openMapOnSuffixTap = false,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -239,33 +364,89 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
             hintText: hint,
             hintStyle: TTextStyles.hint,
 
-            // Prefix icon support
             prefixIcon: prefixAsset != null
                 ? Padding(
-              padding: const EdgeInsets.all(12),
-              child: Image.asset(prefixAsset, width: 18, height: 18),
-            )
+                    padding: const EdgeInsets.all(12),
+                    child: Image.asset(prefixAsset, width: 18, height: 18),
+                  )
                 : null,
 
-            // Suffix icon support (as before)
+            // 👇 Fixed Suffix Icon Part
             suffixIcon: suffixAsset != null
                 ? Padding(
-              padding: const EdgeInsets.all(12),
-              child: Image.asset(suffixAsset, width: 18, height: 18),
-            )
+                    padding: const EdgeInsets.all(8),
+                    child: GestureDetector(
+                      onTap: openMapOnSuffixTap
+                          ? () async {
+                              if (controller != null) {
+                                final isPickup =
+                                    controller == _pickupController;
+                                await _openMapAndSetController(
+                                  controller,
+                                  isPickup: isPickup,
+                                );
+                              }
+                            }
+                          : null,
+                      child: Image.asset(suffixAsset, width: 22, height: 22),
+                    ),
+                  )
                 : null,
 
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 14,
             ),
-            contentPadding:
-            const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
           ),
         ),
       ],
     );
   }
 
+  Future<void> _openMapAndSetController(
+    TextEditingController controller, {
+    required bool isPickup,
+  }) async {
+    // parse existing coords if available
+    LatLng? initial;
+    if (controller.text.isNotEmpty && controller.text.contains(',')) {
+      final parts = controller.text.split(',');
+      final lat = double.tryParse(parts[0].trim());
+      final lng = double.tryParse(parts[1].trim());
+      if (lat != null && lng != null) initial = LatLng(lat, lng);
+    }
+
+    final result = await Navigator.of(context).push<LatLng?>(
+      MaterialPageRoute(
+        builder: (_) => LocationPickerScreen(initialLocation: initial),
+      ),
+    );
+
+    if (result != null) {
+      // store latlng
+      if (isPickup)
+        _pickupLatLng = result;
+      else
+        _deliveryLatLng = result;
+
+      try {
+        final placemarks = await placemarkFromCoordinates(
+          result.latitude,
+          result.longitude,
+        );
+        final p = placemarks.first;
+        setState(() {
+          controller.text =
+              '${p.name ?? ''}, ${p.locality ?? ''}, ${p.country ?? ''}';
+        });
+      } catch (_) {
+        setState(() {
+          controller.text = '${result.latitude}, ${result.longitude}';
+        });
+      }
+    }
+  }
 
   Widget _buildDropdown({
     required String label,
@@ -280,12 +461,16 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
         const SizedBox(height: 6),
         DropdownButtonFormField<String>(
           value: value ?? items.first,
-          items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+          items: items
+              .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+              .toList(),
           onChanged: onChanged ?? (v) {},
           decoration: InputDecoration(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-            contentPadding:
-            const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 14,
+            ),
           ),
         ),
       ],

@@ -18,11 +18,14 @@ class LoadRepositoryImpl implements LoadRepository {
       fromJsonT: (json) => LoadModel.fromJson(json as Map<String, dynamic>),
     );
 
-    return result.fold((failure) {
-      throw Exception('Failed to fetch load: ${failure.runtimeType}');
-    }, (success) {
-      return success.data;
-    });
+    return result.fold(
+      (failure) {
+        throw Exception('Failed to fetch load: ${failure.runtimeType}');
+      },
+      (success) {
+        return success.data;
+      },
+    );
   }
 
   @override
@@ -35,10 +38,13 @@ class LoadRepositoryImpl implements LoadRepository {
       fromJsonT: (json) => LoadModel.fromJson(json as Map<String, dynamic>),
     );
 
-    return result.fold((failure) {
-      throw Exception('Failed to create load: ${failure.runtimeType}');
-    }, (success) {
-      return success.data;
-    });
+    return result.fold(
+      (failure) {
+        throw Exception('Failed to create load: ${failure.runtimeType}');
+      },
+      (success) {
+        return success.data;
+      },
+    );
   }
 }
