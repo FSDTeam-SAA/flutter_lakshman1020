@@ -129,7 +129,6 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            // 👇 return picked location even if user presses back
             Navigator.of(context).pop(_pickedLocation);
           },
         ),
