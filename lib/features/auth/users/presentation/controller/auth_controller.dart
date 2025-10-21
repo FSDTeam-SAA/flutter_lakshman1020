@@ -56,21 +56,14 @@ class AuthController extends BaseController {
       (success) async {
         debugPrint("✅ API Hit Successful!");
         final user = success.data.user;
-        if (user.role == 'user' || user.role == 'company') {
-          await _authStorageService.storeAuthData(
-            accessToken: success.data.accessToken,
-            refreshToken: success.data.refreshToken,
-            userId: success.data.user.id,
-            role: success.data.role,
-          );
-        }
-
-        // await _authStorageService.storeAuthData(
-        //   accessToken: success.data.accessToken,
-        //   refreshToken: success.data.refreshToken,
-        //   userId: success.data.user.id,
-        //   role: success.data.role,
-        // );
+        
+        // Store auth data for all roles
+        await _authStorageService.storeAuthData(
+          accessToken: success.data.accessToken,
+          refreshToken: success.data.refreshToken,
+          userId: success.data.user.id,
+          role: success.data.role,
+        );
 
         // Optional: show success Snackbar
         Get.snackbar(

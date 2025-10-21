@@ -18,6 +18,7 @@ class AccountsScreen extends StatelessWidget {
     final AccountController controller = Get.find<AccountController>();
 
     return Scaffold(
+      
       body: Stack(
         children: [
           Container(
@@ -31,9 +32,6 @@ class AccountsScreen extends StatelessWidget {
             }
 
             final user = controller.userInfo.value;
-            if (user == null) {
-              return const Center(child: Text("No user data available"));
-            }
 
             return SingleChildScrollView(
               child: Column(
@@ -51,15 +49,15 @@ class AccountsScreen extends StatelessWidget {
                   Center(
                     child: CircleAvatar(
                       radius: 60,
-                      backgroundImage: user.avatar.url.isNotEmpty
-                          ? NetworkImage(user.avatar.url)
+                      backgroundImage: (user?.avatar.url.isNotEmpty ?? false)
+                          ? NetworkImage(user!.avatar.url)
                           : const AssetImage(AppImages.accountUser)
                                 as ImageProvider,
                     ),
                   ),
                   const SizedBox(height: 16),
                   CustomText(
-                    user.name.capitalizeFirstOfEach,
+                    user?.name.capitalizeFirstOfEach ?? 'User',
                     style: const TextStyle(
                       color: TColors.account,
                       fontSize: 22,
@@ -67,7 +65,7 @@ class AccountsScreen extends StatelessWidget {
                     ),
                   ),
                   CustomText(
-                    user.email.replaceAll('@gmail.com', ''),
+                    user?.email.replaceAll('@gmail.com', '') ?? 'No email',
                     style: const TextStyle(color: TColors.white1, fontSize: 16),
                   ),
                   const SizedBox(height: 32),
@@ -89,17 +87,25 @@ class AccountsScreen extends StatelessWidget {
                         child: Column(
                           children: [
                             _buildMenuItem(AppImages.personal, 'Personal', () {
-                              Get.to(
-                                () => PersonalDetailsScreen(
-                                  name: user.name,
-                                  email: user.email,
-                                  mobile: user.phone,
-                                  address: user.address,
-                                  dateOfBirth: user.dob,
-                                  nationality: user.nationality,
-                                  avatar: user.avatar,
-                                ),
-                              );
+                              if (user != null) {
+                                Get.to(
+                                  () => PersonalDetailsScreen(
+                                    name: user.name,
+                                    email: user.email,
+                                    mobile: user.phone,
+                                    address: user.address,
+                                    dateOfBirth: user.dob,
+                                    nationality: user.nationality,
+                                    avatar: user.avatar,
+                                  ),
+                                );
+                              } else {
+                                Get.snackbar(
+                                  "No Data",
+                                  "Please wait for profile data to load",
+                                  snackPosition: SnackPosition.BOTTOM,
+                                );
+                              }
                             }),
 
                             Divider(color: TColors.grey2.withOpacity(.4)),

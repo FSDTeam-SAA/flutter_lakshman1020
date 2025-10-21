@@ -1,11 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
+import 'package:flutter_lakshman1020/features/accounts/controller/account_controller.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/driver_home_widgets/current_load_section.dart';
+import 'package:flutter_lakshman1020/features/home/presentations/widgets/driver_home_widgets/header_section.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/driver_home_widgets/status_card.dart';
-import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/header_section.dart';
+import 'package:get/get.dart';
 
-class DriverHomeScreen extends StatelessWidget {
+class DriverHomeScreen extends StatefulWidget {
   const DriverHomeScreen({super.key});
+
+  @override
+  State<DriverHomeScreen> createState() => _DriverHomeScreenState();
+}
+
+class _DriverHomeScreenState extends State<DriverHomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Ensure AccountController is initialized and fetches profile
+    final accountController = Get.find<AccountController>();
+    if (accountController.userInfo.value == null) {
+      accountController.fetchProfile();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +35,7 @@ class DriverHomeScreen extends StatelessWidget {
             // Top blue header section
             Container(
               color: TColors.primary,
-              child: Column(children: [const HeaderSection(), StatusCard()]),
+              child: Column(children: [HeaderSection(), StatusCard()]),
             ),
             // Remaining content scrollable
             Expanded(
