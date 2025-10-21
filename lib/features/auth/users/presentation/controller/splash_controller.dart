@@ -1,5 +1,5 @@
 import 'package:flutter_lakshman1020/features/auth/users/presentation/controller/auth_controller.dart';
-import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/SignInRoleScreen.dart';
+import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/LogIn_screen.dart';
 import 'package:flutter_lakshman1020/features/company_subscription_plans/presentation/screens/subscription_screen.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/screens/user_home_screen.dart';
 import 'package:flutter_lakshman1020/core/network/services/auth_storage_service.dart';
@@ -28,7 +28,7 @@ class SplashScreenController extends GetxController {
 
     // ✅ If no token found → go to login
     if (refreshToken == null || refreshToken.isEmpty) {
-      DPrint.log("❌ No refresh token found. Redirecting to SignInRoleScreen.");
+      DPrint.log("❌ No refresh token found. Redirecting to LoginRoleScreen.");
       _goToLogin();
       return;
     }
@@ -53,7 +53,7 @@ class SplashScreenController extends GetxController {
   }
 
   void _goToLogin() {
-    Get.offAll(() => SignInRoleScreen());
+    Get.offAll(() => LoginRoleScreen());
   }
 }
 
