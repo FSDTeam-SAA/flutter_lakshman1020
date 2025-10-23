@@ -6,7 +6,6 @@ import '../../models/subscription_model.dart';
 import '../controllers/subscription_controller.dart';
 import '../widgets/subscribe_button.dart';
 import '../widgets/subscription_card.dart';
-import 'payment_details_screen.dart';
 
 class SubscriptionListScreen extends StatelessWidget {
   const SubscriptionListScreen({super.key});
@@ -34,14 +33,7 @@ class SubscriptionListScreen extends StatelessWidget {
                   plan: plan,
                   isPopular: index == 1, // Mark Premium (index 1) as popular
                   onSubscribe: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PaymentDetailsScreen(
-                          selectedPlan: plan,
-                        ),
-                      ),
-                    );
+                    print("Subscribe to ${plan.name} plan");
                   },
                 ),
               );
@@ -78,14 +70,8 @@ class SubscriptionListScreen extends StatelessWidget {
               subtitle: Text("\$${plan.price}/${plan.period}"),
               onTap: () {
                 Navigator.of(context).pop();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PaymentDetailsScreen(
-                      selectedPlan: plan,
-                    ),
-                  ),
-                );
+                print("Selected ${plan.name} plan - \$${plan.price}/${plan.period}");
+                // Handle plan selection
               },
             )).toList(),
           ),

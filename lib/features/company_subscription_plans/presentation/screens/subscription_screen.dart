@@ -7,7 +7,6 @@ import '../controllers/subscription_controller.dart';
 import '../widgets/page_indicator.dart';
 import '../widgets/subscribe_button.dart';
 import '../widgets/subscription_card.dart';
-import 'payment_details_screen.dart';
 
 class SubscriptionScreen extends StatefulWidget {
   const SubscriptionScreen({super.key});
@@ -64,14 +63,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       plan: _plans[index],
                       isPopular: index == 1, // Mark Premium (index 1) as popular
                       onSubscribe: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PaymentDetailsScreen(
-                              selectedPlan: _plans[index],
-                            ),
-                          ),
-                        );
+                        print("Subscribe to ${_plans[index].name} plan");
                       },
                     ),
                   );
@@ -93,14 +85,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             SubscribeButton(
               text: "Subscribe to ${_plans[_currentPageIndex].name}",
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PaymentDetailsScreen(
-                      selectedPlan: _plans[_currentPageIndex],
-                    ),
-                  ),
-                );
+                print("Subscribe to ${_plans[_currentPageIndex].name} plan - \$${_plans[_currentPageIndex].price}/${_plans[_currentPageIndex].period}");
               },
             ),
             
