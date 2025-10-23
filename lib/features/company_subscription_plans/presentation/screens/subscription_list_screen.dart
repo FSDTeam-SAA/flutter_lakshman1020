@@ -1,0 +1,102 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_lakshman1020/core/widgets/app_scaffold.dart';
+import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
+
+import '../../models/subscription_model.dart';
+import '../controllers/subscription_controller.dart';
+import '../widgets/subscribe_button.dart';
+import '../widgets/subscription_card.dart';
+import 'payment_details_screen.dart';
+
+class SubscriptionListScreen extends StatelessWidget {
+  const SubscriptionListScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final SubscriptionController controller = SubscriptionController();
+    final List<SubscriptionPlan> plans = controller.getAllPlans();
+
+    return AppScaffold(
+      appBar: const CustomAppBar(title: "Subscription plans", titleCenter: true),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            
+            // List of all subscription cards
+            ...plans.asMap().entries.map((entry) {
+              int index = entry.key;
+              SubscriptionPlan plan = entry.value;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: SubscriptionCard(
+                  plan: plan,
+                  isPopular: index == 1, // Mark Premium (index 1) as popular
+                  onSubscribe: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PaymentDetailsScreen(
+                          selectedPlan: plan,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              );
+            }).toList(),
+            
+            const SizedBox(height: 20),
+            
+            // General subscribe button
+            SubscribeButton(
+              text: "Choose a Plan",
+              onPressed: () {
+                // Show plan selection dialog or navigate
+                _showPlanSelectionDialog(context, plans);
+              },
+            ),
+            
+            const SizedBox(height: 30),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showPlanSelectionDialog(BuildContext context, List<SubscriptionPlan> plans) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Select a Plan"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: plans.map((plan) => ListTile(
+              title: Text(plan.name),
+              subtitle: Text("\$${plan.price}/${plan.period}"),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PaymentDetailsScreen(
+                      selectedPlan: plan,
+                    ),
+                  ),
+                );
+              },
+            )).toList(),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text("Cancel"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}

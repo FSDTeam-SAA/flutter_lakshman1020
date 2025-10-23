@@ -9,13 +9,14 @@ class SubscriptionController {
       period: "m",
       features: [
         SubscriptionFeature(title: "Order Management", value: true),
-        SubscriptionFeature(title: "Client", value: true),
-        SubscriptionFeature(title: "Dispather", value: 10),
-        SubscriptionFeature(title: "Advanced Analytics", value: false),
-        SubscriptionFeature(title: "Priority Support", value: false),
-        SubscriptionFeature(title: "Custom Reports", value: false),
-        SubscriptionFeature(title: "API Access", value: false),
-        SubscriptionFeature(title: "White Label", value: false),
+        SubscriptionFeature(title: "Unlimited Client", value: true),
+        SubscriptionFeature(title: "Unlimited Client", value: true),
+        SubscriptionFeature(title: "Dispatcher", value: 10),
+        SubscriptionFeature(title: "Unlimited Client", value: true),
+        SubscriptionFeature(title: "Unlimited Client", value: true),
+        SubscriptionFeature(title: "Unlimited Client", value: true),
+        SubscriptionFeature(title: "Unlimited Client", value: true),
+        SubscriptionFeature(title: "Unlimited Client", value: true),
       ],
     );
   }
@@ -27,13 +28,14 @@ class SubscriptionController {
       period: "m",
       features: [
         SubscriptionFeature(title: "Order Management", value: true),
-        SubscriptionFeature(title: "Client", value: true),
-        SubscriptionFeature(title: "Dispather", value: "Unlimited"),
+        SubscriptionFeature(title: "Unlimited Client", value: true),
+        SubscriptionFeature(title: "Unlimited Client", value: true),
+        SubscriptionFeature(title: "Dispatcher", value: "Unlimited"),
+        SubscriptionFeature(title: "Unlimited Client", value: true),
         SubscriptionFeature(title: "Advanced Analytics", value: true),
         SubscriptionFeature(title: "Priority Support", value: true),
         SubscriptionFeature(title: "Custom Reports", value: true),
         SubscriptionFeature(title: "API Access", value: true),
-        SubscriptionFeature(title: "White Label", value: true),
       ],
     );
   }
@@ -41,18 +43,30 @@ class SubscriptionController {
   SubscriptionPlan getEnterprisePlan() {
     return SubscriptionPlan(
       name: "Enterprise",
-      price: "299.99",
+      price: "499.99",
       period: "m",
       features: [
         SubscriptionFeature(title: "Order Management", value: true),
-        SubscriptionFeature(title: "Client", value: true),
-        SubscriptionFeature(title: "Dispather", value: "Unlimited"),
+        SubscriptionFeature(title: "Unlimited Client", value: true),
+        SubscriptionFeature(title: "Unlimited Client", value: true),
+        SubscriptionFeature(title: "Dispatcher", value: "Unlimited"),
+        SubscriptionFeature(title: "Unlimited Client", value: true),
         SubscriptionFeature(title: "Advanced Analytics", value: true),
         SubscriptionFeature(title: "Priority Support", value: true),
         SubscriptionFeature(title: "Custom Reports", value: true),
         SubscriptionFeature(title: "API Access", value: true),
         SubscriptionFeature(title: "White Label", value: true),
+        SubscriptionFeature(title: "Dedicated Support", value: true),
       ],
     );
+  }
+
+  // Get all subscription plans
+  List<SubscriptionPlan> getAllPlans() {
+    return [
+      getBasicPlan(),
+      getPremiumPlan(),
+      getEnterprisePlan(),
+    ];
   }
 }

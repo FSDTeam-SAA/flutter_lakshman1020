@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_lakshman1020/core/base/base_controller.dart';
 import 'package:flutter_lakshman1020/core/network/services/auth_storage_service.dart';
 import 'package:flutter_lakshman1020/core/utils/debug_print.dart';
-import 'package:flutter_lakshman1020/features/accounts/presentation/screens/Reset_PassWord_Screen.dart';
 import 'package:flutter_lakshman1020/features/auth/users/data/model/forgot_pass_request_model.dart';
 import 'package:flutter_lakshman1020/features/auth/users/data/model/refresh_token_request_model.dart';
 import 'package:flutter_lakshman1020/features/auth/users/data/model/set_password_request_model.dart';
@@ -13,8 +11,6 @@ import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/Lo
 import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/Otp_verify_screen.dart';
 import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/SignInRoleScreen.dart';
 import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/set_new_password_screen.dart';
-import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/sign_up_screen.dart';
-import 'package:flutter_lakshman1020/features/company_subscription_plans/presentation/screens/subscription_screen.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/screens/user_home_screen.dart';
 import 'package:flutter_lakshman1020/features/others/presentation/screen/dashboard_overview_scren.dart';
 import 'package:get/get.dart';
@@ -99,9 +95,9 @@ class AuthController extends BaseController {
 
         setLoading(false);
 
-        // if(role == UserRole.user.value) {
-        Get.to(() => UserHomeScreen());
-        // }
+        // // if(role == UserRole.user.value) {
+        // Get.to(() => UserHomeScreen());
+        // // }
       },
     );
   }

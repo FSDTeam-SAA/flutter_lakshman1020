@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/theme/app_theme.dart';
 import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/splash_screen.dart';
-
 import 'package:get/get.dart';
-
 import 'core/init/app_initializer.dart';
 import 'features/auth/users/presentation/screens/LogIn_screen.dart';
 import 'features/auth/users/presentation/screens/SignInRoleScreen.dart';

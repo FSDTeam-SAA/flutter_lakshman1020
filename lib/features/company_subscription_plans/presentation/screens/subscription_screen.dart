@@ -1,104 +1,111 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/widgets/app_scaffold.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
-import 'package:flutter_lakshman1020/core/widgets/primary_button.dart';
+
 import '../../models/subscription_model.dart';
 import '../controllers/subscription_controller.dart';
-import '../widgets/feature_items.dart';
+import '../widgets/page_indicator.dart';
+import '../widgets/subscribe_button.dart';
+import '../widgets/subscription_card.dart';
+import 'payment_details_screen.dart';
 
-class SubscriptionScreen extends StatelessWidget {
+class SubscriptionScreen extends StatefulWidget {
   const SubscriptionScreen({super.key});
 
   @override
+  State<SubscriptionScreen> createState() => _SubscriptionScreenState();
+}
+
+class _SubscriptionScreenState extends State<SubscriptionScreen> {
+  final PageController _pageController = PageController();
+  final SubscriptionController _controller = SubscriptionController();
+  int _currentPageIndex = 0;
+  late List<SubscriptionPlan> _plans;
+
+  @override
+  void initState() {
+    super.initState();
+    _plans = _controller.getAllPlans();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _onPageChanged(int index) {
+    setState(() {
+      _currentPageIndex = index;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final SubscriptionController _controller = SubscriptionController();
-    final SubscriptionPlan basicPlan = _controller.getBasicPlan();
-
     return AppScaffold(
-      appBar: CustomAppBar(title: "Subscription plans", titleCenter: true),
+      appBar: const CustomAppBar(title: "Subscription plans", titleCenter: true),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            children: [
-              const SizedBox(height: 29),
-
-              SizedBox(
-                height: 600, // Adjust height as needed
-                child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  itemCount: 3,
-                  itemBuilder: (context, index) {
-                    return Container(
-                      margin: EdgeInsets.only(bottom: 16),
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Color(0xffF2F6FF),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Column(
-                        children: [
-                          // Plan name and price
-                          Padding(
-                            padding: const EdgeInsets.only(top: 13, bottom: 13),
-                            child: Row(
-                              children: [
-                                Text(
-                                  basicPlan.name,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: Color(0xFF18191A),
-                                  ),
-                                ),
-                                Spacer(),
-                                Text(
-                                  "\$ ${basicPlan.price}/${basicPlan.period}",
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.w600,
-                                    color: Color(0xFF18191A),
-                                  ),
-                                ),
-                              ],
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Column(
+          children: [
+            const SizedBox(height: 29),
+            
+            // PageView for subscription cards
+            SizedBox(
+              height: 580, // Fixed height for PageView
+              child: PageView.builder(
+                controller: _pageController,
+                onPageChanged: _onPageChanged,
+                itemCount: _plans.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: SubscriptionCard(
+                      plan: _plans[index],
+                      isPopular: index == 1, // Mark Premium (index 1) as popular
+                      onSubscribe: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PaymentDetailsScreen(
+                              selectedPlan: _plans[index],
                             ),
                           ),
-
-                          // Features list
-                          Container(
-                            padding: EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  Color(0xFFF4788A),
-                                  Color(0xFF2B5DCB),
-                                ],
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Column(
-                              children: [
-                                // Feature items - takes full width
-                                ...basicPlan.features.map((feature) =>
-                                    FeatureItem(
-                                      title: feature.title,
-                                      value: feature.value,
-                                    )
-                                ).toList(),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
+                        );
+                      },
+                    ),
+                  );
+                },
               ),
-              context.primaryButton(onPressed: (){}, text: "Subscribe Now")
-            ],
-          ),
+            ),
+            
+            const SizedBox(height: 16),
+            
+            // Page indicator
+            PageIndicator(
+              currentPage: _currentPageIndex,
+              totalPages: _plans.length,
+            ),
+            
+            const SizedBox(height: 20),
+            
+            // Subscribe button for current plan
+            SubscribeButton(
+              text: "Subscribe to ${_plans[_currentPageIndex].name}",
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PaymentDetailsScreen(
+                      selectedPlan: _plans[_currentPageIndex],
+                    ),
+                  ),
+                );
+              },
+            ),
+            
+            const SizedBox(height: 30),
+          ],
         ),
       ),
     );
