@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../models/subscription_model.dart';
+import '../../data/models/subscription_model.dart';
 import 'subscription_feature_item.dart';
 
 class SubscriptionCard extends StatelessWidget {

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
 import 'package:get/get.dart';
-import '../../models/subscription_model.dart';
-import '../widgets/plan_selection_card.dart';
+
+import '../../data/models/subscription_model.dart';
+import '../../data/services/stripe_service.dart';
 import '../widgets/payment_method_card.dart';
+import '../widgets/plan_selection_card.dart';
 
 class PaymentDetailsScreen extends StatefulWidget {
   final SubscriptionPlan plan;
@@ -19,6 +21,8 @@ class PaymentDetailsScreen extends StatefulWidget {
 
 class _PaymentDetailsScreenState extends State<PaymentDetailsScreen> {
   String selectedPaymentMethod = 'Stripe';
+  final StripeServices _stripeServices = StripeServices();
+  bool _isProcessing = false;
 
   @override
   Widget build(BuildContext context) {
@@ -130,12 +134,11 @@ class _PaymentDetailsScreenState extends State<PaymentDetailsScreen> {
                   const SizedBox(width: 20),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {
-                        // Handle subscription payment
-                        _processPayment();
-                      },
+                      onPressed: _isProcessing ? null : _processPayment,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF007AFF),
+                        backgroundColor: _isProcessing 
+                            ? const Color(0xFF007AFF).withOpacity(0.6)
+                            : const Color(0xFF007AFF),
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
@@ -143,13 +146,22 @@ class _PaymentDetailsScreenState extends State<PaymentDetailsScreen> {
                         ),
                         elevation: 0,
                       ),
-                      child: const Text(
-                        "Subscribe now",
-                        style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      child: _isProcessing
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            )
+                          : const Text(
+                              "Subscribe now",
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                     ),
                   ),
                 ],
@@ -161,7 +173,13 @@ class _PaymentDetailsScreenState extends State<PaymentDetailsScreen> {
     );
   }
 
-  void _processPayment() {
+  Future<void> _processPayment() async {
+    if (_isProcessing) return;
+    
+    setState(() {
+      _isProcessing = true;
+    });
+
     // Show loading dialog
     showDialog(
       context: context,
@@ -178,30 +196,76 @@ class _PaymentDetailsScreenState extends State<PaymentDetailsScreen> {
       ),
     );
 
-    // Simulate payment processing
-    Future.delayed(const Duration(seconds: 2), () {
-      Navigator.of(context).pop(); // Close loading dialog
+    try {
+      // Convert plan price to string for Stripe processing
+      final amount = widget.plan.price.toString();
+      print("🎯 Starting payment process - Plan: ${widget.plan.name}, Amount: \$${amount}");
+      
+      // Initiate Stripe payment
+      await _stripeServices.makePayment(
+        amount: amount,
+        currency: 'USD',
+      );
+      
+      print("✅ Payment completed successfully");
+      
+      // Close loading dialog
+      if (mounted) Navigator.of(context).pop();
       
       // Show success dialog
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text("Payment Successful!"),
-          content: Text(
-            "You have successfully subscribed to the ${widget.plan.name} plan for \$${widget.plan.price}/month.",
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close success dialog
-                Get.back(); // Go back to subscription screen
-                Get.back(); // Go back to previous screen
-              },
-              child: const Text("Done"),
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("Payment Successful!"),
+            content: Text(
+              "You have successfully subscribed to the ${widget.plan.name} plan for \$${widget.plan.price}/month.",
             ),
-          ],
-        ),
-      );
-    });
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close success dialog
+                  Get.back(); // Go back to subscription screen
+                  Get.back(); // Go back to previous screen
+                },
+                child: const Text("Done"),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      print("❌ Payment failed with error: $e");
+      
+      // Close loading dialog
+      if (mounted) Navigator.of(context).pop();
+      
+      // Show error dialog
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("Payment Failed"),
+            content: Text(
+              "Failed to process payment: ${e.toString()}",
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text("Try Again"),
+              ),
+            ],
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isProcessing = false;
+        });
+      }
+    }
   }
 }

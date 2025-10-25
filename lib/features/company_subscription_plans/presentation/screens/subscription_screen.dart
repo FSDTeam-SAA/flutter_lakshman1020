@@ -3,7 +3,7 @@ import 'package:flutter_lakshman1020/core/widgets/app_scaffold.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
 import 'package:get/get.dart';
 
-import '../../models/subscription_model.dart';
+import '../../data/models/subscription_model.dart';
 import '../controllers/subscription_controller.dart';
 import '../widgets/page_indicator.dart';
 import '../widgets/subscribe_button.dart';

@@ -1,5 +1,5 @@
 
-import '../../models/subscription_model.dart';
+import '../../data/models/subscription_model.dart';
 
 class SubscriptionController {
   SubscriptionPlan getBasicPlan() {
