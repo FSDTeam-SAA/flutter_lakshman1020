@@ -6,6 +6,7 @@ import '../../data/models/subscription_model.dart';
 import '../../data/services/stripe_service.dart';
 import '../widgets/payment_method_card.dart';
 import '../widgets/plan_selection_card.dart';
+import 'payment_success_screen.dart';
 
 class PaymentDetailsScreen extends StatefulWidget {
   final SubscriptionPlan plan;
@@ -211,28 +212,11 @@ class _PaymentDetailsScreenState extends State<PaymentDetailsScreen> {
       
       // Close loading dialog
       if (mounted) Navigator.of(context).pop();
-      
-      // Show success dialog
+
+      // Navigate automatically to the payment confirmation screen
       if (mounted) {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text("Payment Successful!"),
-            content: Text(
-              "You have successfully subscribed to the ${widget.plan.name} plan for \$${widget.plan.price}/month.",
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); // Close success dialog
-                  Get.back(); // Go back to subscription screen
-                  Get.back(); // Go back to previous screen
-                },
-                child: const Text("Done"),
-              ),
-            ],
-          ),
-        );
+        // Clear existing routes and show the confirmation
+        Get.offAll(() => const PaymentSuccessScreen());
       }
     } catch (e) {
       print("❌ Payment failed with error: $e");

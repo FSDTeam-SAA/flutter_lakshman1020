@@ -7,7 +7,7 @@ import '../../domain/payment_repo.dart';
 class PaymentRepositoryImpl implements PaymentRepository {
   @override
   Future<Map<String, dynamic>> createPaymentIntent(String amount, String currency) async {
-    final secretKey = "sk_test_51S9etz6Ly9JyjBRKb2uknbNbOTLmuV46fxkz3nvzg1Q9iC5fggbwdPUqRiydGjRc1ST33GtVwJPMjrh0kY8yVPk200tEuKPZJM";
+    final secretKey = "sk_test_51S6pMbRZVOYD6qjBs3XxcUpw32E2k2j6b2AW2YH8WFIgjMbQi6MYMNRtWSkalY9uXVidPA0JSeMEJpQfSpoE8v6400VdeWSwFn";
     if (secretKey.isEmpty) {
       throw Exception('Secret key not available');
     }

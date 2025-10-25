@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/features/others/presentation/widgets/company_appbar.dart';
 import 'package:flutter_lakshman1020/features/others/presentation/widgets/company_drawer.dart';
+import 'package:get/get.dart';
+
+import '../../../accounts/presentation/screens/notification_screen.dart';
 
 class CompanySettingScreen extends StatelessWidget {
   const CompanySettingScreen({super.key});
@@ -39,21 +42,21 @@ class CompanySettingScreen extends StatelessWidget {
                 childAspectRatio: 1.1,
                 children: [
                   _buildSettingCard(
-                    icon: Icons.person,
+                    imagePath: 'assets/icons/FrameSetting.png',
                     title: "Personal",
                     onTap: () {
                       print("Navigate to Personal Settings");
                     },
                   ),
                   _buildSettingCard(
-                    icon: Icons.notifications,
+                    imagePath: "assets/icons/FrameNotific.png",
                     title: "Notification",
                     onTap: () {
-                      print("Navigate to Notification Settings");
+                      Get.to(() => NotificationSettingsScreen());
                     },
                   ),
                   _buildSettingCard(
-                    icon: Icons.privacy_tip,
+                    imagePath: "assets/icons/FramePolicy.png",
                     title: "Privacy Policy",
                     onTap: () {
                       print("Navigate to Privacy Policy");
@@ -69,7 +72,7 @@ class CompanySettingScreen extends StatelessWidget {
   }
 
   Widget _buildSettingCard({
-    required IconData icon,
+    required String imagePath,
     required String title,
     required VoidCallback onTap,
   }) {
@@ -96,16 +99,16 @@ class CompanySettingScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  width: 48,
-                  height: 48,
+                  width: 32,
+                  height: 32,
                   decoration: BoxDecoration(
                     color: const Color(0xFFE5EDFF),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(
-                    icon,
-                    color: Colors.black,
-                    size: 24,
+                  child: Image.asset(
+                    imagePath,
+                    width: 24,
+                    height: 24,
                   ),
                 ),
                 const SizedBox(height: 12),

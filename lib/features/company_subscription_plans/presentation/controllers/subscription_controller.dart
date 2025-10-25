@@ -43,7 +43,7 @@ class SubscriptionController {
   SubscriptionPlan getEnterprisePlan() {
     return SubscriptionPlan(
       name: "Enterprise",
-      price: "499.99",
+      price: "49999.99",
       period: "m",
       features: [
         SubscriptionFeature(title: "Order Management", value: true),
