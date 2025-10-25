@@ -30,13 +30,12 @@ class SubscriptionListScreen extends StatelessWidget {
             
             // List of all subscription cards
             ...plans.asMap().entries.map((entry) {
-              int index = entry.key;
               SubscriptionPlan plan = entry.value;
               return Padding(
                 padding: const EdgeInsets.only(bottom: 16),
                 child: SubscriptionCard(
                   plan: plan,
-                  isPopular: index == 1, // Mark Premium (index 1) as popular
+                  isPopular: false,
                   onSubscribe: () {
                     print("Subscribe to ${plan.name} plan");
                   },

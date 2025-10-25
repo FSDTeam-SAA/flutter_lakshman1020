@@ -113,7 +113,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 4),
                       child: SubscriptionCard(
                         plan: plans[index],
-                        isPopular: index == 0, // Mark first plan as popular
+                        isPopular: false,
                         onSubscribe: () {
                           Get.to(
                             () => PaymentDetailsScreen(plan: plans[index]),

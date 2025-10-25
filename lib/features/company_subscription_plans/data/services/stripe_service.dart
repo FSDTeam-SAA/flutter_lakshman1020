@@ -18,6 +18,10 @@ class StripeServices {
       // amount is passed dynamically from the caller (payment details page)
       final paymentIntent = await _createPaymentIntent.call(amount, currency);
 
+      // Extract and log the Payment Intent ID
+      final paymentIntentId = paymentIntent['id'];
+      print('🔵 Stripe Payment Intent ID: $paymentIntentId');
+
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
           paymentIntentClientSecret: paymentIntent['client_secret'],
@@ -26,6 +30,10 @@ class StripeServices {
       );
 
       await Stripe.instance.presentPaymentSheet();
+      
+      // Log the successful transaction ID again
+      print('✅ Payment completed successfully! Transaction ID: $paymentIntentId');
+      
       Fluttertoast.showToast(msg: 'Payment successfully completed');
     } on StripeException catch (e) {
       Fluttertoast.showToast(msg: 'Stripe error: ${e.error.localizedMessage}');
