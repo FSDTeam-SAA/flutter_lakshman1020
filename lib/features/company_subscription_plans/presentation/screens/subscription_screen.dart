@@ -25,7 +25,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   void initState() {
     super.initState();
     // Initialize controller with dependency injection
-    _controller = Get.put(SubscriptionController(Get.find()));
+    _controller = Get.put(SubscriptionController(Get.find(), Get.find()));
   }
 
   @override
@@ -139,11 +139,31 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               // Subscribe button for current plan
               SubscribeButton(
                 text: "Subscribe to ${plans[_currentPageIndex].name}",
-                onPressed: () {
-                  Get.to(
-                    () => PaymentDetailsScreen(plan: plans[_currentPageIndex]),
-                    transition: Transition.rightToLeft,
+                onPressed: () async {
+                  // Get the current plan
+                  final currentPlan = plans[_currentPageIndex];
+                  final apiPlan = _controller.apiPlans[_currentPageIndex];
+                  
+                  // Call the create payment API
+                  final clientSecret = await _controller.createPayment(
+                    planId: apiPlan.id,
+                    price: apiPlan.price,
                   );
+                  
+                  if (clientSecret != null && clientSecret.isNotEmpty) {
+                    // Navigate to payment details screen with the client secret
+                    Get.to(
+                      () => PaymentDetailsScreen(plan: currentPlan),
+                      transition: Transition.rightToLeft,
+                    );
+                  } else {
+                    // Show error if payment creation failed
+                    Get.snackbar(
+                      'Error',
+                      'Failed to create payment. Please try again.',
+                      snackPosition: SnackPosition.BOTTOM,
+                    );
+                  }
                 },
               ),
               

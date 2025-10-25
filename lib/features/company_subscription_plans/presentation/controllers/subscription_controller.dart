@@ -3,16 +3,19 @@ import 'package:flutter_lakshman1020/features/accounts/controller/account_contro
 import 'package:flutx_core/flutx_core.dart';
 import 'package:get/get.dart';
 
+import '../../data/models/create_payment_request_model.dart';
 import '../../data/models/fetch_plans_request_model.dart';
 import '../../data/models/fetch_plans_response_model.dart';
 import '../../data/models/subscription_model.dart';
+import '../../domain/payment_repo.dart';
 import '../../domain/subscription_repo.dart';
 
 class SubscriptionController extends BaseController {
   final SubscriptionRepository _subscriptionRepository;
+  final PaymentRepository _paymentRepository;
   final AccountController _accountController = Get.find<AccountController>();
 
-  SubscriptionController(this._subscriptionRepository);
+  SubscriptionController(this._subscriptionRepository, this._paymentRepository);
 
   // Observable list of plans from API
   final RxList<FetchPlansResponseModel> apiPlans =
@@ -94,12 +97,61 @@ class SubscriptionController extends BaseController {
     );
   }
 
-  // Get all subscription plans (now from API)
+    // Get all subscription plans (now from API)
   List<SubscriptionPlan> getAllPlans() {
     if (apiPlans.isEmpty) {
       // Return empty list if API hasn't loaded yet
       return [];
     }
     return apiPlans.map((plan) => convertToSubscriptionPlan(plan)).toList();
+  }
+
+  // Create payment for a subscription plan
+  Future<String?> createPayment({
+    required String planId,
+    required double price,
+  }) async {
+    try {
+      setLoading(true);
+      setError('');
+
+      final userId = _accountController.userInfo.value?.id;
+      if (userId == null || userId.isEmpty) {
+        setError('User ID not found. Please try again.');
+        setLoading(false);
+        DPrint.error("❌ Cannot create payment: User ID is null");
+        return null;
+      }
+
+      DPrint.log("🔍 Creating payment for user: $userId, plan: $planId, price: $price");
+
+      final request = CreatePaymentRequestModel(
+        userId: userId,
+        planId: planId,
+        price: price,
+        type: 'order',
+      );
+
+      final result = await _paymentRepository.createPayment(request);
+
+      return result.fold(
+        (failure) {
+          setError(failure.message);
+          DPrint.error("❌ Failed to create payment: ${failure.message}");
+          setLoading(false);
+          return null;
+        },
+        (success) {
+          DPrint.log("✅ Payment created successfully! Client Secret: ${success.data.clientSecret}");
+          setLoading(false);
+          return success.data.clientSecret;
+        },
+      );
+    } catch (e) {
+      setError(e.toString());
+      DPrint.error("❌ Exception creating payment: $e");
+      setLoading(false);
+      return null;
+    }
   }
 }

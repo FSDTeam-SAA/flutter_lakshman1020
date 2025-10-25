@@ -1,15 +1,17 @@
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 
+import '../../domain/payment_repo.dart';
 import '../../domain/usecases/create_payment_intent.dart';
-import '../repo/payment_repo_impl.dart';
-
 
 class StripeServices {
-  final _repository = PaymentRepositoryImpl();
+  late final PaymentRepository _repository;
   late final CreatePaymentIntent _createPaymentIntent;
 
   StripeServices() {
+    // Get PaymentRepository from DI container
+    _repository = Get.find<PaymentRepository>();
     _createPaymentIntent = CreatePaymentIntent(_repository);
   }
 

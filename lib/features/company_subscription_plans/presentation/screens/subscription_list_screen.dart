@@ -15,7 +15,7 @@ class SubscriptionListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // Use GetX to get or create the controller instance with dependency injection
     final SubscriptionController controller = Get.put(
-      SubscriptionController(Get.find()),
+      SubscriptionController(Get.find(), Get.find()),
       tag: 'subscription_list', // Use a tag to avoid conflicts with other instances
     );
     final List<SubscriptionPlan> plans = controller.getAllPlans();

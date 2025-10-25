@@ -43,6 +43,8 @@ class ApiConstants {
   static GetProfile get getProfile => GetProfile();
   
   static PlanEndpoints get plan => PlanEndpoints();
+  
+  static PaymentEndpoints get payment => PaymentEndpoints();
 }
 
 /// [Authentication Endpoints]
@@ -108,4 +110,10 @@ class PlanEndpoints {
   static const String _base = '${ApiConstants.baseUrl}/plan';
 
   final String getPlans = _base;
+}
+
+class PaymentEndpoints {
+  static const String _base = '${ApiConstants.baseUrl}/payment';
+
+  final String createPayment = '$_base/create-payment';
 }
