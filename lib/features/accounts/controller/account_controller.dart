@@ -8,7 +8,6 @@ import 'package:flutter_lakshman1020/features/accounts/domain/repo/account_repo.
 import 'package:get/get.dart';
 import '../../../../core/base/base_controller.dart';
 import '../../../../core/network/services/multiple_form_data_manager.dart';
-import '../presentation/screens/accounts_screen.dart';
 
 class AccountController extends BaseController {
   final AccountRepository _accountRepository;
@@ -113,69 +112,4 @@ class AccountController extends BaseController {
       },
     );
   }
-
-  // Future<void> uploadPhoto(File image) async {
-  //   setLoading(true);
-  //   setError('');
-  //
-  //   _multiFormDataManager.addImageFile(image, key: "avatar");
-  //
-  //   final formRequest = await _multiFormDataManager.toFormDataAsync();
-  //
-  //   final result = await _profileRepository.uploadPhoto(formRequest);
-  //
-  //   result.fold(
-  //         (fail) {
-  //       setError(fail.message);
-  //       DPrint.log('Upload photo: ${fail.message}');
-  //       isLoading(false);
-  //     },
-  //         (success) {
-  //       DPrint.log('Upload photo: ${success.message}');
-  //       fetchProfile();
-  //       Get.back();
-  //       setError(success.message);
-  //       _multiFormDataManager.clear();
-  //       isLoading(false);
-  //     },
-  //   );
-  // }
-  //
-  // Future<void> tradingProfileSetup(
-  //     final String tradingExperience,
-  //     final String assetsOfInterest,
-  //     final String mainGoal,
-  //     final String riskAppetite,
-  //     final List<String> preferredLearning,
-  //     ) async {
-  //   setLoading(true);
-  //   setError('');
-  //
-  //   final profile = TradingProfile(tradingExperience: tradingExperience, assetsOfInterest: assetsOfInterest, mainGoal: mainGoal, riskAppetite: riskAppetite, preferredLearning: preferredLearning);
-  //   final toJson = jsonEncode(profile.toJson());
-  //
-  //
-  //   _multiFormDataManager.addTextData("treding_profile", toJson);
-  //
-  //
-  //   final formRequest = await _multiFormDataManager.toFormDataAsync();
-  //
-  //   final result = await _profileRepository.tradingInfo(formRequest);
-  //
-  //   result.fold(
-  //         (fail) {
-  //       setError(fail.message);
-  //       DPrint.log('Trading info: ${fail.message}');
-  //       isLoading(false);
-  //     },
-  //         (success) {
-  //       DPrint.log('Trading info: ${success.message}');
-  //       Get.back();
-  //       isLoading(false);
-  //
-  //       _multiFormDataManager.clear();
-  //       setError(success.message);
-  //     },
-  //   );
-  // }
 }

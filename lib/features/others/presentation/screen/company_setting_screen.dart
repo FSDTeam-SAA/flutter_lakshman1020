@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_lakshman1020/features/accounts/presentation/screens/accounts_screen.dart';
 import 'package:flutter_lakshman1020/features/others/presentation/widgets/company_appbar.dart';
 import 'package:flutter_lakshman1020/features/others/presentation/widgets/company_drawer.dart';
 import 'package:get/get.dart';
@@ -45,6 +46,7 @@ class CompanySettingScreen extends StatelessWidget {
                     imagePath: 'assets/icons/FrameSetting.png',
                     title: "Personal",
                     onTap: () {
+                      Get.to(() => AccountsScreen());
                       print("Navigate to Personal Settings");
                     },
                   ),

@@ -61,9 +61,43 @@ class AuthEndpoints {
 }
 
 class GetProfile {
-  static const String _base = '${ApiConstants.baseUrl}/user';
-  final String fetchProfile = '$_base/profile';
-  final String updateProfile = '$_base/update-profile';
+  static const String _baseUser = '${ApiConstants.baseUrl}/user';
+  static const String _baseCompany = '${ApiConstants.baseUrl}/company';
+  static const String _baseDriver = '${ApiConstants.baseUrl}/driver';
+  static const String _baseDispatcher = '${ApiConstants.baseUrl}/dispatcher';
+  
+  // Role-based profile endpoints
+  String fetchProfileByRole(String role) {
+    switch (role.toLowerCase()) {
+      case 'company':
+        return '$_baseCompany/profile';
+      case 'driver':
+        return '$_baseDriver/profile';
+      case 'dispatcher':
+        return '$_baseDispatcher/profile';
+      case 'user':
+      default:
+        return '$_baseUser/profile';
+    }
+  }
+  
+  String updateProfileByRole(String role) {
+    switch (role.toLowerCase()) {
+      case 'company':
+        return '$_baseCompany/update-profile';
+      case 'driver':
+        return '$_baseDriver/update-profile';
+      case 'dispatcher':
+        return '$_baseDispatcher/update-profile';
+      case 'user':
+      default:
+        return '$_baseUser/update-profile';
+    }
+  }
+  
+  // Legacy endpoints for backward compatibility
+  final String fetchProfile = '$_baseUser/profile';
+  final String updateProfile = '$_baseUser/update-profile';
 }
 
 class UserEndpoints {
