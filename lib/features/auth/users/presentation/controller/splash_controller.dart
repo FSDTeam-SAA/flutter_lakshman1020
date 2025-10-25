@@ -1,8 +1,7 @@
-// navigation is handled inside AuthController.refreshToken()
+import 'package:flutter_lakshman1020/features/auth/users/presentation/controller/auth_controller.dart';
+import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/LogIn_screen.dart';
 import 'package:flutter_lakshman1020/core/network/services/auth_storage_service.dart';
 import 'package:flutter_lakshman1020/core/utils/debug_print.dart';
-import 'package:flutter_lakshman1020/features/auth/users/presentation/controller/auth_controller.dart';
-import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/SignInRoleScreen.dart';
 import 'package:get/get.dart';
 
 class SplashScreenController extends GetxController {
@@ -27,7 +26,7 @@ class SplashScreenController extends GetxController {
 
     // ✅ If no token found → go to login
     if (refreshToken == null || refreshToken.isEmpty) {
-      DPrint.log("❌ No refresh token found. Redirecting to SignInRoleScreen.");
+      DPrint.log("❌ No refresh token found. Redirecting to LoginRoleScreen.");
       _goToLogin();
       return;
     }
@@ -40,7 +39,7 @@ class SplashScreenController extends GetxController {
   }
 
   void _goToLogin() {
-    Get.offAll(() => SignInRoleScreen());
+    Get.offAll(() => LoginRoleScreen());
   }
 }
 

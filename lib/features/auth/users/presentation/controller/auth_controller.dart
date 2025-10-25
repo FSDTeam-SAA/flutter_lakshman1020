@@ -11,6 +11,8 @@ import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/Lo
 import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/Otp_verify_screen.dart';
 import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/SignInRoleScreen.dart';
 import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/set_new_password_screen.dart';
+import 'package:flutter_lakshman1020/features/home/presentations/screens/dispatcher_home_screen.dart';
+import 'package:flutter_lakshman1020/features/home/presentations/screens/driver_home_screen.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/screens/user_home_screen.dart';
 import 'package:flutter_lakshman1020/features/others/presentation/screen/dashboard_overview_scren.dart';
 import 'package:get/get.dart';
@@ -21,9 +23,6 @@ import '../../data/model/register_request_model.dart';
 class AuthController extends BaseController {
   final AuthRepository _authRepository;
   final AuthStorageService _authStorageService;
-
-  // final String selectedRole;
-  bool _isSuccess = false;
 
   AuthController(this._authRepository, this._authStorageService);
 
@@ -55,25 +54,16 @@ class AuthController extends BaseController {
         setLoading(false);
       },
       (success) async {
-        String role = success.data.role;
-
         debugPrint("✅ API Hit Successful!");
         final user = success.data.user;
-        if (user.role == 'user' || user.role == 'company') {
-          await _authStorageService.storeAuthData(
-            accessToken: success.data.accessToken,
-            refreshToken: success.data.refreshToken,
-            userId: success.data.user.id,
-            role: success.data.role,
-          );
-        }
-
-        // await _authStorageService.storeAuthData(
-        //   accessToken: success.data.accessToken,
-        //   refreshToken: success.data.refreshToken,
-        //   userId: success.data.user.id,
-        //   role: success.data.role,
-        // );
+        
+        // Store auth data for all roles
+        await _authStorageService.storeAuthData(
+          accessToken: success.data.accessToken,
+          refreshToken: success.data.refreshToken,
+          userId: success.data.user.id,
+          role: success.data.role,
+        );
 
         // Optional: show success Snackbar
         Get.snackbar(
@@ -87,10 +77,20 @@ class AuthController extends BaseController {
           duration: const Duration(seconds: 2),
         );
 
+        setLoading(false);
+
+        // Navigate based on role from API response
         if (user.role == 'user') {
           Get.offAll(() => UserHomeScreen());
         } else if (user.role == 'company') {
           Get.offAll(() => DashboardScreen());
+        } else if (user.role == 'driver') {
+          Get.offAll(() => DriverHomeScreen());
+        } else if (user.role == 'dispatcher') {
+          Get.offAll(() => DispatcherHomeScreen());
+        } else {
+          // Fallback for unknown roles
+          Get.offAll(() => SignInRoleScreen());
         }
 
         setLoading(false);
@@ -367,7 +367,12 @@ class AuthController extends BaseController {
           Get.offAll(() => UserHomeScreen());
         } else if (role == "company") {
           Get.offAll(() => DashboardScreen());
-        } else {
+        } else if (role == "driver") {
+          Get.offAll(() => DriverHomeScreen());
+        }else if (role == "dispatcher") {
+          Get.offAll(() => DispatcherHomeScreen());
+        }
+        else {
           Get.offAll(() => SignInRoleScreen());
         }
       },
