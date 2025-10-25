@@ -18,7 +18,7 @@ class AccountsScreen extends StatelessWidget {
     final AccountController controller = Get.find<AccountController>();
 
     return Scaffold(
-      
+      appBar: AppBar(),
       body: Stack(
         children: [
           Container(
