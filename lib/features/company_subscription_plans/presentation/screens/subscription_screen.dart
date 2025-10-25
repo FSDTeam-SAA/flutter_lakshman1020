@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/widgets/app_scaffold.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
+import 'package:get/get.dart';
 
 import '../../models/subscription_model.dart';
 import '../controllers/subscription_controller.dart';
 import '../widgets/page_indicator.dart';
 import '../widgets/subscribe_button.dart';
 import '../widgets/subscription_card.dart';
+import 'payment_details_screen.dart';
 
 class SubscriptionScreen extends StatefulWidget {
   const SubscriptionScreen({super.key});
@@ -63,7 +65,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       plan: _plans[index],
                       isPopular: index == 1, // Mark Premium (index 1) as popular
                       onSubscribe: () {
-                        print("Subscribe to ${_plans[index].name} plan");
+                        Get.to(
+                          () => PaymentDetailsScreen(plan: _plans[index]),
+                          transition: Transition.rightToLeft,
+                        );
                       },
                     ),
                   );
@@ -85,7 +90,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             SubscribeButton(
               text: "Subscribe to ${_plans[_currentPageIndex].name}",
               onPressed: () {
-                print("Subscribe to ${_plans[_currentPageIndex].name} plan - \$${_plans[_currentPageIndex].price}/${_plans[_currentPageIndex].period}");
+                Get.to(
+                  () => PaymentDetailsScreen(plan: _plans[_currentPageIndex]),
+                  transition: Transition.rightToLeft,
+                );
               },
             ),
             
