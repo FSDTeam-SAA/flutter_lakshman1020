@@ -3,7 +3,6 @@ import 'package:flutter_lakshman1020/core/widgets/app_scaffold.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
 import 'package:get/get.dart';
 
-import '../../data/models/subscription_model.dart';
 import '../controllers/subscription_controller.dart';
 import '../widgets/page_indicator.dart';
 import '../widgets/subscribe_button.dart';
@@ -19,14 +18,14 @@ class SubscriptionScreen extends StatefulWidget {
 
 class _SubscriptionScreenState extends State<SubscriptionScreen> {
   final PageController _pageController = PageController();
-  final SubscriptionController _controller = SubscriptionController();
+  late SubscriptionController _controller;
   int _currentPageIndex = 0;
-  late List<SubscriptionPlan> _plans;
 
   @override
   void initState() {
     super.initState();
-    _plans = _controller.getAllPlans();
+    // Initialize controller with dependency injection
+    _controller = Get.put(SubscriptionController(Get.find()));
   }
 
   @override
@@ -45,62 +44,114 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   Widget build(BuildContext context) {
     return AppScaffold(
       appBar: const CustomAppBar(title: "Subscription plans", titleCenter: true),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          children: [
-            const SizedBox(height: 29),
-            
-            // PageView for subscription cards
-            SizedBox(
-              height: 580, // Fixed height for PageView
-              child: PageView.builder(
-                controller: _pageController,
-                onPageChanged: _onPageChanged,
-                itemCount: _plans.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: SubscriptionCard(
-                      plan: _plans[index],
-                      isPopular: index == 1, // Mark Premium (index 1) as popular
-                      onSubscribe: () {
-                        Get.to(
-                          () => PaymentDetailsScreen(plan: _plans[index]),
-                          transition: Transition.rightToLeft,
-                        );
-                      },
-                    ),
+      body: Obx(() {
+        // Show loading indicator while fetching plans
+        if (_controller.isLoading.value) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        // Show error message if API fails
+        if (_controller.errorMessage.value.isNotEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.error_outline,
+                  size: 64,
+                  color: Colors.red,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  _controller.errorMessage.value,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.red,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () => _controller.fetchPlansFromApi(),
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          );
+        }
+
+        // Get plans from controller
+        final plans = _controller.getAllPlans();
+
+        // Show message if no plans available
+        if (plans.isEmpty) {
+          return const Center(
+            child: Text(
+              'No subscription plans available',
+              style: TextStyle(fontSize: 16),
+            ),
+          );
+        }
+
+        return SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            children: [
+              const SizedBox(height: 29),
+              
+              // PageView for subscription cards
+              SizedBox(
+                height: 580, // Fixed height for PageView
+                child: PageView.builder(
+                  controller: _pageController,
+                  onPageChanged: _onPageChanged,
+                  itemCount: plans.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: SubscriptionCard(
+                        plan: plans[index],
+                        isPopular: index == 0, // Mark first plan as popular
+                        onSubscribe: () {
+                          Get.to(
+                            () => PaymentDetailsScreen(plan: plans[index]),
+                            transition: Transition.rightToLeft,
+                          );
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ),
+              
+              const SizedBox(height: 16),
+              
+              // Page indicator
+              PageIndicator(
+                currentPage: _currentPageIndex,
+                totalPages: plans.length,
+              ),
+              
+              const SizedBox(height: 20),
+              
+              // Subscribe button for current plan
+              SubscribeButton(
+                text: "Subscribe to ${plans[_currentPageIndex].name}",
+                onPressed: () {
+                  Get.to(
+                    () => PaymentDetailsScreen(plan: plans[_currentPageIndex]),
+                    transition: Transition.rightToLeft,
                   );
                 },
               ),
-            ),
-            
-            const SizedBox(height: 16),
-            
-            // Page indicator
-            PageIndicator(
-              currentPage: _currentPageIndex,
-              totalPages: _plans.length,
-            ),
-            
-            const SizedBox(height: 20),
-            
-            // Subscribe button for current plan
-            SubscribeButton(
-              text: "Subscribe to ${_plans[_currentPageIndex].name}",
-              onPressed: () {
-                Get.to(
-                  () => PaymentDetailsScreen(plan: _plans[_currentPageIndex]),
-                  transition: Transition.rightToLeft,
-                );
-              },
-            ),
-            
-            const SizedBox(height: 30),
-          ],
-        ),
-      ),
+              
+              const SizedBox(height: 30),
+            ],
+          ),
+        );
+      }),
     );
   }
 }

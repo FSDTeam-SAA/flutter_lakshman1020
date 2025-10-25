@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/widgets/app_scaffold.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
+import 'package:get/get.dart';
 
 import '../../data/models/subscription_model.dart';
 import '../controllers/subscription_controller.dart';
@@ -12,7 +13,11 @@ class SubscriptionListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final SubscriptionController controller = SubscriptionController();
+    // Use GetX to get or create the controller instance with dependency injection
+    final SubscriptionController controller = Get.put(
+      SubscriptionController(Get.find()),
+      tag: 'subscription_list', // Use a tag to avoid conflicts with other instances
+    );
     final List<SubscriptionPlan> plans = controller.getAllPlans();
 
     return AppScaffold(

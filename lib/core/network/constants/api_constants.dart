@@ -41,6 +41,8 @@ class ApiConstants {
   static LoadEndpoints get load => LoadEndpoints();
 
   static GetProfile get getProfile => GetProfile();
+  
+  static PlanEndpoints get plan => PlanEndpoints();
 }
 
 /// [Authentication Endpoints]
@@ -100,4 +102,10 @@ class LoadEndpoints {
   String getById(String id) => '$_base/$id';
   String priceAction(String id) => '$_base/$id/price-action';
   String askPrice(String id) => '$_base/$id/ask-price';
+}
+
+class PlanEndpoints {
+  static const String _base = '${ApiConstants.baseUrl}/plan';
+
+  final String getPlans = _base;
 }
