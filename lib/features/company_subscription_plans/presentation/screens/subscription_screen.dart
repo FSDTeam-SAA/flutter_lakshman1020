@@ -114,11 +114,33 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       child: SubscriptionCard(
                         plan: plans[index],
                         isPopular: false,
-                        onSubscribe: () {
-                          Get.to(
-                            () => PaymentDetailsScreen(plan: plans[index]),
-                            transition: Transition.rightToLeft,
+                        onSubscribe: () async {
+                          // Get the API plan for this index
+                          final apiPlan = _controller.apiPlans[index];
+                          
+                          // Call the create payment API
+                          final clientSecret = await _controller.createPayment(
+                            planId: apiPlan.id,
+                            price: apiPlan.price,
                           );
+                          
+                          if (clientSecret != null && clientSecret.isNotEmpty) {
+                            // Navigate to payment details screen with the client secret
+                            Get.to(
+                              () => PaymentDetailsScreen(
+                                plan: plans[index],
+                                clientSecret: clientSecret,
+                              ),
+                              transition: Transition.rightToLeft,
+                            );
+                          } else {
+                            // Show error if payment creation failed
+                            Get.snackbar(
+                              'Error',
+                              'Failed to create payment. Please try again.',
+                              snackPosition: SnackPosition.BOTTOM,
+                            );
+                          }
                         },
                       ),
                     );
@@ -153,7 +175,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   if (clientSecret != null && clientSecret.isNotEmpty) {
                     // Navigate to payment details screen with the client secret
                     Get.to(
-                      () => PaymentDetailsScreen(plan: currentPlan),
+                      () => PaymentDetailsScreen(
+                        plan: currentPlan,
+                        clientSecret: clientSecret,
+                      ),
                       transition: Transition.rightToLeft,
                     );
                   } else {
