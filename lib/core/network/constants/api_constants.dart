@@ -2,7 +2,7 @@ class ApiConstants {
   /// [Base Configuration]
   // static const String baseDomain = 'https://karlfive223-backend.onrender.com';
 
-  static const String baseDomain = 'http://10.10.5.59:8001';
+  static const String baseDomain = 'http://10.10.5.88:8001';
   static const String baseUrl = '$baseDomain/api/v1';
 
   /// Optional Google Maps API key. Leave empty to use simulated addresses.
@@ -66,38 +66,17 @@ class AuthEndpoints {
 
 class GetProfile {
   static const String _baseUser = '${ApiConstants.baseUrl}/user';
-  static const String _baseCompany = '${ApiConstants.baseUrl}/company';
-  static const String _baseDriver = '${ApiConstants.baseUrl}/driver';
-  static const String _baseDispatcher = '${ApiConstants.baseUrl}/dispatcher';
   
   // Role-based profile endpoints
   String fetchProfileByRole(String role) {
-    switch (role.toLowerCase()) {
-      case 'company':
-        return '$_baseCompany/profile';
-      case 'driver':
-        return '$_baseDriver/profile';
-      case 'dispatcher':
-        return '$_baseDispatcher/profile';
-      case 'user':
-      default:
         return '$_baseUser/profile';
     }
-  }
+  
   
   String updateProfileByRole(String role) {
-    switch (role.toLowerCase()) {
-      case 'company':
-        return '$_baseCompany/update-profile';
-      case 'driver':
-        return '$_baseDriver/update-profile';
-      case 'dispatcher':
-        return '$_baseDispatcher/update-profile';
-      case 'user':
-      default:
-        return '$_baseUser/update-profile';
+    return '$_baseUser/update-profile';
     }
-  }
+  
   
   // Legacy endpoints for backward compatibility
   final String fetchProfile = '$_baseUser/profile';
