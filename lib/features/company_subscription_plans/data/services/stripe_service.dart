@@ -1,32 +1,49 @@
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-import '../../domain/usecases/create_payment_intent.dart';
-import '../repo/payment_repo_impl.dart';
-
-
 class StripeServices {
-  final _repository = PaymentRepositoryImpl();
-  late final CreatePaymentIntent _createPaymentIntent;
-
-  StripeServices() {
-    _createPaymentIntent = CreatePaymentIntent(_repository);
-  }
-
-  Future<void> makePayment({required String amount, String currency = 'USD'}) async {
+  /// Make payment using the client secret from backend
+  Future<String?> makePaymentWithClientSecret({required String clientSecret}) async {
     try {
-      // amount is passed dynamically from the caller (payment details page)
-      final paymentIntent = await _createPaymentIntent.call(amount, currency);
+      print('🔵 Using Client Secret from backend: $clientSecret');
+
+      // Extract Payment Intent ID from client secret
+      // Client secret format: pi_xxxxx_secret_yyyyy
+      final paymentIntentId = clientSecret.split('_secret_')[0];
+      print('🔑 Extracted Payment Intent ID: $paymentIntentId');
 
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
-          paymentIntentClientSecret: paymentIntent['client_secret'],
+          paymentIntentClientSecret: clientSecret,
           merchantDisplayName: 'Lakshman Merchant',
         ),
       );
 
       await Stripe.instance.presentPaymentSheet();
-      Fluttertoast.showToast(msg: 'Payment successfully completed');
+      
+      // After successful payment, retrieve the payment intent details
+      try {
+        final paymentIntent = await Stripe.instance.retrievePaymentIntent(clientSecret);
+        print('💰 Payment Intent Details from Stripe:');
+        print('   - Payment Intent ID: ${paymentIntent.id}');
+        print('   - Status: ${paymentIntent.status}');
+        print('   - Amount: ${paymentIntent.amount}');
+        print('   - Currency: ${paymentIntent.currency}');
+        print('   - Created: ${paymentIntent.created}');
+        
+        Fluttertoast.showToast(msg: 'Payment successfully completed');
+        
+        // Return the payment intent ID
+        return paymentIntent.id;
+      } catch (retrieveError) {
+        print('⚠️ Could not retrieve payment intent details: $retrieveError');
+        print('✅ Payment completed successfully with Payment Intent ID: $paymentIntentId');
+        
+        Fluttertoast.showToast(msg: 'Payment successfully completed');
+        
+        // Return the extracted payment intent ID even if retrieval fails
+        return paymentIntentId;
+      }
     } on StripeException catch (e) {
       Fluttertoast.showToast(msg: 'Stripe error: ${e.error.localizedMessage}');
       rethrow;

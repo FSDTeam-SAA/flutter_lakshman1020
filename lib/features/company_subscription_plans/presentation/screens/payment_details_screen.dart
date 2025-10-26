@@ -10,10 +10,12 @@ import 'payment_success_screen.dart';
 
 class PaymentDetailsScreen extends StatefulWidget {
   final SubscriptionPlan plan;
+  final String clientSecret;
 
   const PaymentDetailsScreen({
     super.key,
     required this.plan,
+    required this.clientSecret,
   });
 
   @override
@@ -198,25 +200,42 @@ class _PaymentDetailsScreenState extends State<PaymentDetailsScreen> {
     );
 
     try {
-      // Convert plan price to string for Stripe processing
-      final amount = widget.plan.price.toString();
-      print("🎯 Starting payment process - Plan: ${widget.plan.name}, Amount: \$${amount}");
+      print("🎯 Starting payment process - Plan: ${widget.plan.name}");
+      print("🔑 Using client secret from backend API");
       
-      // Initiate Stripe payment
-      await _stripeServices.makePayment(
-        amount: amount,
-        currency: 'USD',
+      // Initiate Stripe payment with client secret from backend
+      final paymentIntentId = await _stripeServices.makePaymentWithClientSecret(
+        clientSecret: widget.clientSecret,
       );
-      
-      print("✅ Payment completed successfully");
       
       // Close loading dialog
       if (mounted) Navigator.of(context).pop();
 
-      // Navigate automatically to the payment confirmation screen
-      if (mounted) {
-        // Clear existing routes and show the confirmation
-        Get.offAll(() => const PaymentSuccessScreen());
+      if (paymentIntentId != null && paymentIntentId.isNotEmpty) {
+        print("✅ Payment completed successfully");
+        print("🎫 Final Payment Intent ID from Stripe: $paymentIntentId");
+        
+        // Navigate to payment success screen with paymentIntentId
+        if (mounted) {
+          Get.offAll(() => PaymentSuccessScreen(paymentIntentId: paymentIntentId));
+        }
+      } else {
+        // Show error if paymentIntentId is null
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text("Payment Error"),
+              content: const Text("Could not retrieve payment intent ID."),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text("OK"),
+                ),
+              ],
+            ),
+          );
+        }
       }
     } catch (e) {
       print("❌ Payment failed with error: $e");
