@@ -1,9 +1,55 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_lakshman1020/features/company_subscription_plans/data/models/confirm_payment_request_model.dart';
+import 'package:flutter_lakshman1020/features/company_subscription_plans/domain/payment_repo.dart';
 import 'package:flutter_lakshman1020/features/others/presentation/screen/dashboard_overview_scren.dart';
 import 'package:get/get.dart';
 
-class PaymentSuccessScreen extends StatelessWidget {
-  const PaymentSuccessScreen({super.key});
+class PaymentSuccessScreen extends StatefulWidget {
+  final String paymentIntentId;
+
+  const PaymentSuccessScreen({
+    super.key,
+    required this.paymentIntentId,
+  });
+
+  @override
+  State<PaymentSuccessScreen> createState() => _PaymentSuccessScreenState();
+}
+
+class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
+  final PaymentRepository _paymentRepository = Get.find<PaymentRepository>();
+  bool _isConfirming = false;
+
+  Future<void> _confirmPayment() async {
+    if (_isConfirming) return;
+
+    setState(() {
+      _isConfirming = true;
+    });
+
+    try {
+      print("🔐 Confirming payment with Payment Intent ID: ${widget.paymentIntentId}");
+
+      final request = ConfirmPaymentRequestModel(
+        paymentIntentId: widget.paymentIntentId,
+      );
+
+      await _paymentRepository.confirmPayment(request);
+      
+      print("✅ Payment confirmation API called");
+
+      // Navigate to dashboard
+      Get.offAll(DashboardScreen());
+    } catch (e) {
+      print("❌ Error confirming payment: $e");
+      setState(() {
+        _isConfirming = false;
+      });
+      
+      // Still navigate to dashboard even if API fails
+      Get.offAll(DashboardScreen());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,24 +116,30 @@ class PaymentSuccessScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Go to home or main dashboard; here we pop to root
-                    Get.offAll(DashboardScreen());
-                  },
+                  onPressed: _isConfirming ? null : _confirmPayment,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF007AFF),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: const Text(
-                    'Get Started',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
+                  child: _isConfirming
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : const Text(
+                          'Get Started',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
                 ),
               ),
             ),

@@ -116,4 +116,5 @@ class PaymentEndpoints {
   static const String _base = '${ApiConstants.baseUrl}/payment';
 
   final String createPayment = '$_base/create-payment';
+  final String confirmPayment = '$_base/confirm-payment';
 }

@@ -9,6 +9,7 @@ import '../../../../core/network/constants/api_constants.dart';
 import '../../../../core/network/models/network_failure.dart';
 import '../../../../core/network/models/network_success.dart';
 import '../../domain/payment_repo.dart';
+import '../models/confirm_payment_request_model.dart';
 import '../models/create_payment_request_model.dart';
 import '../models/create_payment_response_model.dart';
 
@@ -94,6 +95,24 @@ class PaymentRepositoryImpl implements PaymentRepository {
     } catch (e) {
       DPrint.error("❌ Unexpected error creating payment: $e");
       return Left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<void> confirmPayment(ConfirmPaymentRequestModel request) async {
+    try {
+      DPrint.log("🚀 Confirming payment for Payment Intent ID: ${request.paymentIntentId}");
+
+      await _apiClient.post<Map<String, dynamic>>(
+        ApiConstants.payment.confirmPayment,
+        data: request.toJson(),
+        fromJsonT: (json) => json as Map<String, dynamic>,
+      );
+
+      DPrint.log("✅ Payment confirmation API called");
+    } catch (e) {
+      DPrint.error("❌ Unexpected error confirming payment: $e");
+      rethrow;
     }
   }
 }
