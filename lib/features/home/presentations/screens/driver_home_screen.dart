@@ -6,6 +6,8 @@ import 'package:flutter_lakshman1020/features/home/presentations/widgets/driver_
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/driver_home_widgets/status_card.dart';
 import 'package:get/get.dart';
 
+import '../../../../core/widgets/custom_bottom_nav.dart';
+
 class DriverHomeScreen extends StatefulWidget {
   const DriverHomeScreen({super.key});
 
@@ -14,6 +16,8 @@ class DriverHomeScreen extends StatefulWidget {
 }
 
 class _DriverHomeScreenState extends State<DriverHomeScreen> {
+  int _currentIndex = 0;
+
   @override
   void initState() {
     super.initState();
@@ -27,28 +31,62 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: TColors.primary),
       backgroundColor: TColors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Top blue header section
-            Container(
-              color: TColors.primary,
-              child: Column(children: [HeaderSection(), StatusCard()]),
+      body: Column(
+        children: [
+          // Top blue header section
+          
+          Container(
+            color: TColors.primary,
+            child: Column(
+              children: [
+              const SizedBox(height: 50),
+                HeaderSection(),
+                StatusCard()
+              ],
             ),
-            // Remaining content scrollable
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [SizedBox(height: 20), CurrentLoadSection()],
-                ),
+          ),
+          // Remaining content scrollable
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [SizedBox(height: 20), CurrentLoadSection()],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: CustomBottomNavBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        items: [
+          NavItemData(
+            icon: Icons.home_outlined,
+            selectedIcon: Icons.home,
+            label: 'Home',
+          ),
+          NavItemData(
+            icon: Icons.local_shipping_outlined,
+            selectedIcon: Icons.local_shipping,
+            label: 'Loads',
+          ),
+          NavItemData(
+            icon: Icons.notifications_outlined,
+            selectedIcon: Icons.notifications,
+            label: 'Alerts',
+          ),
+          NavItemData(
+            icon: Icons.person_outline,
+            selectedIcon: Icons.person,
+            label: 'Profile',
+          ),
+        ],
       ),
     );
   }
