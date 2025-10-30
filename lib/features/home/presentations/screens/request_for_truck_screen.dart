@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:get/get.dart';
 import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
+import 'package:flutter_lakshman1020/core/network/api_client.dart';
 import 'package:flutter_lakshman1020/core/widgets/app_scaffold.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
 import 'package:flutter_lakshman1020/core/widgets/primary_button.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:get/get.dart';
+import 'package:latlong2/latlong.dart';
+
 import '../../../../core/constants/app_icons.dart';
+import '../../data/datasources/load_remote_datasource.dart';
+import '../../data/repositories/load_repository_impl.dart';
 import '../../models/app_text_styles.dart';
 import '../controllers/load_controller.dart';
-import '../../data/repositories/load_repository_impl.dart';
 import 'location_picker_screen.dart';
-import 'package:latlong2/latlong.dart';
 
 class RequestInformationScreen extends StatefulWidget {
   const RequestInformationScreen({super.key});
@@ -348,8 +351,17 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
   @override
   void initState() {
     super.initState();
-    // Initialize controller once to avoid re-creating ApiClient/_dio multiple times
-    Get.put(LoadController(repository: LoadRepositoryImpl()));
+    // Initialize controller using the binding setup to ensure proper DI
+    if (!Get.isRegistered<LoadController>()) {
+      final remoteDataSource = LoadRemoteDataSourceImpl(
+        apiClient: ApiClient(),
+      );
+      final repository = LoadRepositoryImpl(
+        remoteDataSource: remoteDataSource,
+        apiClient: ApiClient(),
+      );
+      Get.put(LoadController(repository: repository));
+    }
   }
 
   @override

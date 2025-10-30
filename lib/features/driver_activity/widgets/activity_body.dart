@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../controller/activitry_controller.dart';
+import '../presentation/controller/activitry_controller.dart';
 import 'activity_list_widgets.dart';
 import 'user_stats_widget.dart';
 
