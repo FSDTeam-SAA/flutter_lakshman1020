@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../../domain/entities/load_entity.dart';
 import '../../domain/repositories/load_repository.dart';
 
@@ -89,6 +90,40 @@ class LoadController extends GetxController {
       return loads.firstWhere((load) => load.id == id);
     } catch (e) {
       return null;
+    }
+  }
+
+  /// Fetch single load by ID from repository
+  Future<LoadEntity?> fetchLoadById(String id) async {
+    try {
+      isLoading.value = true;
+      errorMessage.value = '';
+      final result = await repository.getLoadById(id);
+      return result;
+    } catch (e) {
+      errorMessage.value = 'Failed to fetch load: $e';
+      debugPrint('Error in fetchLoadById: $e');
+      return null;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /// Create a new load
+  Future<LoadEntity?> createLoad(Map<String, dynamic> payload) async {
+    try {
+      isLoading.value = true;
+      errorMessage.value = '';
+      final result = await repository.createLoad(payload);
+      // Refresh loads after creation
+      await fetchLoads();
+      return result;
+    } catch (e) {
+      errorMessage.value = 'Failed to create load: $e';
+      debugPrint('Error in createLoad: $e');
+      return null;
+    } finally {
+      isLoading.value = false;
     }
   }
 }

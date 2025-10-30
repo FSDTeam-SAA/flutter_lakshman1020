@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../controller/activitry_controller.dart';
+import '../presentation/controller/activitry_controller.dart';
 
 class ActivityListWidget extends StatelessWidget {
   final ActivityController controller;

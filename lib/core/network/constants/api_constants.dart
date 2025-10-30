@@ -9,11 +9,6 @@ class ApiConstants {
   /// Add your API key here when you want real geocoding.
   static const String googleMapsApiKey = '';
 
-  /// soykot ip
-
-  static const String soyDomain = 'http://10.10.5.91:5002';
-
-  /// [Headers]
   static Map<String, String> get defaultHeaders => {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
