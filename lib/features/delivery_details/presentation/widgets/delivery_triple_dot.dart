@@ -26,13 +26,17 @@ class TripleZeroIndicator extends StatelessWidget {
         var isProcessing = index == currentStep;
 
         // If orderStatus is provided, override visuals to match product rules:
-        // - 'asked' => first dot completed (tick), second dot processing (amber border)
+        // - 'ask_pending' => first dot tick, second dot processing (amber border)
+        // - 'asked' => first AND second dots tick, third dot processing (amber border)
         // - 'processing' => first dot processing (amber border), others pending
         if (orderStatus != null) {
           final s = orderStatus!.toLowerCase();
-          if (s == 'asked') {
-            isCompleted = index == 0; // only first tick
+          if (s == 'ask_pending') {
+            isCompleted = index == 0; // first tick
             isProcessing = index == 1; // second shows processing ring
+          } else if (s == 'asked') {
+            isCompleted = index < 2; // first AND second tick
+            isProcessing = index == 2; // third shows processing ring
           } else if (s == 'processing') {
             isCompleted = false; // none ticked
             isProcessing = index == 0; // first shows processing ring
