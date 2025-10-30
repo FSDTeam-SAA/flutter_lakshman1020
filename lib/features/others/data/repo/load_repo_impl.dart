@@ -9,7 +9,7 @@ import '../../domain/load_repo.dart';
 import '../models/ask_price_request_model.dart';
 import '../models/ask_price_response_model.dart';
 
-class LoadRepositoryImpl implements LoadRepository {
+class LoadRepositoryImpl implements AskPriceRepository {
   final ApiClient _apiClient;
 
   LoadRepositoryImpl({required ApiClient apiClient}) : _apiClient = apiClient;

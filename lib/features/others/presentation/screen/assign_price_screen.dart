@@ -17,12 +17,12 @@ class AssignPriceScreen extends StatefulWidget {
 }
 
 class _AssignPriceScreenState extends State<AssignPriceScreen> {
-  late final LoadRepository _loadRepository;
+  late final AskPriceRepository _loadRepository;
 
   @override
   void initState() {
     super.initState();
-    _loadRepository = Get.find<LoadRepository>();
+  _loadRepository = Get.find<AskPriceRepository>();
   }
 
   @override

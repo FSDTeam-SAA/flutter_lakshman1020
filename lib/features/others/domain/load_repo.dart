@@ -5,8 +5,9 @@ import '../../../core/network/models/network_success.dart';
 import '../data/models/ask_price_request_model.dart';
 import '../data/models/ask_price_response_model.dart';
 
-abstract class LoadRepository {
+/// Repository dedicated to ask-price flows (different from home LoadRepository)
+abstract class AskPriceRepository {
   /// Ask price for a load using PATCH method
-  Future<Either<NetworkFailure, NetworkSuccess<AskPriceResponseModel>>> 
+  Future<Either<NetworkFailure, NetworkSuccess<AskPriceResponseModel>>>
       askPrice(String loadId, AskPriceRequestModel request);
 }

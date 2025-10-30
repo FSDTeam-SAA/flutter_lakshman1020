@@ -17,7 +17,7 @@ void setupRepository() {
   Get.lazyPut<AccountRepository>(() => AccountRepositoryImpl(apiClient: Get.find(),authStorageService: Get.find()), fenix: true);
   Get.lazyPut<SubscriptionRepository>(() => SubscriptionRepositoryImpl(apiClient: Get.find()), fenix: true);
   Get.lazyPut<PaymentRepository>(() => PaymentRepositoryImpl(apiClient: Get.find()), fenix: true);
-  Get.lazyPut<LoadRepository>(() => LoadRepositoryImpl(apiClient: Get.find()), fenix: true);
+  Get.lazyPut<AskPriceRepository>(() => LoadRepositoryImpl(apiClient: Get.find()), fenix: true);
   
 
 }
