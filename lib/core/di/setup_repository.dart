@@ -4,6 +4,8 @@ import 'package:flutter_lakshman1020/features/company_subscription_plans/data/re
 import 'package:flutter_lakshman1020/features/company_subscription_plans/data/repo/subscription_repo_impl.dart';
 import 'package:flutter_lakshman1020/features/company_subscription_plans/domain/payment_repo.dart';
 import 'package:flutter_lakshman1020/features/company_subscription_plans/domain/subscription_repo.dart';
+import 'package:flutter_lakshman1020/features/others/data/repo/load_repo_impl.dart';
+import 'package:flutter_lakshman1020/features/others/domain/load_repo.dart';
 import 'package:get/get.dart';
 
 import '../../features/auth/users/data/repo/auth_repo_impl.dart';
@@ -15,6 +17,7 @@ void setupRepository() {
   Get.lazyPut<AccountRepository>(() => AccountRepositoryImpl(apiClient: Get.find(),authStorageService: Get.find()), fenix: true);
   Get.lazyPut<SubscriptionRepository>(() => SubscriptionRepositoryImpl(apiClient: Get.find()), fenix: true);
   Get.lazyPut<PaymentRepository>(() => PaymentRepositoryImpl(apiClient: Get.find()), fenix: true);
+  Get.lazyPut<AskPriceRepository>(() => LoadRepositoryImpl(apiClient: Get.find()), fenix: true);
   
 
 }

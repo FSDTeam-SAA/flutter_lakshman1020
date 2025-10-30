@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_lakshman1020/features/auth/users/presentation/controller/auth_controller.dart';
-import 'package:flutx_core/core/theme/extensions/string_extension.dart';
-import 'package:get/get.dart';
 import 'package:flutter_lakshman1020/core/constants/app_images.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_text.dart';
 import 'package:flutter_lakshman1020/features/accounts/controller/account_controller.dart';
+import 'package:flutter_lakshman1020/features/auth/users/presentation/controller/auth_controller.dart';
+import 'package:flutx_core/core/theme/extensions/string_extension.dart';
+import 'package:get/get.dart';
+
 import '../../../../core/constants/app_colors.dart';
+import 'contact_support_screen.dart';
 import 'personal_details_screen.dart';
 import 'settings_screen.dart';
-import 'contact_support_screen.dart';
 
 class AccountsScreen extends StatefulWidget {
   const AccountsScreen({super.key});
@@ -34,7 +35,7 @@ class _AccountsScreenState extends State<AccountsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      // appBar: AppBar(),
       body: Stack(
         children: [
           Container(

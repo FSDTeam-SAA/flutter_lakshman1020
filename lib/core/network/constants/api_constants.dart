@@ -130,3 +130,9 @@ class PaymentEndpoints {
   final String createPayment = '$_base/create-payment';
   final String confirmPayment = '$_base/confirm-payment';
 }
+
+class AskPriceEndpoints{
+  static const String _base = '${ApiConstants.baseUrl}/load';
+
+  String askPrice(String id) => '$_base/$id/ask-price';
+}

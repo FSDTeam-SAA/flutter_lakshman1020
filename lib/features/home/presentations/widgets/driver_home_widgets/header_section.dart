@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/app_images.dart';
 import 'package:flutter_lakshman1020/features/notification/presentations/screens/notification_alert.dart';
 import 'package:get/get.dart';
+
 import '../../../../accounts/controller/account_controller.dart';
 import '../../../../accounts/presentation/screens/accounts_screen.dart';
 
@@ -13,7 +14,7 @@ class HeaderSection extends StatelessWidget {
     final accountController = Get.find<AccountController>();
 
     return GestureDetector(
-      onTap: () => Get.to(() => const AccountsScreen()),
+      onTap: () => Get.to(() => const AccountsScreen(),transition: Transition.rightToLeft),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
         child: Row(
