@@ -5,7 +5,7 @@ import 'package:flutter_lakshman1020/features/accounts/presentation/screens/acco
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/driver_home_widgets/current_load_section.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/driver_home_widgets/header_section.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/driver_home_widgets/status_card.dart';
-import 'package:flutter_lakshman1020/features/notification/presentations/screens/notification_alert.dart';
+import 'package:flutter_lakshman1020/features/notification/presentation/screens/messages_screen.dart';
 import 'package:get/get.dart';
 
 import '../../../../core/widgets/custom_bottom_nav.dart';
@@ -63,7 +63,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     final pages = [
       homePage,
       const ActivityBody(),
-      NotificationAlertScreen(),
+      MessagesScreen(),
       AccountsScreen(),
     ];
 
@@ -92,9 +92,9 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
             label: 'Activity',
           ),
           NavItemData(
-            icon: Icons.notifications_outlined,
-            selectedIcon: Icons.notifications,
-            label: 'Alerts',
+            icon: Icons.mail_outlined,
+            selectedIcon: Icons.mail,
+            label: 'Message',
           ),
           NavItemData(
             icon: Icons.person_outline,

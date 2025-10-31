@@ -4,7 +4,7 @@ import 'package:flutter_lakshman1020/features/accounts/presentation/screens/acco
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/dispatcher_home_widgets/header_section.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/dispatcher_home_widgets/recent_section.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/dispatcher_home_widgets/stats_section.dart';
-import 'package:flutter_lakshman1020/features/notification/presentations/screens/notification_alert.dart';
+import 'package:flutter_lakshman1020/features/notification/presentation/screens/messages_screen.dart';
 
 import '../../../driver_activity/presentation/widgets/activity_body.dart';
 
@@ -41,7 +41,7 @@ class _DispatcherHomeScreenState extends State<DispatcherHomeScreen> {
     final pages = [
       _buildHomePage(),
       const ActivityBody(),
-      NotificationAlertScreen(),
+      MessagesScreen(),
       AccountsScreen(),
     ];
 
@@ -63,9 +63,9 @@ class _DispatcherHomeScreenState extends State<DispatcherHomeScreen> {
             label: 'Activity',
           ),
           NavItemData(
-            icon: Icons.notifications_outlined,
-            selectedIcon: Icons.notifications,
-            label: 'Alerts',
+            icon: Icons.mail_outlined,
+            selectedIcon: Icons.mail,
+            label: 'Message',
           ),
           NavItemData(
             icon: Icons.person_outline,

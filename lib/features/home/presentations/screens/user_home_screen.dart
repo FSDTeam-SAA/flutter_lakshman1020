@@ -6,7 +6,7 @@ import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_ho
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/recent_shipment_header.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/shipment_filter_tabs.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/shipment_item.dart';
-import 'package:flutter_lakshman1020/features/notification/presentations/screens/notification_alert.dart';
+import 'package:flutter_lakshman1020/features/notification/presentation/screens/messages_screen.dart';
 // Pages used for bottom navigation
 import 'package:flutter_lakshman1020/features/others/presentation/screen/shipment_screen.dart';
 import 'package:get/get.dart';
@@ -110,7 +110,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
     final List<Widget> pages = [
       homePage,
       const ShipmentScreen(),
-      NotificationAlertScreen(),
+      MessagesScreen(),
       const AccountsScreen(),
     ];
 
@@ -139,9 +139,9 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
             label: 'Loads',
           ),
           NavItemData(
-            icon: Icons.notifications_outlined,
-            selectedIcon: Icons.notifications,
-            label: 'Alerts',
+            icon: Icons.mail_outlined,
+            selectedIcon: Icons.mail,
+            label: 'Message',
           ),
           NavItemData(
             icon: Icons.person_outline,
