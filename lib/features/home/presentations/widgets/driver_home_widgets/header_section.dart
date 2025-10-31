@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/app_images.dart';
-import 'package:flutter_lakshman1020/features/notification/presentations/screens/notification_alert.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../accounts/controller/account_controller.dart';
 import '../../../../accounts/presentation/screens/accounts_screen.dart';
@@ -34,11 +34,15 @@ class HeaderSection extends StatelessWidget {
 
             const SizedBox(width: 8),
 
-            // ✅ User Info (name + username) — use Expanded + overflow handling
+            // ✅ User Info (name + date) — use Expanded + overflow handling
             Obx(() {
               final user = accountController.userInfo.value;
-              final name = user?.name ?? "Loading...";
-              final email = user?.email ?? "";
+              final name = user?.name ?? "Niloy";
+              
+              // Get today's date in the format: 31 October, 2025
+              final now = DateTime.now();
+              final dateFormat = DateFormat('d MMMM, yyyy');
+              final todayDate = dateFormat.format(now);
 
               return Expanded(
                 child: Column(
@@ -58,7 +62,7 @@ class HeaderSection extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      "@${email.split('@').first}",
+                      todayDate,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       softWrap: false,
@@ -79,7 +83,7 @@ class HeaderSection extends StatelessWidget {
                 height: 32,
                 width: 32,
               ),
-              onPressed: () => Get.to(() => const NotificationAlertScreen()),
+              onPressed: () {},
             ),
           ],
         ),
