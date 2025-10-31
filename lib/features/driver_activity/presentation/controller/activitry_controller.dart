@@ -8,8 +8,20 @@ class ActivityController extends ChangeNotifier {
   // Mock data - replace with actual data later
   String userName = 'Michael Ken';
   String userRole = 'Supervisor';
-  int checkpoints = 198;
-  String period = 'Weekly';
+  
+  // Period and checkpoint tracking
+  String _period = 'Weekly';
+  String get period => _period;
+  
+  late int _checkpoints;
+  int get checkpoints => _checkpoints;
+
+  // Checkpoint data for different periods
+  final Map<String, int> checkpointsByPeriod = {
+    'Daily': 28,
+    'Weekly': 198,
+    'Monthly': 842,
+  };
 
   List<Map<String, String>> activities = List.generate(8, (i) => {
     'id': '#nod_45693',
@@ -17,6 +29,10 @@ class ActivityController extends ChangeNotifier {
     'status': 'hellopublic.in',
     'location': 'Chicago, IL',
   });
+
+  ActivityController() {
+    _checkpoints = checkpointsByPeriod['Weekly'] ?? 198;
+  }
 
   void loadData() {
     _isLoading = true;
@@ -29,8 +45,9 @@ class ActivityController extends ChangeNotifier {
     });
   }
 
-  void changePeriod() {
-    // Handle period change logic
+  void changePeriod(String newPeriod) {
+    _period = newPeriod;
+    _checkpoints = checkpointsByPeriod[newPeriod] ?? 198;
     notifyListeners();
   }
 }

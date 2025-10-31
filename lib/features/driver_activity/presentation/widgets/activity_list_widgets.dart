@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_lakshman1020/features/delivery_details/presentation/screens/driver_delivery_details_screen.dart';
+import 'package:get/get.dart';
 
-import '../presentation/controller/activitry_controller.dart';
+import '../controller/activitry_controller.dart';
 
 class ActivityListWidget extends StatelessWidget {
   final ActivityController controller;
@@ -27,21 +29,28 @@ class ActivityItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 12),
-      padding: EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
+    return GestureDetector(
+      onTap: () {
+        // Navigate to driver delivery details screen with load ID
+        Get.to(
+          () => DriverDeliveryDetailsScreen(loadId: activity['id']),
+        );
+      },
+      child: Container(
+        margin: EdgeInsets.only(bottom: 12),
+        padding: EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 8,
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
         children: [
           CircleAvatar(
             radius: 22,
@@ -112,6 +121,7 @@ class ActivityItemWidget extends StatelessWidget {
             ],
           ),
         ],
+      ),
       ),
     );
   }

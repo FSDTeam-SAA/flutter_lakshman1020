@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../presentation/controller/activitry_controller.dart';
+import '../controller/activitry_controller.dart';
 import 'activity_list_widgets.dart';
 import 'user_stats_widget.dart';
 
@@ -34,7 +34,12 @@ class _ActivityBodyState extends State<ActivityBody> {
     return Column(
       children: [
         const SizedBox(height: 50),
-        UserStatsWidget(controller: _controller),
+        AnimatedBuilder(
+          animation: _controller,
+          builder: (context, _) {
+            return UserStatsWidget(controller: _controller);
+          },
+        ),
         Expanded(
           child: AnimatedBuilder(
             animation: _controller,

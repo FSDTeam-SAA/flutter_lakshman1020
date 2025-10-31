@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../presentation/controller/activitry_controller.dart';
+import '../controller/activitry_controller.dart';
 
 class UserStatsWidget extends StatelessWidget {
   final ActivityController controller;
@@ -71,8 +71,28 @@ class UserStatsWidget extends StatelessWidget {
             ],
           ),
           SizedBox(width: 12),
-          GestureDetector(
-            onTap: () => controller.changePeriod(),
+          PopupMenuButton<String>(
+            onSelected: (String newPeriod) {
+              controller.changePeriod(newPeriod);
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(
+                value: 'Daily',
+                child: Text('Daily'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'Weekly',
+                child: Text('Weekly'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'Monthly',
+                child: Text('Monthly'),
+              ),
+            ],
+            offset: Offset(0, 40),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(

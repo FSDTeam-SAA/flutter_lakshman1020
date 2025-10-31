@@ -9,7 +9,7 @@ import 'package:flutter_lakshman1020/features/notification/presentations/screens
 import 'package:get/get.dart';
 
 import '../../../../core/widgets/custom_bottom_nav.dart';
-import '../../../driver_activity/widgets/activity_body.dart';
+import '../../../driver_activity/presentation/widgets/activity_body.dart';
 
 class DriverHomeScreen extends StatefulWidget {
   const DriverHomeScreen({super.key});

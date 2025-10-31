@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../widgets/activity_body.dart';
+import '../widgets/activity_body.dart';
 
 class ActivityScreen extends StatelessWidget {
   final bool embed;

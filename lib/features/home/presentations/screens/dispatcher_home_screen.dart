@@ -6,7 +6,7 @@ import 'package:flutter_lakshman1020/features/home/presentations/widgets/dispatc
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/dispatcher_home_widgets/stats_section.dart';
 import 'package:flutter_lakshman1020/features/notification/presentations/screens/notification_alert.dart';
 
-import '../../../driver_activity/widgets/activity_body.dart';
+import '../../../driver_activity/presentation/widgets/activity_body.dart';
 
 class DispatcherHomeScreen extends StatefulWidget {
   const DispatcherHomeScreen({super.key});
