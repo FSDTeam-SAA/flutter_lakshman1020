@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_bottom_nav.dart';
 import 'package:flutter_lakshman1020/features/accounts/controller/account_controller.dart';
 import 'package:flutter_lakshman1020/features/accounts/presentation/screens/accounts_screen.dart';
+import 'package:flutter_lakshman1020/features/dispatcher/presentation/screens/dispatcher_navigate_screen.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/dispatcher_home_widgets/header_section.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/dispatcher_home_widgets/recent_section.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/dispatcher_home_widgets/stats_section.dart';
 import 'package:flutter_lakshman1020/features/notification/presentation/screens/messages_screen.dart';
 import 'package:get/get.dart';
-
-import '../../../driver_activity/presentation/widgets/activity_body.dart';
 
 class DispatcherHomeScreen extends StatefulWidget {
   const DispatcherHomeScreen({super.key});
@@ -52,7 +51,7 @@ class _DispatcherHomeScreenState extends State<DispatcherHomeScreen> {
   Widget build(BuildContext context) {
     final pages = [
       _buildHomePage(),
-      const ActivityBody(),
+      const DispatcherNavigateScreen(),
       MessagesScreen(),
       AccountsScreen(),
     ];
