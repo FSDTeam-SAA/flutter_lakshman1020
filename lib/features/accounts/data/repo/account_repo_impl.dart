@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_lakshman1020/features/accounts/data/models/fetch_profile_response_model.dart';
 import 'package:flutter_lakshman1020/features/accounts/domain/repo/account_repo.dart';
+
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/constants/api_constants.dart';
 import '../../../../core/network/network_result.dart';
@@ -24,6 +25,9 @@ class AccountRepositoryImpl implements AccountRepository {
     // Get role from storage if not provided
     final userRole = role ?? await _authStorageService.getRole() ?? 'user';
     final endpoint = ApiConstants.getProfile.fetchProfileByRole(userRole);
+    
+    print('🔗 Fetching profile for role: $userRole');
+    print('📍 Using endpoint: $endpoint');
     
     return _apiClient.get(
         endpoint,

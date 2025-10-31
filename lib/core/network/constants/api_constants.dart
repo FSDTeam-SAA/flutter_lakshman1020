@@ -60,22 +60,22 @@ class AuthEndpoints {
 }
 
 class GetProfile {
-  static const String _baseUser = '${ApiConstants.baseUrl}/user';
+  static const String _baseUrl = '${ApiConstants.baseUrl}';
   
-  // Role-based profile endpoints
+  // Single endpoint for all roles - backend handles role-based logic
   String fetchProfileByRole(String role) {
-        return '$_baseUser/profile';
-    }
+    return '$_baseUrl/user/profile';
+  }
   
   
   String updateProfileByRole(String role) {
-    return '$_baseUser/update-profile';
-    }
+    return '$_baseUrl/user/update-profile';
+  }
   
   
   // Legacy endpoints for backward compatibility
-  final String fetchProfile = '$_baseUser/profile';
-  final String updateProfile = '$_baseUser/update-profile';
+  final String fetchProfile = '$_baseUrl/user/profile';
+  final String updateProfile = '$_baseUrl/user/update-profile';
 }
 
 class UserEndpoints {

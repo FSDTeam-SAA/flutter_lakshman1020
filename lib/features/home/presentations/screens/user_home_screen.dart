@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_bottom_nav.dart';
+import 'package:flutter_lakshman1020/features/accounts/controller/account_controller.dart';
 import 'package:flutter_lakshman1020/features/accounts/presentation/screens/accounts_screen.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/banner_section.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/header_section.dart';
@@ -30,6 +31,11 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
     if (!Get.isRegistered<LoadController>()) {
       LoadBinding().dependencies();
     }
+    // Ensure AccountController is initialized and fetches profile
+    Future.delayed(const Duration(milliseconds: 200), () {
+      final accountController = Get.find<AccountController>();
+      accountController.fetchProfile();
+    });
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
 import 'package:get/get.dart';
+
 import '../../controllers/load_controller.dart';
 
 class ShipmentFilterTabs extends StatelessWidget {
@@ -87,7 +88,7 @@ class ShipmentFilterTabs extends StatelessWidget {
                         style: const TextStyle(
                           color: TColors.activityColor,
                           fontWeight: FontWeight.w500,
-                          fontSize: 12,
+                          fontSize: 10,
                         ),
                       ),
                     );

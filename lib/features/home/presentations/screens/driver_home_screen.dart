@@ -25,10 +25,10 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   void initState() {
     super.initState();
     // Ensure AccountController is initialized and fetches profile
-    final accountController = Get.find<AccountController>();
-    if (accountController.userInfo.value == null) {
+    Future.delayed(const Duration(milliseconds: 200), () {
+      final accountController = Get.find<AccountController>();
       accountController.fetchProfile();
-    }
+    });
   }
 
   @override

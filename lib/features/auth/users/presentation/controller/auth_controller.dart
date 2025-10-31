@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/base/base_controller.dart';
 import 'package:flutter_lakshman1020/core/network/services/auth_storage_service.dart';
 import 'package:flutter_lakshman1020/core/utils/debug_print.dart';
+import 'package:flutter_lakshman1020/features/accounts/controller/account_controller.dart';
 import 'package:flutter_lakshman1020/features/auth/users/data/model/forgot_pass_request_model.dart';
 import 'package:flutter_lakshman1020/features/auth/users/data/model/refresh_token_request_model.dart';
 import 'package:flutter_lakshman1020/features/auth/users/data/model/set_password_request_model.dart';
@@ -78,6 +79,11 @@ class AuthController extends BaseController {
         );
 
         setLoading(false);
+
+        // Reset AccountController to ensure fresh profile fetch
+        if (Get.isRegistered<AccountController>()) {
+          Get.delete<AccountController>();
+        }
 
         // Navigate based on role from API response
         if (user.role == 'user') {

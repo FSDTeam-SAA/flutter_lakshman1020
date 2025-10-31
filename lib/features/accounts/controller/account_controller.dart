@@ -1,11 +1,11 @@
 import 'dart:developer' as DPrint;
 import 'dart:io';
 
-
 import 'package:flutter_lakshman1020/features/accounts/data/models/change_password_request_model.dart';
 import 'package:flutter_lakshman1020/features/accounts/data/models/fetch_profile_response_model.dart';
 import 'package:flutter_lakshman1020/features/accounts/domain/repo/account_repo.dart';
 import 'package:get/get.dart';
+
 import '../../../../core/base/base_controller.dart';
 import '../../../../core/network/services/multiple_form_data_manager.dart';
 
@@ -33,14 +33,17 @@ class AccountController extends BaseController {
 
     final result = await _accountRepository.fetchProfile();
 
-
     result.fold((fail) {
       setError(fail.message);
-      DPrint.log('data fetch failed');
+      DPrint.log('❌ Profile fetch failed: ${fail.message}');
       setLoading(false);
     }, (success) {
       userInfo.value = success.data;
-      DPrint.log(success.message);
+      DPrint.log('✅ Profile fetched successfully');
+      DPrint.log('👤 User Name: ${success.data.name}');
+      DPrint.log('📧 User Email: ${success.data.email}');
+      DPrint.log('🎭 User Role: ${success.data.role}');
+      DPrint.log('🖼️ Avatar URL: ${success.data.avatar.url}');
       setLoading(false);
     });
   }
