@@ -63,9 +63,10 @@ class LoadController extends GetxController {
       final lowerFilter = f.toLowerCase();
 
       // Define acceptable backend status values for each UI filter
+      // Note: include 'ask_pending' and 'asked' as part of the pending bucket
       final Map<String, List<String>> filterMap = {
         'pending': ['pending'],
-        'processing': ['processing'],
+        'processing': ['ask_pending', 'asked'],
         // sometimes backend uses 'completed' or 'delivered' interchangeably
         'delivered': ['delivered', 'completed'],
       };

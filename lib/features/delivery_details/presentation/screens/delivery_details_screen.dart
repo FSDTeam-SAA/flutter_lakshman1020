@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
 import 'package:get/get.dart';
+
 import '../controllers/delivery_details_controller.dart';
 import '../widgets/delivery_info_card.dart' show DeliveryInfoCard;
 import '../widgets/delivery_triple_dot.dart';
@@ -80,9 +81,8 @@ class DeliveryDetailsScreen extends StatelessWidget {
                           selectedDelivery['productDescription'] ??
                           'No description available',
                     ),
-                    // Show action buttons only when backend orderStatus is 'asked'
-                    if (controller.orderStatus.value.toLowerCase() == 'asked' &&
-                        !controller.accepted.value) ...[
+                    // Show Accept/Reject buttons when orderStatus is 'ask_pending'
+                    if (controller.orderStatus.value.toLowerCase() == 'ask_pending') ...[
                       const SizedBox(height: 20),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -167,8 +167,8 @@ class DeliveryDetailsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                     ],
-                    // After accepting, show Contact Driver and Pay buttons
-                    if (controller.accepted.value) ...[
+                    // After orderStatus becomes 'asked', show Contact Driver and Pay buttons
+                    if (controller.orderStatus.value.toLowerCase() == 'asked') ...[
                       const SizedBox(height: 20),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),

@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
+
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/constants/api_constants.dart';
-
-import '../../data/services/geocoding_service.dart';
 import '../../../home/data/models/load_model.dart';
+import '../../data/services/geocoding_service.dart';
 
 class DeliveryDetailsController extends GetxController {
   var deliveryList = <Map<String, String>>[].obs;
@@ -158,12 +158,16 @@ class DeliveryDetailsController extends GetxController {
           orderStatus.value = load.orderStatus.toString();
 
           switch (orderStatus.value.toLowerCase()) {
-            case 'asked':
+            case 'ask_pending':
               // 'asked' means the first dot is completed (tick) and the second is active.
               currentStep.value = 1;
               break;
-            case 'delivered':
+            case 'asked':
+            // 'asked' means the second dot is completed (tick) and the third is active.
               currentStep.value = 2;
+              break;
+            case 'delivered':
+              currentStep.value = 3;
               break;
             // 'processing' and other statuses are treated as pending for now
             default:
@@ -304,11 +308,14 @@ class DeliveryDetailsController extends GetxController {
 
                   orderStatus.value = load.orderStatus.toString();
                   switch (orderStatus.value.toLowerCase()) {
-                    case 'asked':
+                    case 'ask_pending':
                       currentStep.value = 1;
                       break;
-                    case 'delivered':
+                    case 'asked':
                       currentStep.value = 2;
+                      break;
+                    case 'delivered':
+                      currentStep.value = 3;
                       break;
                     default:
                       currentStep.value = 0;
@@ -392,11 +399,15 @@ class DeliveryDetailsController extends GetxController {
           // Update raw order status and computed step
           orderStatus.value = load.orderStatus.toString();
           switch (orderStatus.value.toLowerCase()) {
-            case 'asked':
+            case 'ask_pending':
               currentStep.value = 1;
               break;
-            case 'delivered':
+            case 'asked':
+              // 'asked' means the second dot is completed (tick) and the third is active
               currentStep.value = 2;
+              break;
+            case 'delivered':
+              currentStep.value = 3;
               break;
             default:
               currentStep.value = 0;
