@@ -68,21 +68,6 @@ class DriverListItem extends StatelessWidget {
           ),
 
           // Rating column
-          Expanded(
-            flex: 1,
-            child: Row(
-              children: [
-                Text(
-                  rating.toString(),
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF18191A),
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
