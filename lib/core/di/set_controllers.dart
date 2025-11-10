@@ -9,5 +9,6 @@ void setupController() {
   Get.lazyPut<AuthController>(() => AuthController(Get.find(), Get.find()), fenix: true);
   Get.lazyPut<AccountController>(() => AccountController(Get.find()), fenix: true);
   
+  
 
 }
