@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/widgets/app_scaffold.dart';
+import 'package:flutter_lakshman1020/features/manage_users/presentation/add_driver_screen.dart';
+import 'package:get/get.dart';
 
 import '../../../others/presentation/widgets/company_drawer.dart';
 import '../../model/dariver_model.dart';
@@ -104,6 +106,7 @@ class _CompanyDriverScreenState extends State<CompanyDriverScreen> {
                       GestureDetector(
                         onTap: () {
                           // Handle add driver functionality
+                          Get.to(() => AddDriverScreen());
                         },
                         child: Container(
                           padding: EdgeInsets.symmetric(
