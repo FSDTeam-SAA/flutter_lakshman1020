@@ -5,11 +5,16 @@ import 'package:flutter_lakshman1020/features/others/presentation/screen/pending
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
+import '../../../domain/repositories/load_repository.dart';
+import '../../controllers/load_controller.dart';
+
 class RecentSection extends StatelessWidget {
   const RecentSection();
 
   @override
   Widget build(BuildContext context) {
+
+    final LoadController loadController = Get.find<LoadController>();
     return Column(
       children: [
         // Header row
@@ -33,21 +38,47 @@ class RecentSection extends StatelessWidget {
         ),
         const SizedBox(height: 8),
 
-        // Recent cards list
-        Column(
-          children: const [
-            _RecentCard(id: "#load_45982", subtitle: "Medical equipment..."),
-            SizedBox(height: 8),
-            _RecentCard(id: "#load_45982", subtitle: "Medical equipment..."),
-            SizedBox(height: 8),
-            _RecentCard(id: "#load_45982", subtitle: "Medical equipment..."),
-          ],
-        ),
+        Obx(() {
+          if (loadController.isLoading.value) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (loadController.errorMessage.isNotEmpty) {
+            return Center(
+              child: Text(
+                loadController.errorMessage.value,
+                style: const TextStyle(color: Colors.red),
+              ),
+            );
+          }
+
+          final recentLoads = loadController.loads.take(3).toList();
+
+          if (recentLoads.isEmpty) {
+            return const Center(
+              child: Text(
+                "No recent loads available",
+                style: TextStyle(color: Colors.black54),
+              ),
+            );
+          }
+
+          return Column(
+            children: recentLoads.map((load) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: _RecentCard(
+                  id: "#${load.id.substring(load.id.length - 5)}",
+                  subtitle: load.description ?? "No description",
+                ),
+              );
+            }).toList(),
+          );
+        }),
       ],
     );
   }
 }
-
 class _RecentCard extends StatelessWidget {
   final String id;
   final String subtitle;

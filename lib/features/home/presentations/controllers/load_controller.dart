@@ -33,51 +33,65 @@ class LoadController extends GetxController {
       result.fold(
         (failure) {
           errorMessage.value = failure.message;
-          debugPrint('Error fetching loads: ${failure.message}');
+          debugPrint('❌ Error fetching loads: ${failure.message}');
         },
         (success) {
-          loads.value = success.data;
-          filteredLoads.value = success.data;
-          debugPrint(
-            'Loads fetched successfully: ${success.data.length} items',
-          );
+          debugPrint('========== FETCH ALL LOADS ==========');
+      debugPrint('✅ Received ${success.data.length} loads from API');
+      for (var load in success.data) {
+        debugPrint('   - ${load.id}: ${load.title}');
+        debugPrint('     Status: "${load.orderStatus}" (lowercase: "${load.orderStatus.toLowerCase()}")');
+      }
+      
+      loads.value = success.data;
+      
+      // Apply current filter instead of showing all
+      filterLoads(selectedFilter.value);
+      
+      debugPrint('📊 After filtering: ${filteredLoads.length} loads displayed');
+      debugPrint('====================================');
         },
       );
     } catch (e) {
       errorMessage.value = 'An unexpected error occurred';
-      debugPrint('Error in fetchLoads: $e');
+      debugPrint('❌ Error in fetchLoads: $e');
     } finally {
       isLoading.value = false;
     }
   }
 
-  /// Filter loads by status
+   /// Filter loads by UI filter
   void filterLoads(String filter) {
     selectedFilter.value = filter;
 
+    debugPrint('========== FILTER LOADS ==========');
+    debugPrint('🔍 Filter selected: $filter');
+    debugPrint('📦 Total loads: ${loads.length}');
+    
     if (filter == 'All') {
       filteredLoads.value = loads;
-    } else {
-      // Normalize orderStatus and map UI filter names to backend status values.
-      final f = filter.trim();
-      final lowerFilter = f.toLowerCase();
-
-      // Define acceptable backend status values for each UI filter
-      // Note: include 'ask_pending' and 'asked' as part of the pending bucket
-      final Map<String, List<String>> filterMap = {
-        'pending': ['pending'],
-        'processing': ['ask_pending', 'asked'],
-        // sometimes backend uses 'completed' or 'delivered' interchangeably
-        'delivered': ['delivered', 'completed'],
-      };
-
-      final allowed = filterMap[lowerFilter] ?? [lowerFilter];
-
+      debugPrint('✅ Showing all ${filteredLoads.length} loads');
+    } else if (filter == 'Assign price') {
+      debugPrint('🔎 Looking for loads with status: "pending"');
       filteredLoads.value = loads.where((load) {
-        final status = load.orderStatus.toString().trim().toLowerCase();
-        return allowed.contains(status);
+        final matches = load.orderStatus.toLowerCase() == 'pending';
+        debugPrint('   - ${load.id}: status="${load.orderStatus}" (${load.orderStatus.toLowerCase()}) -> $matches');
+        return matches;
       }).toList();
+      debugPrint('✅ Filtered to ${filteredLoads.length} pending loads');
+    } else if (filter == 'Assign driver') {
+      debugPrint('🔎 Looking for loads with status: "accepted"');
+      filteredLoads.value = loads.where((load) {
+        final matches = load.orderStatus.toLowerCase() == 'accepted';
+        debugPrint('   - ${load.id}: status="${load.orderStatus}" (${load.orderStatus.toLowerCase()}) -> $matches');
+        return matches;
+      }).toList();
+      debugPrint('✅ Filtered to ${filteredLoads.length} accepted loads');
+    } else {
+      filteredLoads.value = [];
+      debugPrint('⚠️ Unknown filter, showing 0 loads');
     }
+    debugPrint('==================================');
   }
 
   /// Refresh loads
@@ -123,6 +137,38 @@ class LoadController extends GetxController {
       errorMessage.value = 'Failed to create load: $e';
       debugPrint('Error in createLoad: $e');
       return null;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /// Fetch loads by company ID
+  Future<void> fetchLoadsByCompany(String companyId) async {
+    try {
+      isLoading.value = true;
+      errorMessage.value = '';
+
+      debugPrint('========== FETCH LOADS BY COMPANY ==========');
+      debugPrint('📦 Company ID: $companyId');
+
+      final result = await repository.getLoadsByCompany(companyId);
+      
+      debugPrint('✅ Received ${result.length} loads from API');
+      for (var load in result) {
+        debugPrint('   - ${load.id}: ${load.title}');
+        debugPrint('     Status: "${load.orderStatus}" (lowercase: "${load.orderStatus.toLowerCase()}")');
+      }
+      
+      loads.value = result;
+      
+      // Apply current filter instead of showing all
+      filterLoads(selectedFilter.value);
+      
+      debugPrint('📊 After filtering: ${filteredLoads.length} loads displayed');
+      debugPrint('============================================');
+    } catch (e) {
+      errorMessage.value = 'Failed to fetch company loads: $e';
+      debugPrint('❌ Error in fetchLoadsByCompany: $e');
     } finally {
       isLoading.value = false;
     }

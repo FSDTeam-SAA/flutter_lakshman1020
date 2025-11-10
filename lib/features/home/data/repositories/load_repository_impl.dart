@@ -75,4 +75,14 @@ class LoadRepositoryImpl implements LoadRepository {
       },
     );
   }
+
+  @override
+  Future<List<LoadEntity>> getLoadsByCompany(String companyId) async {
+    try {
+      final loads = await remoteDataSource.getLoadsByCompany(companyId);
+      return loads;
+    } catch (e) {
+      throw Exception('Failed to fetch company loads: $e');
+    }
+  }
 }

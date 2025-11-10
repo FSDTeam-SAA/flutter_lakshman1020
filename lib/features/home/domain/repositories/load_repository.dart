@@ -8,4 +8,7 @@ abstract class LoadRepository {
 
   /// Create or post a new load
   Future<LoadEntity> createLoad(Map<String, dynamic> payload);
+  
+  /// Get loads filtered by company ID
+  Future<List<LoadEntity>> getLoadsByCompany(String companyId);
 }
