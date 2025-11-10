@@ -93,6 +93,8 @@ class AuthStorageService {
       _secureStorage.delete(key: KeyConstants.accessToken),
       _secureStorage.delete(key: KeyConstants.refreshToken),
       _secureStorage.delete(key: KeyConstants.userId),
+      _secureStorage.delete(key: KeyConstants.role),
+      _secureStorage.delete(key: KeyConstants.companyId),
     ]);
     _isAuthenticated = false;
   }

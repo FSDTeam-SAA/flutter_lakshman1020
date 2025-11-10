@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/widgets/app_scaffold.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
+import 'package:flutter_lakshman1020/features/accounts/controller/account_controller.dart';
 import 'package:get/get.dart';
 
 import '../controllers/subscription_controller.dart';
@@ -26,6 +27,15 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     super.initState();
     // Initialize controller with dependency injection
     _controller = Get.put(SubscriptionController(Get.find(), Get.find()));
+    
+    // Force refresh account profile to get latest company data
+    try {
+      final accountController = Get.find<AccountController>();
+      debugPrint('🔄 Force refreshing account profile for subscription...');
+      accountController.fetchProfile();
+    } catch (e) {
+      debugPrint('⚠️ Could not refresh account profile: $e');
+    }
   }
 
   @override

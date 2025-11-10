@@ -29,14 +29,10 @@ class SubscriptionController extends BaseController {
       _accountController = Get.find<AccountController>();
       DPrint.log("✅ AccountController found successfully");
       
-      // Manually trigger profile fetch if user info is empty
-      if (_accountController!.userInfo.value == null || 
-          _accountController!.userInfo.value!.email.isEmpty) {
-        DPrint.log("📥 User info is empty, triggering fetchProfile()...");
-        _accountController!.fetchProfile();
-      } else {
-        DPrint.log("✅ User info already loaded: ${_accountController!.userInfo.value!.email}");
-      }
+      // ALWAYS trigger profile fetch to get the latest company data
+      DPrint.log("� Force fetching latest profile data...");
+      _accountController!.fetchProfile();
+      
     } catch (e) {
       DPrint.error("❌ Failed to find AccountController: $e");
       DPrint.error("❌ Will try to initialize it...");
@@ -74,6 +70,7 @@ class SubscriptionController extends BaseController {
            attempts < 50) {
       DPrint.log("⏳ Waiting for user info... Attempt $attempts/50");
       DPrint.log("📧 Current email value: ${_accountController?.userInfo.value?.email}");
+      DPrint.log("👤 Current user info: ${_accountController?.userInfo.value}");
       await Future.delayed(const Duration(milliseconds: 100));
       attempts++;
     }
@@ -82,6 +79,8 @@ class SubscriptionController extends BaseController {
     DPrint.log("========== USER INFO LOADED ==========");
     DPrint.log("✅ Final email: $finalEmail");
     DPrint.log("📊 Total attempts: $attempts");
+    DPrint.log("👤 Full user info: ${_accountController?.userInfo.value}");
+    DPrint.log("=====================================");
     
     // Now fetch plans
     await fetchPlansFromApi();
