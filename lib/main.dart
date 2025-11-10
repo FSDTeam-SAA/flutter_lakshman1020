@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/theme/app_theme.dart';
-import 'package:flutter_lakshman1020/dispatcher/presentation/screens/assign_driver_screen.dart';
-import 'package:flutter_lakshman1020/dispatcher/presentation/screens/available_driver_screen.dart';
+import 'package:flutter_lakshman1020/features/dispatcher/presentation/screens/assign_driver_screen.dart';
+import 'package:flutter_lakshman1020/features/dispatcher/presentation/screens/available_driver_screen.dart';
 import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/splash_screen.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_lakshman1020/dispatcher/presentation/controllers/driver_controller.dart';
+import 'package:flutter_lakshman1020/features/dispatcher/presentation/controllers/driver_controller.dart';
 import 'package:get/get.dart';
 import 'driver_detail_screen.dart';
 
