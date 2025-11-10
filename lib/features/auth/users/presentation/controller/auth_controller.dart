@@ -64,6 +64,7 @@ class AuthController extends BaseController {
           refreshToken: success.data.refreshToken,
           userId: success.data.user.id,
           role: success.data.role,
+          companyId: success.data.role == 'company' ? success.data.id : null,
         );
 
         // Optional: show success Snackbar

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/widgets/app_scaffold.dart';
+import 'package:flutter_lakshman1020/features/manage_users/presentation/add_driver_screen.dart';
+import 'package:get/get.dart';
+
 import '../../../others/presentation/widgets/company_drawer.dart';
 import '../../model/dariver_model.dart';
 import '../controllers/driver_controller.dart';
@@ -96,67 +99,6 @@ class _CompanyDriverScreenState extends State<CompanyDriverScreen> {
                   child: Row(
                     children: [
                       // Available button
-                      GestureDetector(
-                        onTap: () => _filterDrivers("available"),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 6,
-                          ),
-                          height: 32,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            color: _currentFilter == "available"
-                                ? Color(0xffCCDCFF)
-                                : Colors.transparent,
-                            border: _currentFilter != "available"
-                                ? Border.all(color: Colors.grey, width: 1)
-                                : null,
-                          ),
-                          child: Text(
-                            "Available",
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: _currentFilter == "available"
-                                  ? Color(0xFF2F80ED)
-                                  : Color(0xFF18191A),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-
-                      // On load button
-                      GestureDetector(
-                        onTap: () => _filterDrivers("on_load"),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 6,
-                          ),
-                          height: 32,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            color: _currentFilter == "on_load"
-                                ? Color(0xffCCDCFF)
-                                : Colors.transparent,
-                            border: _currentFilter != "on_load"
-                                ? Border.all(color: Colors.grey, width: 1)
-                                : null,
-                          ),
-                          child: Text(
-                            "On load",
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: _currentFilter == "on_load"
-                                  ? Color(0xFF2F80ED)
-                                  : Color(0xFF18191A),
-                            ),
-                          ),
-                        ),
-                      ),
 
                       Spacer(),
 
@@ -164,6 +106,7 @@ class _CompanyDriverScreenState extends State<CompanyDriverScreen> {
                       GestureDetector(
                         onTap: () {
                           // Handle add driver functionality
+                          Get.to(() => AddDriverScreen());
                         },
                         child: Container(
                           padding: EdgeInsets.symmetric(
@@ -221,17 +164,6 @@ class _CompanyDriverScreenState extends State<CompanyDriverScreen> {
                         flex: 1,
                         child: Text(
                           "Delivery",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF18191A),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 1,
-                        child: Text(
-                          "Rating",
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,

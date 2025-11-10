@@ -13,7 +13,7 @@ import '../../domain/subscription_repo.dart';
 class SubscriptionController extends BaseController {
   final SubscriptionRepository _subscriptionRepository;
   final PaymentRepository _paymentRepository;
-  final AccountController _accountController = Get.find<AccountController>();
+  AccountController? _accountController;
 
   SubscriptionController(this._subscriptionRepository, this._paymentRepository);
 
@@ -24,20 +24,64 @@ class SubscriptionController extends BaseController {
   @override
   void onInit() {
     super.onInit();
+    // Try to get AccountController safely
+    try {
+      _accountController = Get.find<AccountController>();
+      DPrint.log("✅ AccountController found successfully");
+      
+      // Manually trigger profile fetch if user info is empty
+      if (_accountController!.userInfo.value == null || 
+          _accountController!.userInfo.value!.email.isEmpty) {
+        DPrint.log("📥 User info is empty, triggering fetchProfile()...");
+        _accountController!.fetchProfile();
+      } else {
+        DPrint.log("✅ User info already loaded: ${_accountController!.userInfo.value!.email}");
+      }
+    } catch (e) {
+      DPrint.error("❌ Failed to find AccountController: $e");
+      DPrint.error("❌ Will try to initialize it...");
+      // Try to create it if it doesn't exist
+      try {
+        Get.lazyPut<AccountController>(() => AccountController(Get.find()), fenix: true);
+        _accountController = Get.find<AccountController>();
+        DPrint.log("✅ AccountController initialized successfully");
+        // Fetch profile after initialization
+        _accountController!.fetchProfile();
+      } catch (e2) {
+        DPrint.error("❌ Failed to initialize AccountController: $e2");
+      }
+    }
+    
     // Wait for user info to be available before fetching plans
     _waitForUserInfoAndFetch();
   }
 
   // Wait for user info to load, then fetch plans
   Future<void> _waitForUserInfoAndFetch() async {
+    DPrint.log("========== WAITING FOR USER INFO ==========");
+    
+    // First, check if AccountController exists
+    if (_accountController == null) {
+      DPrint.error("❌ AccountController is null, cannot fetch plans");
+      setError('AccountController not initialized');
+      return;
+    }
+    
     // Wait for userInfo to be populated (max 5 seconds)
     int attempts = 0;
-    while ((_accountController.userInfo.value?.email == null || 
-            _accountController.userInfo.value!.email.isEmpty) && 
+    while ((_accountController?.userInfo.value?.email == null || 
+            _accountController!.userInfo.value!.email.isEmpty) && 
            attempts < 50) {
+      DPrint.log("⏳ Waiting for user info... Attempt $attempts/50");
+      DPrint.log("📧 Current email value: ${_accountController?.userInfo.value?.email}");
       await Future.delayed(const Duration(milliseconds: 100));
       attempts++;
     }
+    
+    final finalEmail = _accountController?.userInfo.value?.email;
+    DPrint.log("========== USER INFO LOADED ==========");
+    DPrint.log("✅ Final email: $finalEmail");
+    DPrint.log("📊 Total attempts: $attempts");
     
     // Now fetch plans
     await fetchPlansFromApi();
@@ -46,20 +90,37 @@ class SubscriptionController extends BaseController {
   // Fetch plans from API
   Future<void> fetchPlansFromApi() async {
     try {
+      DPrint.log("========== FETCH PLANS FROM API STARTED ==========");
       setLoading(true);
       setError('');
 
-      final email = _accountController.userInfo.value?.email;
-      if (email == null || email.isEmpty) {
-        setError('User email not found. Please try again.');
+      if (_accountController == null) {
+        final errorMsg = 'AccountController not initialized';
+        setError(errorMsg);
         setLoading(false);
-        DPrint.error("❌ Cannot fetch plans: User email is null");
+        DPrint.error("❌ Cannot fetch plans: AccountController is null");
+        return;
+      }
+
+      final email = _accountController?.userInfo.value?.email;
+      DPrint.log("📧 Extracted email: $email");
+      DPrint.log("👤 User info object: ${_accountController?.userInfo.value}");
+      DPrint.log("🔍 User info is null: ${_accountController?.userInfo.value == null}");
+      
+      if (email == null || email.isEmpty) {
+        final errorMsg = 'User email not found. Please try again.';
+        setError(errorMsg);
+        setLoading(false);
+        DPrint.error("❌ Cannot fetch plans: User email is null or empty");
+        DPrint.error("❌ AccountController userInfo: ${_accountController?.userInfo.value}");
         return;
       }
 
       DPrint.log("🔍 Fetching plans for email: $email");
 
       final request = FetchPlansRequestModel(email: email);
+      DPrint.log("📦 Request model created: ${request.toJson()}");
+      
       final result = await _subscriptionRepository.fetchPlans(request);
 
       result.fold(
@@ -115,7 +176,14 @@ class SubscriptionController extends BaseController {
       setLoading(true);
       setError('');
 
-      final userId = _accountController.userInfo.value?.id;
+      if (_accountController == null) {
+        setError('AccountController not initialized');
+        setLoading(false);
+        DPrint.error("❌ Cannot create payment: AccountController is null");
+        return null;
+      }
+
+      final userId = _accountController?.userInfo.value?.id;
       if (userId == null || userId.isEmpty) {
         setError('User ID not found. Please try again.');
         setLoading(false);

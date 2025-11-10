@@ -19,15 +19,23 @@ class AuthStorageService {
     required String accessToken,
     required String refreshToken,
     required String userId, 
-    required String role, // Added required userId parameter
+    required String role,
+    String? companyId, // Optional company ID for company role
   }) async {
     // Store tokens and user ID in parallel for better performance
-    await Future.wait([
+    final futures = [
       _secureStorage.write(key: KeyConstants.accessToken, value: accessToken),
       _secureStorage.write(key: KeyConstants.refreshToken, value: refreshToken),
       _secureStorage.write(key: KeyConstants.userId, value: userId),
       _secureStorage.write(key: KeyConstants.role, value: role),
-    ]);
+    ];
+    
+    // Store company ID if provided
+    if (companyId != null && companyId.isNotEmpty) {
+      futures.add(_secureStorage.write(key: KeyConstants.companyId, value: companyId));
+    }
+    
+    await Future.wait(futures);
   }
 
   // Store just access token
@@ -103,5 +111,15 @@ class AuthStorageService {
   // Get role
   Future<String?> getRole() async {
     return await _secureStorage.read(key: KeyConstants.role);
+  }
+  
+  // Store company ID
+  Future<void> storeCompanyId(String companyId) async {
+    await _secureStorage.write(key: KeyConstants.companyId, value: companyId);
+  }
+
+  // Get company ID
+  Future<String?> getCompanyId() async {
+    return await _secureStorage.read(key: KeyConstants.companyId);
   }
 }
