@@ -27,7 +27,7 @@ class _ShipmentItemState extends State<ShipmentItem> {
   String _pickupAddress = '';
   String _deliveryAddress = '';
   bool _isLoading = true;
-  static const Duration _timeout = Duration(seconds: 3);
+  static const Duration _timeout = Duration(seconds: 10); // Increased to 10 seconds for reliable address fetching
 
   @override
   void initState() {
@@ -41,21 +41,36 @@ class _ShipmentItemState extends State<ShipmentItem> {
       final pickupLocation = widget.load?.pickupLocation ?? widget.shipment?.origin ?? '';
       final deliveryLocation = widget.load?.deliveryLocation ?? widget.shipment?.destination ?? '';
 
-      // Use timeout to prevent long waits (3 seconds max per address)
+      debugPrint('🌍 Starting parallel address resolution...');
+      debugPrint('   Pickup: $pickupLocation');
+      debugPrint('   Delivery: $deliveryLocation');
+
+      // Fetch ALL addresses in parallel at the same time
       final results = await Future.wait(
         [
           _geocodingService.getAddressFromLatLng(pickupLocation).timeout(
             _timeout,
-            onTimeout: () => GeocodingAddressModel(formattedAddress: 'Loading address...'),
+            onTimeout: () {
+              debugPrint('⏰ Pickup address timeout - using fallback');
+              return GeocodingAddressModel(formattedAddress: pickupLocation.isNotEmpty ? pickupLocation : 'Address unavailable');
+            },
           ),
           _geocodingService.getAddressFromLatLng(deliveryLocation).timeout(
             _timeout,
-            onTimeout: () => GeocodingAddressModel(formattedAddress: 'Loading address...'),
+            onTimeout: () {
+              debugPrint('⏰ Delivery address timeout - using fallback');
+              return GeocodingAddressModel(formattedAddress: deliveryLocation.isNotEmpty ? deliveryLocation : 'Address unavailable');
+            },
           ),
         ],
         eagerError: false,
       );
 
+      debugPrint('✅ All addresses resolved simultaneously');
+      debugPrint('   Pickup: ${results[0].formattedAddress}');
+      debugPrint('   Delivery: ${results[1].formattedAddress}');
+
+      // Update UI with ALL addresses at once
       if (mounted) {
         setState(() {
           _pickupAddress = results[0].formattedAddress;
@@ -64,7 +79,7 @@ class _ShipmentItemState extends State<ShipmentItem> {
         });
       }
     } catch (e) {
-      print('Error resolving addresses: $e');
+      debugPrint('❌ Error resolving addresses: $e');
       if (mounted) {
         setState(() {
           _pickupAddress = 'Address unavailable';
@@ -73,6 +88,21 @@ class _ShipmentItemState extends State<ShipmentItem> {
         });
       }
     }
+  }
+
+  Widget _buildSkeletonLoader() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SkeletonLine(width: double.infinity, height: 10),
+        const SizedBox(height: 6),
+        _SkeletonLine(width: 100, height: 10),
+        const SizedBox(height: 8),
+        _SkeletonLine(width: double.infinity, height: 10),
+        const SizedBox(height: 6),
+        _SkeletonLine(width: 120, height: 10),
+      ],
+    );
   }
 
   @override
@@ -146,16 +176,7 @@ class _ShipmentItemState extends State<ShipmentItem> {
               Expanded(
                 flex: 2,
                 child: _isLoading
-                    ? const Center(
-                        child: SizedBox(
-                          width: 12,
-                          height: 12,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 1.5,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                          ),
-                        ),
-                      )
+                    ? _buildSkeletonLoader()
                     : Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -189,6 +210,59 @@ class _ShipmentItemState extends State<ShipmentItem> {
           ),
         ),
       ),
+    );
+  }
+}
+
+// Skeleton loader widget for shimmer effect
+class _SkeletonLine extends StatefulWidget {
+  final double width;
+  final double height;
+
+  const _SkeletonLine({required this.width, required this.height});
+
+  @override
+  State<_SkeletonLine> createState() => _SkeletonLineState();
+}
+
+class _SkeletonLineState extends State<_SkeletonLine>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    )..repeat(reverse: true);
+    
+    _animation = Tween<double>(begin: 0.3, end: 0.7).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return Container(
+          width: widget.width,
+          height: widget.height,
+          decoration: BoxDecoration(
+            color: Colors.grey.withOpacity(_animation.value),
+            borderRadius: BorderRadius.circular(4),
+          ),
+        );
+      },
     );
   }
 }
