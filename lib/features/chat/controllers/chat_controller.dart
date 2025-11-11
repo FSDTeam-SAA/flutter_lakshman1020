@@ -1,38 +1,48 @@
 import 'package:get/get.dart';
+import '../data/chat_repository.dart';
 import '../data/models/chat_model.dart';
 
 class ChatController extends GetxController {
+  final ChatRepository _chatRepository = ChatRepository();
+
   var chatList = <ChatModel>[].obs;
+  var filteredChatList = <ChatModel>[].obs;
+  var isLoading = false.obs;
 
   @override
   void onInit() {
     super.onInit();
-    loadChats();
+    fetchChatList();
   }
 
-  void loadChats() {
-    chatList.value = [
-      ChatModel(
-        id: '1',
-        name: 'Marcus Stanton',
-        lastMessage: 'may i change the delivery date?',
-        time: '4:25 pm',
-        avatar: 'https://i.pravatar.cc/150?img=1',
-      ),
-      ChatModel(
-        id: '2',
-        name: 'Bator Josh',
-        lastMessage: 'okay',
-        time: '3:25 pm',
-        avatar: 'https://i.pravatar.cc/150?img=2',
-      ),
-      ChatModel(
-        id: '3',
-        name: 'Jhon Mac',
-        lastMessage: 'you: Update please',
-        time: '3:15 pm',
-        avatar: 'https://i.pravatar.cc/150?img=3',
-      ),
-    ];
+  Future<void> fetchChatList() async {
+    isLoading.value = true;
+
+    final result = await _chatRepository.fetchChats();
+    result.fold(
+          (failure) {
+        Get.snackbar('Error', failure.message ?? 'Something went wrong');
+      },
+          (chats) {
+        chatList.assignAll(chats);
+        filteredChatList.assignAll(chats);
+      },
+    );
+
+    isLoading.value = false;
+  }
+
+  void filterChats(String query) {
+    if (query.isEmpty) {
+      filteredChatList.assignAll(chatList);
+    } else {
+      final lower = query.toLowerCase();
+      filteredChatList.assignAll(
+        chatList.where((chat) {
+          return chat.name.toLowerCase().contains(lower) ||
+              chat.lastMessage.toLowerCase().contains(lower);
+        }).toList(),
+      );
+    }
   }
 }

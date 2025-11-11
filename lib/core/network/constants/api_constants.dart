@@ -2,7 +2,7 @@ class ApiConstants {
   /// [Base Configuration]
   // static const String baseDomain = 'https://karlfive223-backend.onrender.com';
 
-  static const String baseDomain = 'http://10.10.5.88:8001';
+  static const String baseDomain = 'http://10.10.5.91:8001';
   static const String baseUrl = '$baseDomain/api/v1';
 
   /// Optional Google Maps API key. Leave empty to use simulated addresses.
@@ -41,6 +41,7 @@ class ApiConstants {
   static PaymentEndpoints get payment => PaymentEndpoints();
   
   static CompanyEndpoints get company => CompanyEndpoints();
+  static ChatEndpoints get chat => ChatEndpoints();// Soykot
 }
 
 /// [Authentication Endpoints]
@@ -140,3 +141,19 @@ class CompanyEndpoints {
   final String createDriver = '$_base/create-driver';
   final String createDispatcher = '$_base/create-dispacher';
 }
+
+//Soykot
+class ChatEndpoints {
+  static const String _base = '${ApiConstants.baseUrl}/chat';
+
+  final String getAllChats = '$_base/get-chat';
+  final String createChat = '$_base/create';
+  final String sendMessage = '$_base/send-message';
+  final String updateMessage = '$_base/update-message';
+  final String getUserAllChat = '$_base/user/all';
+  final String getAllChatForFarm = '$_base/farm/all';
+  final String newRequest = '$_base/new-request';
+}
+
+
+//Soykot
