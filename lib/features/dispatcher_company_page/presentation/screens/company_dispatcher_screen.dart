@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/features/others/presentation/widgets/company_drawer.dart';
+import 'package:get/get.dart';
 
+import '../../../manage_users/presentation/add_dispatcher_screen.dart';
 import '../../models/dispatcher_model.dart';
 import '../controllers/dispatcher_controller.dart';
 import '../widgets/dispatcheer_item.dart';
@@ -112,6 +114,7 @@ class _CompanyDispatcherScreenState extends State<CompanyDispatcherScreen> {
                       child: GestureDetector(
                         onTap: () {
                           // Handle add dispatcher functionality
+                          Get.to(() => const AddDispatcherScreen());
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(

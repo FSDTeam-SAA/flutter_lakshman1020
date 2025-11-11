@@ -12,6 +12,8 @@ import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/Lo
 import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/Otp_verify_screen.dart';
 import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/SignInRoleScreen.dart';
 import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/set_new_password_screen.dart';
+import 'package:flutter_lakshman1020/features/company_subscription_plans/presentation/controllers/subscription_controller.dart';
+import 'package:flutter_lakshman1020/features/home/presentations/controllers/load_controller.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/screens/dispatcher_home_screen.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/screens/driver_home_screen.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/screens/user_home_screen.dart';
@@ -64,6 +66,7 @@ class AuthController extends BaseController {
           refreshToken: success.data.refreshToken,
           userId: success.data.user.id,
           role: success.data.role,
+          companyId: success.data.role == 'company' ? success.data.id : null,
         );
 
         // Optional: show success Snackbar
@@ -386,7 +389,41 @@ class AuthController extends BaseController {
   }
 
   Future<void> logout() async {
+    debugPrint('========== LOGOUT PROCESS STARTED ==========');
+    
+    // Clear all auth data from secure storage
     await _authStorageService.clearAuthData();
+    debugPrint('✅ Auth data cleared from secure storage');
+    
+    // Clear all GetX controllers to reset app state
+    try {
+      // Delete AccountController if it exists
+      if (Get.isRegistered<AccountController>()) {
+        Get.delete<AccountController>(force: true);
+        debugPrint('✅ AccountController deleted');
+      }
+      
+      // Delete SubscriptionController if it exists
+      if (Get.isRegistered<SubscriptionController>()) {
+        Get.delete<SubscriptionController>(force: true);
+        debugPrint('✅ SubscriptionController deleted');
+      }
+      
+      // Delete LoadController if it exists
+      if (Get.isRegistered<LoadController>()) {
+        Get.delete<LoadController>(force: true);
+        debugPrint('✅ LoadController deleted');
+      }
+      
+      debugPrint('✅ All controllers cleared');
+    } catch (e) {
+      debugPrint('⚠️ Error clearing controllers: $e');
+    }
+    
+    debugPrint('🔄 Navigating to login screen...');
+    debugPrint('========== LOGOUT COMPLETE ==========');
+    
+    // Navigate to login screen and clear navigation stack
     Get.offAll(() => LoginRoleScreen());
   }
 }

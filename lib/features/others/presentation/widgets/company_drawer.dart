@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
-import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/LogIn_screen.dart';
 import 'package:flutter_lakshman1020/features/company_subscription_plans/presentation/screens/subscription_screen.dart';
 import 'package:flutter_lakshman1020/features/dispatcher_company_page/presentation/screens/company_dispatcher_screen.dart';
 import 'package:flutter_lakshman1020/features/driver_company_page/presentation/screens/company_driver_screen.dart';
-import 'package:flutter_lakshman1020/features/others/presentation/screen/pending_req_screen.dart';
 import 'package:flutter_lakshman1020/features/others/presentation/screen/running_load_screen.dart';
 import 'package:get/get.dart';
 
+import '../../../auth/users/presentation/controller/auth_controller.dart';
+import '../screen/company_pending_req_screen.dart';
 import '../screen/company_setting_screen.dart';
 import '../screen/dashboard_overview_scren.dart';
 
@@ -75,7 +75,7 @@ class CompanyDrawer extends StatelessWidget {
             ),
             onTap: () {
               Get.to(
-                () => const PendingReqScreen(),
+                () => const CompanyPendingReqScreen(),
                 transition: Transition.rightToLeft,
               );
             },
@@ -161,7 +161,8 @@ class CompanyDrawer extends StatelessWidget {
             ),
             title: Text("Log out", style: TextStyle(color: TColors.grey)),
             onTap: () {
-              Get.offAll(LoginRoleScreen());
+              // Properly logout and clear all data
+              Get.find<AuthController>().logout();
             },
           ),
           SizedBox(height: 80),

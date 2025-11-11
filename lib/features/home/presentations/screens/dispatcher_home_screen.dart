@@ -9,6 +9,9 @@ import 'package:flutter_lakshman1020/features/home/presentations/widgets/dispatc
 import 'package:flutter_lakshman1020/features/notification/presentation/screens/messages_screen.dart';
 import 'package:get/get.dart';
 
+import '../bindings/load_binding.dart';
+import '../controllers/load_controller.dart';
+
 class DispatcherHomeScreen extends StatefulWidget {
   const DispatcherHomeScreen({super.key});
 
@@ -22,6 +25,10 @@ class _DispatcherHomeScreenState extends State<DispatcherHomeScreen> {
   @override
   void initState() {
     super.initState();
+
+    if (!Get.isRegistered<LoadController>()) {
+      LoadBinding().dependencies();
+    }
     // Ensure AccountController is initialized and fetches profile
     Future.delayed(const Duration(milliseconds: 200), () {
       final accountController = Get.find<AccountController>();
@@ -67,6 +74,7 @@ class _DispatcherHomeScreenState extends State<DispatcherHomeScreen> {
             icon: Icons.home_outlined,
             selectedIcon: Icons.home,
             label: 'Home',
+            
           ),
           NavItemData(
             icon: Icons.local_shipping_outlined,

@@ -77,28 +77,32 @@ class SubscriptionCard extends StatelessWidget {
             ),
           ),
 
-          // Features Container with Gradient
-          Container(
-            margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFFF4788A),
-                  Color(0xFF2B5DCB),
-                ],
+          // Features Container with Gradient - Takes remaining space
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFFF4788A),
+                    Color(0xFF2B5DCB),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(16),
               ),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              children: plan.features
-                  .map((feature) => SubscriptionFeatureItem(
-                        title: feature.title,
-                        value: feature.value,
-                      ))
-                  .toList(),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: plan.features
+                    .map((feature) => SubscriptionFeatureItem(
+                          title: feature.title,
+                          value: feature.value,
+                        ))
+                    .toList(),
+              ),
             ),
           ),
         ],

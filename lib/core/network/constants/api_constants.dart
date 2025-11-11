@@ -2,7 +2,7 @@ class ApiConstants {
   /// [Base Configuration]
   // static const String baseDomain = 'https://karlfive223-backend.onrender.com';
 
-  static const String baseDomain = 'http://10.10.5.91:8001';
+  static const String baseDomain = 'http://10.10.5.88:8001';
   static const String baseUrl = '$baseDomain/api/v1';
 
   /// Optional Google Maps API key. Leave empty to use simulated addresses.
@@ -39,6 +39,8 @@ class ApiConstants {
   static PlanEndpoints get plan => PlanEndpoints();
   
   static PaymentEndpoints get payment => PaymentEndpoints();
+  
+  static CompanyEndpoints get company => CompanyEndpoints();
 }
 
 /// [Authentication Endpoints]
@@ -130,4 +132,11 @@ class AskPriceEndpoints{
   static const String _base = '${ApiConstants.baseUrl}/load';
 
   String askPrice(String id) => '$_base/$id/ask-price';
+}
+
+class CompanyEndpoints {
+  static const String _base = '${ApiConstants.baseUrl}/company';
+
+  final String createDriver = '$_base/create-driver';
+  final String createDispatcher = '$_base/create-dispacher';
 }
