@@ -140,4 +140,5 @@ class CompanyEndpoints {
   final String createDriver = '$_base/create-driver';
   final String createDispatcher = '$_base/create-dispacher';
   final String getDispatchers = '$_base/dispacher'; // Note: API has typo "dispacher"
+  final String getDrivers = '$_base/driver';
 }
