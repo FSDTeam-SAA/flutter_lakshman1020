@@ -5,9 +5,8 @@ class ApiConstants {
   static const String baseDomain = 'http://10.10.5.91:8001';
   static const String baseUrl = '$baseDomain/api/v1';
 
-  /// Optional Google Maps API key. Leave empty to use simulated addresses.
-  /// Add your API key here when you want real geocoding.
-  static const String googleMapsApiKey = '';
+  /// Google Maps API key for geocoding addresses from coordinates
+  static const String googleMapsApiKey = 'AIzaSyALWWWVRTpQHw1A8okK1Mxx6lCgFRyGRPI';
 
   static Map<String, String> get defaultHeaders => {
     'Content-Type': 'application/json',
@@ -140,6 +139,8 @@ class CompanyEndpoints {
 
   final String createDriver = '$_base/create-driver';
   final String createDispatcher = '$_base/create-dispacher';
+  final String getDispatchers = '$_base/dispacher'; // Note: API has typo "dispacher"
+  final String getDrivers = '$_base/driver';
 }
 
 //Soykot

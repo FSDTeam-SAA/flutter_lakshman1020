@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/widgets/app_scaffold.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
+import 'package:flutter_lakshman1020/core/widgets/skeleton_loader.dart';
 import 'package:flutter_lakshman1020/features/accounts/controller/account_controller.dart';
 import 'package:get/get.dart';
 
@@ -55,10 +56,17 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     return AppScaffold(
       appBar: const CustomAppBar(title: "Subscription plans", titleCenter: true),
       body: Obx(() {
-        // Show loading indicator while fetching plans
+        // Show skeleton loaders while fetching plans
         if (_controller.isLoading.value) {
-          return const Center(
-            child: CircularProgressIndicator(),
+          return SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              children: [
+                const SizedBox(height: 29),
+                _buildSkeletonPlans(),
+                const SizedBox(height: 30),
+              ],
+            ),
           );
         }
 
@@ -95,12 +103,16 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         // Get plans from controller
         final plans = _controller.getAllPlans();
 
-        // Show message if no plans available
+        // Show skeleton loaders if no plans available yet (API still loading)
         if (plans.isEmpty) {
-          return const Center(
-            child: Text(
-              'No subscription plans available',
-              style: TextStyle(fontSize: 16),
+          return SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              children: [
+                const SizedBox(height: 29),
+                _buildSkeletonPlans(),
+                const SizedBox(height: 30),
+              ],
             ),
           );
         }
@@ -207,6 +219,99 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           ),
         );
       }),
+    );
+  }
+
+  /// Build skeleton loaders for subscription plans
+  Widget _buildSkeletonPlans() {
+    return Column(
+      children: [
+        // Skeleton for main card
+        Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF2F6FF),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            children: [
+              // Skeleton header with plan name and price
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Plan name skeleton
+                    SkeletonLoader(
+                      width: 100,
+                      height: 20,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    // Price skeleton
+                    SkeletonLoader(
+                      width: 80,
+                      height: 24,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ],
+                ),
+              ),
+              // Features skeleton lines
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (int i = 0; i < 4; i++) ...[
+                      SkeletonLoader(
+                        width: double.infinity,
+                        height: 16,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                  ],
+                ),
+              ),
+              // Button skeleton
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: SkeletonLoader(
+                  width: double.infinity,
+                  height: 48,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ],
+          ),
+        ),
+        
+        const SizedBox(height: 12),
+        
+        // Page indicator skeleton
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            for (int i = 0; i < 3; i++) ...[
+              SkeletonLoader(
+                width: 8,
+                height: 8,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              if (i < 2) const SizedBox(width: 8),
+            ],
+          ],
+        ),
+        
+        const SizedBox(height: 20),
+        
+        // Subscribe button skeleton
+        SkeletonLoader(
+          width: double.infinity,
+          height: 48,
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ],
     );
   }
 }

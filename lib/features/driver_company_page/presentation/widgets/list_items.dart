@@ -30,17 +30,7 @@ class DriverListItem extends StatelessWidget {
             flex: 3,
             child: Row(
               children: [
-                Container(
-                  height: 32,
-                  width: 32,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                      image: AssetImage(imageUrl),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
+                _buildAvatar(),
                 SizedBox(width: 8),
                 Text(
                   name,
@@ -53,22 +43,61 @@ class DriverListItem extends StatelessWidget {
               ],
             ),
           ),
-
-          // Delivery count column
-          Expanded(
-            flex: 1,
-            child: Text(
-              deliveryCount.toString(),
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF18191A),
-              ),
-            ),
-          ),
-
-          // Rating column
         ],
+      ),
+    );
+  }
+
+  Widget _buildAvatar() {
+    // Check if imageUrl is empty or null or is the default fallback image
+    final isValidUrl = imageUrl.isNotEmpty && 
+        !imageUrl.contains('assets/images/truck_home.png') &&
+        (imageUrl.startsWith('http') || imageUrl.startsWith('https'));
+
+    return Container(
+      height: 32,
+      width: 32,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Color(0xFFE8F1FF),
+        border: Border.all(
+          color: Color(0xFFD0E0FF),
+          width: 1,
+        ),
+      ),
+      child: isValidUrl
+          ? ClipOval(
+              child: Image.network(
+                imageUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return _buildPlaceholder();
+                },
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Center(
+                    child: SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation(Color(0xFF219653)),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            )
+          : _buildPlaceholder(),
+    );
+  }
+
+  Widget _buildPlaceholder() {
+    return Center(
+      child: Icon(
+        Icons.person,
+        color: Color(0xFF219653),
+        size: 18,
       ),
     );
   }
