@@ -4,6 +4,9 @@ class Driver {
   final String phone;
   final String? email;
   final String? imageUrl;
+  final String? address;
+  final String? dateOfBirth;
+  final String? nationality;
   final int deliveryCount;
   final double rating;
 
@@ -13,6 +16,9 @@ class Driver {
     required this.phone,
     this.email,
     this.imageUrl,
+    this.address,
+    this.dateOfBirth,
+    this.nationality,
     this.deliveryCount = 0,
     this.rating = 0.0,
   });
@@ -26,6 +32,9 @@ class Driver {
       phone: user?['phone'] ?? 'N/A',
       email: user?['email'],
       imageUrl: user?['avatar']?['url'],
+      address: user?['address'],
+      dateOfBirth: user?['dateOfBirth'],
+      nationality: user?['nationality'],
       deliveryCount: json['deliveryCount'] ?? 0,
       rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
     );
@@ -38,6 +47,9 @@ class Driver {
         'name': name,
         'phone': phone,
         'email': email,
+        'address': address,
+        'dateOfBirth': dateOfBirth,
+        'nationality': nationality,
         'avatar': {
           'url': imageUrl,
         }

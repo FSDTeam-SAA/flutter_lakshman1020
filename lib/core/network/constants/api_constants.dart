@@ -142,4 +142,5 @@ class CompanyEndpoints {
   final String getDispatchers = '$_base/dispacher'; // Note: API has typo "dispacher"
   final String getDrivers = '$_base/driver';
   String removeDispatcher(String id) => '$_base/dispacher/$id';
+  String getDriverDetails(String id) => '$_base/driver/$id';
 }

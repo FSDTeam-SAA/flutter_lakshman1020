@@ -190,6 +190,7 @@ class _CompanyDriverScreenState extends State<CompanyDriverScreen> {
                       deliveryCount: driver.deliveryCount,
                       rating: driver.rating,
                       imageUrl: driver.imageUrl ?? "assets/images/truck_home.png",
+                      driver: driver,
                     );
                   },
                 ),

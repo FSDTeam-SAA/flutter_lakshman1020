@@ -6,9 +6,11 @@ import '../../../../core/network/constants/api_constants.dart';
 import '../../../../core/network/models/network_failure.dart';
 import '../../../../core/network/models/network_success.dart';
 import '../../model/dariver_model.dart';
+import '../models/driver_details_response_model.dart';
 
 abstract class DriverRemoteDataSource {
   Future<Either<NetworkFailure, NetworkSuccess<List<Driver>>>> getDrivers();
+  Future<Either<NetworkFailure, NetworkSuccess<DriverDetailsResponseModel>>> getDriverDetails(String driverId);
 }
 
 class DriverRemoteDataSourceImpl implements DriverRemoteDataSource {
@@ -53,6 +55,40 @@ class DriverRemoteDataSourceImpl implements DriverRemoteDataSource {
       return Left(
         NetworkFailure(
           message: 'An unexpected error occurred: $e',
+          statusCode: 0,
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<NetworkFailure, NetworkSuccess<DriverDetailsResponseModel>>> getDriverDetails(String driverId) async {
+    try {
+      DPrint.log("🚀 Fetching driver details for ID: $driverId");
+      
+      final result = await _apiClient.get<DriverDetailsResponseModel>(
+        ApiConstants.company.getDriverDetails(driverId),
+        fromJsonT: (json) {
+          DPrint.log("📦 Raw Driver Details Response: $json");
+          return DriverDetailsResponseModel.fromJson(json as Map<String, dynamic>);
+        },
+      );
+
+      return result.fold(
+        (failure) {
+          DPrint.error("❌ Failed to fetch driver details: ${failure.message}");
+          return Left(failure);
+        },
+        (success) {
+          DPrint.log("✅ Successfully fetched driver details: ${success.data.user.name}");
+          return Right(success);
+        },
+      );
+    } catch (e) {
+      DPrint.error("❌ Exception in getDriverDetails: $e");
+      return Left(
+        NetworkFailure(
+          message: 'Failed to fetch driver details: $e',
           statusCode: 0,
         ),
       );
