@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_bottom_nav.dart';
 import 'package:flutter_lakshman1020/features/accounts/controller/account_controller.dart';
 import 'package:flutter_lakshman1020/features/accounts/presentation/screens/accounts_screen.dart';
+import 'package:flutter_lakshman1020/features/chat/presentation/screens/chat_inbox_screen.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/banner_section.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/header_section.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/recent_shipment_header.dart';
@@ -116,7 +117,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
     final List<Widget> pages = [
       homePage,
       const ShipmentScreen(),
-      MessagesScreen(),
+      ChatInboxScreen(),
       const AccountsScreen(),
     ];
 

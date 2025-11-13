@@ -6,14 +6,11 @@ import 'package:get/get.dart';
 import 'core/common/constants/stripe_key.dart';
 import 'core/init/app_initializer.dart';
 
-
 void main() async {
   await AppInitializer.initializeApp();
 
-  Stripe.publishableKey = StripeKey
-      .publishableKey; 
-  Stripe.merchantIdentifier =
-      'merchant.com.yourapp';
+  Stripe.publishableKey = StripeKey.publishableKey;
+  Stripe.merchantIdentifier = 'merchant.com.yourapp';
   await Stripe.instance.applySettings();
   runApp(MyApp());
 }
