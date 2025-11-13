@@ -112,6 +112,7 @@ class LoadEndpoints {
   String getById(String id) => '$_base/$id';
   String priceAction(String id) => '$_base/$id/price-action';
   String askPrice(String id) => '$_base/$id/ask-price';
+  String assignDriver(String id) => '$_base/$id/assign-driver';
 }
 
 class PlanEndpoints {
@@ -140,4 +141,5 @@ class CompanyEndpoints {
   final String createDispatcher = '$_base/create-dispacher';
   final String getDispatchers = '$_base/dispacher'; // Note: API has typo "dispacher"
   final String getDrivers = '$_base/driver';
+  String removeDispatcher(String id) => '$_base/dispacher/$id';
 }

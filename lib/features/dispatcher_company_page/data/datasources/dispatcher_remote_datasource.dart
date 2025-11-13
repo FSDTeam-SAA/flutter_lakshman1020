@@ -9,6 +9,7 @@ import '../../models/dispatcher_model.dart';
 
 abstract class DispatcherRemoteDataSource {
   Future<Either<NetworkFailure, NetworkSuccess<List<Dispatcher>>>> getDispatchers();
+  Future<Either<NetworkFailure, NetworkSuccess<void>>> removeDispatcher(String dispatcherId);
 }
 
 class DispatcherRemoteDataSourceImpl implements DispatcherRemoteDataSource {
@@ -28,19 +29,18 @@ class DispatcherRemoteDataSourceImpl implements DispatcherRemoteDataSource {
           DPrint.log("📦 Raw API Response: $json");
           
           if (json is List) {
-            final dispatchers = json.map((item) => Dispatcher.fromJson(item as Map<String, dynamic>)).toList();
-            DPrint.log("✅ Parsed ${dispatchers.length} dispatchers");
-            return dispatchers;
+            DPrint.log("✅ Received ${json.length} dispatchers");
+            return json.map((item) => Dispatcher.fromJson(item as Map<String, dynamic>)).toList();
+          } else {
+            DPrint.error("❌ Expected List, got ${json.runtimeType}");
+            throw Exception('Invalid response format');
           }
-          
-          DPrint.log("⚠️ Unexpected response format");
-          return <Dispatcher>[];
         },
       );
 
       return result.fold(
         (failure) {
-          DPrint.error("❌ Failed to fetch dispatchers: ${failure.message}");
+          DPrint.error("❌ API Error: ${failure.message}");
           return Left(failure);
         },
         (success) {
@@ -50,8 +50,51 @@ class DispatcherRemoteDataSourceImpl implements DispatcherRemoteDataSource {
       );
     } catch (e) {
       DPrint.error("❌ Exception in getDispatchers: $e");
-      return const Left(
-        UnknownFailure(message: "Failed to fetch dispatchers"),
+      return Left(
+        NetworkFailure(
+          message: 'Failed to fetch dispatchers: $e',
+          statusCode: 0,
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<NetworkFailure, NetworkSuccess<void>>> removeDispatcher(String dispatcherId) async {
+    try {
+      DPrint.log("🗑️ Removing dispatcher with ID: $dispatcherId");
+      
+      final result = await _apiClient.delete<void>(
+        ApiConstants.company.removeDispatcher(dispatcherId),
+        fromJsonT: (json) {
+          DPrint.log("📦 Remove Dispatcher Response: $json");
+          // API returns {success: true, message: "...", data: null}
+          // We don't need to return anything, just acknowledge success
+          return;
+        },
+      );
+
+      return result.fold(
+        (failure) {
+          DPrint.error("❌ Remove Dispatcher API Error: ${failure.message}");
+          return Left(failure);
+        },
+        (success) {
+          DPrint.log("✅ Dispatcher removed successfully");
+          return Right(NetworkSuccess<void>(
+            data: null,
+            message: 'Dispatcher removed successfully',
+            statusCode: 200,
+          ));
+        },
+      );
+    } catch (e) {
+      DPrint.error("❌ Exception in removeDispatcher: $e");
+      return Left(
+        NetworkFailure(
+          message: 'Failed to remove dispatcher: $e',
+          statusCode: 0,
+        ),
       );
     }
   }
