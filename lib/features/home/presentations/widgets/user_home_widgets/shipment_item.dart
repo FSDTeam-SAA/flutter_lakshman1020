@@ -3,7 +3,6 @@ import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
 import 'package:flutter_lakshman1020/features/home/models/shipment_model.dart';
 import 'package:get/get.dart';
 
-import '../../../../delivery_details/data/models/geocoding_address_model.dart';
 import '../../../../delivery_details/data/services/geocoding_service.dart';
 import '../../../../delivery_details/presentation/screens/delivery_details_screen.dart';
 import '../../../domain/entities/load_entity.dart';
@@ -27,7 +26,6 @@ class _ShipmentItemState extends State<ShipmentItem> {
   String _pickupAddress = '';
   String _deliveryAddress = '';
   bool _isLoading = true;
-  static const Duration _timeout = Duration(seconds: 10); // Increased to 10 seconds for reliable address fetching
 
   @override
   void initState() {
@@ -45,23 +43,12 @@ class _ShipmentItemState extends State<ShipmentItem> {
       debugPrint('   Pickup: $pickupLocation');
       debugPrint('   Delivery: $deliveryLocation');
 
-      // Fetch ALL addresses in parallel at the same time
+      // Fetch ALL addresses in parallel
+      // The service has built-in retries, so we wait for real results
       final results = await Future.wait(
         [
-          _geocodingService.getAddressFromLatLng(pickupLocation).timeout(
-            _timeout,
-            onTimeout: () {
-              debugPrint('⏰ Pickup address timeout - using fallback');
-              return GeocodingAddressModel(formattedAddress: pickupLocation.isNotEmpty ? pickupLocation : 'Address unavailable');
-            },
-          ),
-          _geocodingService.getAddressFromLatLng(deliveryLocation).timeout(
-            _timeout,
-            onTimeout: () {
-              debugPrint('⏰ Delivery address timeout - using fallback');
-              return GeocodingAddressModel(formattedAddress: deliveryLocation.isNotEmpty ? deliveryLocation : 'Address unavailable');
-            },
-          ),
+          _geocodingService.getAddressFromLatLng(pickupLocation),
+          _geocodingService.getAddressFromLatLng(deliveryLocation),
         ],
         eagerError: false,
       );
@@ -70,24 +57,47 @@ class _ShipmentItemState extends State<ShipmentItem> {
       debugPrint('   Pickup: ${results[0].formattedAddress}');
       debugPrint('   Delivery: ${results[1].formattedAddress}');
 
-      // Update UI with ALL addresses at once
+      // Update UI with ALL addresses at once - only if we got REAL addresses
       if (mounted) {
-        setState(() {
-          _pickupAddress = results[0].formattedAddress;
-          _deliveryAddress = results[1].formattedAddress;
-          _isLoading = false;
-        });
+        final pickupAddr = results[0].formattedAddress.trim();
+        final deliveryAddr = results[1].formattedAddress.trim();
+        
+        // Check if addresses are valid (not empty and not just coordinates)
+        final hasValidPickup = pickupAddr.isNotEmpty && !_isJustCoordinates(pickupAddr);
+        final hasValidDelivery = deliveryAddr.isNotEmpty && !_isJustCoordinates(deliveryAddr);
+        
+        if (hasValidPickup && hasValidDelivery) {
+          // Got real addresses - update UI
+          setState(() {
+            _pickupAddress = pickupAddr;
+            _deliveryAddress = deliveryAddr;
+            _isLoading = false;
+          });
+        } else {
+          // Retry if we didn't get real addresses
+          debugPrint('⚠️ Got incomplete addresses, retrying...');
+          debugPrint('   Pickup valid: $hasValidPickup');
+          debugPrint('   Delivery valid: $hasValidDelivery');
+          await Future.delayed(const Duration(seconds: 1));
+          return await _resolveAddresses();
+        }
       }
     } catch (e) {
       debugPrint('❌ Error resolving addresses: $e');
       if (mounted) {
-        setState(() {
-          _pickupAddress = 'Address unavailable';
-          _deliveryAddress = 'Address unavailable';
-          _isLoading = false;
-        });
+        // Retry on error
+        await Future.delayed(const Duration(seconds: 2));
+        if (mounted) {
+          return await _resolveAddresses();
+        }
       }
     }
+  }
+
+  /// Check if string is just raw coordinates (lat,lng format)
+  bool _isJustCoordinates(String address) {
+    final pattern = RegExp(r'^\-?\d+\.?\d*\s*,\s*\-?\d+\.?\d*$');
+    return pattern.hasMatch(address);
   }
 
   Widget _buildSkeletonLoader() {

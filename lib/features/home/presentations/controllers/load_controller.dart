@@ -69,8 +69,15 @@ class LoadController extends GetxController {
     debugPrint('📦 Total loads: ${loads.length}');
     
     if (filter == 'All') {
-      filteredLoads.value = loads;
-      debugPrint('✅ Showing all ${filteredLoads.length} loads');
+      // Show only pending or accepted loads in "All" tab
+      debugPrint('🔎 Showing only pending or accepted loads in All tab');
+      filteredLoads.value = loads.where((load) {
+        final status = load.orderStatus.toLowerCase();
+        final matches = status == 'pending' || status == 'accepted';
+        debugPrint('   - ${load.id}: status="${load.orderStatus}" ($status) -> $matches');
+        return matches;
+      }).toList();
+      debugPrint('✅ Showing ${filteredLoads.length} loads (pending + accepted)');
     } else if (filter == 'Assign price') {
       debugPrint('🔎 Looking for loads with status: "pending"');
       filteredLoads.value = loads.where((load) {

@@ -140,7 +140,7 @@ class _CompanyPendingReqScreenState extends State<CompanyPendingReqScreen> {
                         children: loads
                             .map((load) => PendingRequestItem(
                                   shipment: Shipment(
-                                    id: "#${load.id.substring(load.id.length > 5 ? load.id.length - 5 : 0)}",
+                                    id: load.id, // Pass actual load ID
                                     title: load.title,
                                     description: load.description,
                                     status: load.orderStatus.toLowerCase() == 'accepted',

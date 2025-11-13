@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_lakshman1020/core/network/api_client.dart';
+import 'package:flutter_lakshman1020/core/network/constants/api_constants.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
 import 'package:flutter_lakshman1020/core/widgets/primary_button.dart';
+import 'package:flutter_lakshman1020/core/widgets/skeleton_loader.dart';
+import 'package:flutter_lakshman1020/features/delivery_details/data/services/geocoding_service.dart';
+import 'package:flutter_lakshman1020/features/dispatcher/presentation/screens/assign_driver_screen.dart';
+import 'package:flutter_lakshman1020/features/home/data/models/load_model.dart';
 import 'package:flutter_lakshman1020/features/home/models/shipment_model.dart';
+import 'package:flutter_lakshman1020/features/home/presentations/controllers/load_controller.dart';
 import 'package:flutter_lakshman1020/features/others/data/models/ask_price_request_model.dart';
 import 'package:flutter_lakshman1020/features/others/domain/load_repo.dart';
 import 'package:get/get.dart';
@@ -18,101 +25,299 @@ class AssignPriceScreen extends StatefulWidget {
 
 class _AssignPriceScreenState extends State<AssignPriceScreen> {
   late final AskPriceRepository _loadRepository;
+  LoadModel? _loadData;
+  bool _isLoadingData = true;
+  String? _loadError;
+  String? _pickupAddress;
+  String? _deliveryAddress;
+  bool _isLoadingAddresses = true;
 
   @override
   void initState() {
     super.initState();
-  _loadRepository = Get.find<AskPriceRepository>();
+    _loadRepository = Get.find<AskPriceRepository>();
+    _fetchLoadDataAndAddresses();
+  }
+
+  /// Fetch load data and geocode addresses in parallel for better performance
+  Future<void> _fetchLoadDataAndAddresses() async {
+    try {
+      final apiClient = ApiClient();
+      final endpoint = ApiConstants.load.getById(widget.loadId);
+
+      final response = await apiClient.get<Map<String, dynamic>>(
+        endpoint,
+        fromJsonT: (json) => json as Map<String, dynamic>,
+      );
+
+      await response.fold(
+        (failure) async {
+          setState(() {
+            _isLoadingData = false;
+            _isLoadingAddresses = false;
+            _loadError = 'Failed to load data: ${failure.message}';
+          });
+          debugPrint('❌ Failed to fetch load data: ${failure.message}');
+        },
+        (success) async {
+          final data = success.data;
+          final load = LoadModel.fromJson(data);
+          
+          // Update load data immediately
+          setState(() {
+            _loadData = load;
+            _isLoadingData = false;
+          });
+          
+          debugPrint('✅ Load data fetched successfully: ${load.title}');
+          
+          // Fetch addresses in parallel
+          await _geocodeAddresses(load);
+        },
+      );
+    } catch (e) {
+      setState(() {
+        _isLoadingData = false;
+        _isLoadingAddresses = false;
+        _loadError = 'Error: $e';
+      });
+      debugPrint('❌ Exception fetching load data: $e');
+    }
+  }
+
+  Future<void> _geocodeAddresses(LoadModel load) async {
+    try {
+      final geocodingService = GeocodingService();
+      
+      debugPrint('🔄 Starting parallel address geocoding with retries...');
+      final startTime = DateTime.now();
+      
+      // Geocode both addresses in parallel
+      final results = await Future.wait([
+        geocodingService.getAddressFromLatLng(load.pickupLocation),
+        geocodingService.getAddressFromLatLng(load.deliveryLocation),
+      ]);
+      
+      final endTime = DateTime.now();
+      final duration = endTime.difference(startTime);
+      
+      final pickupAddr = results[0].formattedAddress.trim();
+      final deliveryAddr = results[1].formattedAddress.trim();
+      
+      // Check if we got valid addresses (not empty and not just coordinates)
+      final hasValidPickupAddr = pickupAddr.isNotEmpty && !_isJustCoordinates(pickupAddr);
+      final hasValidDeliveryAddr = deliveryAddr.isNotEmpty && !_isJustCoordinates(deliveryAddr);
+      
+      if (!hasValidPickupAddr || !hasValidDeliveryAddr) {
+        // If either address failed, retry after a short delay
+        debugPrint('⚠️ Got incomplete addresses, retrying in 1 second...');
+        debugPrint('   Pickup: ${hasValidPickupAddr ? pickupAddr : "PENDING"}');
+        debugPrint('   Delivery: ${hasValidDeliveryAddr ? deliveryAddr : "PENDING"}');
+        await Future.delayed(const Duration(seconds: 1));
+        return await _geocodeAddresses(load); // Retry recursively
+      }
+      
+      setState(() {
+        _pickupAddress = pickupAddr;
+        _deliveryAddress = deliveryAddr;
+        _isLoadingAddresses = false;
+      });
+      
+      debugPrint('✅ Addresses geocoded in ${duration.inMilliseconds}ms');
+      debugPrint('✅ Pickup Address: $_pickupAddress');
+      debugPrint('✅ Delivery Address: $_deliveryAddress');
+    } catch (e) {
+      setState(() {
+        _isLoadingAddresses = false;
+      });
+      debugPrint('⚠️ Error geocoding addresses: $e');
+    }
+  }
+
+  /// Check if string is just raw coordinates (lat,lng format)
+  bool _isJustCoordinates(String address) {
+    final pattern = RegExp(r'^\-?\d+\.?\d*\s*,\s*\-?\d+\.?\d*$');
+    return pattern.hasMatch(address);
   }
 
   @override
   Widget build(BuildContext context) {
     final shipment = widget.shipment;
+    final isAccepted = _loadData?.orderStatus.toLowerCase() == 'accepted';
+    final buttonTitle = isAccepted ? "Assign Driver" : "Assign Price";
+    final screenTitle = isAccepted ? "Assign Driver" : "Assign Price";
+    
     return Scaffold(
-      appBar: CustomAppBar(title: "Assign Price"),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Title
-              Center(
-                child: Text(
-                  shipment.description,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
+      appBar: CustomAppBar(title: screenTitle),
+      body: _isLoadingData
+          ? const Center(child: CircularProgressIndicator())
+          : _loadError != null
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(_loadError!, style: const TextStyle(color: Colors.red)),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            _isLoadingData = true;
+                            _isLoadingAddresses = true;
+                            _loadError = null;
+                          });
+                          _fetchLoadDataAndAddresses();
+                        },
+                        child: const Text('Retry'),
+                      ),
+                    ],
                   ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              const SizedBox(height: 16),
+                )
+              : SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Title
+                        Center(
+                          child: Text(
+                            _loadData?.title ?? shipment.description,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
 
-              // Delivery Information Card
-              _buildInfoRow("Customer Name", "Daniel Shix"),
-              _buildInfoRow("Mobile", "+78937836790"),
-              _buildInfoRow("Pickup Address", "J street, London"),
-              _buildInfoRow("Delivery Address", "k street, London"),
-              _buildInfoRow("Delivered Date", "12.10.2025"),
-              _buildInfoRow("Delivered ID", "#ASC56787B06"),
-              
-              const SizedBox(height: 24),
+                        // Customer Name
+                        _buildInfoRow("Customer Name", _loadData?.loadBy.name ?? "N/A"),
+                        
+                        // Phone
+                        if (_loadData?.loadBy != null && (_loadData!.loadBy.phone.isNotEmpty))
+                          _buildInfoRow("Mobile", _loadData!.loadBy.phone),
 
-              // Product details section
-              const Text(
-                "Product details",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 12),
+                        // Pickup Address (with skeleton loader while geocoding)
+                        _buildInfoRow(
+                          "Pickup Address",
+                          _pickupAddress ?? _loadData?.pickupLocation ?? "",
+                          isLoading: _isLoadingAddresses,
+                        ),
 
-              // Product description card
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: const Color(0xffF5F8FF),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Text(
-                  "Includes items such as stethoscopes, sphygmomanometers, anatomy kits, lab coats, training dummies, and portable diagnostic tools — typically used by medical, nursing, or paramedic students.",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Color(0xff666666),
-                    height: 1.5,
+                        // Delivery Address (with skeleton loader while geocoding)
+                        _buildInfoRow(
+                          "Delivery Address",
+                          _deliveryAddress ?? _loadData?.deliveryLocation ?? "",
+                          isLoading: _isLoadingAddresses,
+                        ),
+
+                        // Delivery Date
+                        if (_loadData?.pickupDate != null)
+                          _buildInfoRow(
+                            "Delivered Date",
+                            _formatDate(_loadData!.pickupDate),
+                          ),
+
+                        // Delivered ID
+                        _buildInfoRow("Delivered ID", "#${widget.loadId.toUpperCase().substring(widget.loadId.length > 8 ? widget.loadId.length - 8 : 0)}"),
+                        
+                        // Load Category
+                        _buildInfoRow("Load Category", _loadData?.category ?? "N/A"),
+
+                        // Order Status
+                        _buildInfoRow("Order Status", _loadData?.orderStatus.toUpperCase() ?? "N/A"),
+                        
+                        const SizedBox(height: 24),
+
+                        // Product details section
+                        const Text(
+                          "Product details",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+
+                        // Product description card
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: const Color(0xffF5F8FF),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            _loadData?.description ?? shipment.description,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Color(0xff666666),
+                              height: 1.5,
+                            ),
+                          ),
+                        ),
+
+                        if (_loadData?.note != null && _loadData!.note.isNotEmpty) ...[
+                          const SizedBox(height: 16),
+                          const Text(
+                            "Additional Notes",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: const Color(0xffF9F9F9),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.grey.shade200),
+                            ),
+                            child: Text(
+                              _loadData!.note,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: Color(0xff666666),
+                              ),
+                            ),
+                          ),
+                        ],
+
+                        const SizedBox(height: 32),
+
+                        // Dynamic Button based on order status
+                        SizedBox(
+                          width: double.infinity,
+                          child: context.primaryButton(
+                            onPressed: () {
+                              final loadId = widget.loadId;
+                              if (loadId.trim().isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Load ID is missing')),
+                                );
+                                return;
+                              }
+                              
+                              if (isAccepted) {
+                                // Show Assign Driver dialog/screen
+                                _showAssignDriverDialog(context);
+                              } else {
+                                // Show Assign Price dialog
+                                _showAssignPriceDialog(context);
+                              }
+                            },
+                            text: buttonTitle,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-
-              const SizedBox(height: 32),
-
-              // Assign Price Button
-              SizedBox(
-                width: double.infinity,
-                child: context.primaryButton(
-                  onPressed: () {
-                    final loadId = widget.loadId;
-                    if (loadId.trim().isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Load ID is missing')),
-                      );
-                      return;
-                    }
-                    _showAssignPriceDialog(context);
-                  },
-                  text: 'Assign Price',
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
+  Widget _buildInfoRow(String label, String value, {bool isLoading = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -129,19 +334,28 @@ class _AssignPriceScreenState extends State<AssignPriceScreen> {
             ),
           ),
           Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Color(0xff000000),
-              ),
-              textAlign: TextAlign.right,
-            ),
+            child: isLoading
+                ? const Align(
+                    alignment: Alignment.centerRight,
+                    child: SkeletonText(width: 200, height: 14),
+                  )
+                : Text(
+                    value,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xff000000),
+                    ),
+                    textAlign: TextAlign.right,
+                  ),
           ),
         ],
       ),
     );
+  }
+
+  String _formatDate(DateTime dateTime) {
+    return "${dateTime.day.toString().padLeft(2, '0')}.${dateTime.month.toString().padLeft(2, '0')}.${dateTime.year}";
   }
 
   void _showAssignPriceDialog(BuildContext context) {
@@ -228,6 +442,16 @@ class _AssignPriceScreenState extends State<AssignPriceScreen> {
                           debugPrint('✅ Ask price API success: ${success.data.orderStatus}');
                           Navigator.of(dialogCtx).pop();
 
+                          // Refresh the load data by fetching loads again
+                          try {
+                            final loadController = Get.find<LoadController>();
+                            debugPrint('🔄 Refreshing load data...');
+                            // Refresh all loads
+                            loadController.fetchLoads();
+                          } catch (e) {
+                            debugPrint('⚠️ Could not refresh LoadController: $e');
+                          }
+
                           // Show success confirmation
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -235,9 +459,17 @@ class _AssignPriceScreenState extends State<AssignPriceScreen> {
                                 'Price \$${amount.toStringAsFixed(2)} assigned successfully!\nLoad ID: ${widget.loadId}\nStatus: ${success.data.orderStatus}',
                               ),
                               backgroundColor: Colors.green,
-                              duration: const Duration(seconds: 3),
+                              duration: const Duration(seconds: 2),
                             ),
                           );
+
+                          // Auto-redirect to pending requests screen after delay
+                          Future.delayed(const Duration(seconds: 2), () {
+                            if (mounted) {
+                              debugPrint('🔙 Redirecting to pending requests screen...');
+                              Get.back();
+                            }
+                          });
                         },
                       );
                     } catch (e) {
@@ -259,5 +491,9 @@ class _AssignPriceScreenState extends State<AssignPriceScreen> {
         );
       },
     );
+  }
+
+  void _showAssignDriverDialog(BuildContext context) {
+    Get.to(() => const AssignDriverScreen());
   }
 }

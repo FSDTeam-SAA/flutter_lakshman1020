@@ -21,8 +21,9 @@ class PendingRequestItem extends StatelessWidget {
       ),
       child: ListTile(
         onTap: () {
-          Get.to(() => AssignPriceScreen(shipment: shipment, loadId: "69019686c174eac51683ee65"));
-        },//ToDO needs loadId parameter
+          // Pass the actual load ID from shipment
+          Get.to(() => AssignPriceScreen(shipment: shipment, loadId: shipment.id));
+        },
         leading: SizedBox(
           width: 32,
           height: 32,
