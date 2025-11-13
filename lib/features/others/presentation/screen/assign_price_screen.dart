@@ -494,6 +494,6 @@ class _AssignPriceScreenState extends State<AssignPriceScreen> {
   }
 
   void _showAssignDriverDialog(BuildContext context) {
-    Get.to(() => const AssignDriverScreen());
+    Get.to(() => AssignDriverScreen(loadId: widget.loadId));
   }
 }

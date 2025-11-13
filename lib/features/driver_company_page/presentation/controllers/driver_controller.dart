@@ -6,6 +6,7 @@ import '../../model/dariver_model.dart';
 
 class DriverController extends GetxController {
   final DriverRepository _repository;
+  bool _hasInitialized = false;
 
   DriverController({required DriverRepository repository})
       : _repository = repository;
@@ -18,7 +19,11 @@ class DriverController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchDrivers();
+    // Only fetch on first initialization if not already done
+    if (!_hasInitialized) {
+      fetchDrivers();
+      _hasInitialized = true;
+    }
   }
 
   Future<void> fetchDrivers() async {
