@@ -1,61 +1,88 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_lakshman1020/core/network/api_client.dart';
+import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
+import 'package:flutter_lakshman1020/features/driver_company_page/data/datasources/driver_remote_datasource.dart';
+import 'package:flutter_lakshman1020/features/driver_company_page/data/repository/driver_repository_impl.dart';
+import 'package:flutter_lakshman1020/features/driver_company_page/model/dariver_model.dart';
+import 'package:flutter_lakshman1020/features/driver_company_page/presentation/controllers/driver_controller.dart';
 import 'package:get/get.dart';
 
-class AssignDriverScreen extends StatelessWidget {
-  const AssignDriverScreen({super.key});
+class AssignDriverScreen extends StatefulWidget {
+  final String loadId;
+
+  const AssignDriverScreen({super.key, required this.loadId});
+
+  @override
+  State<AssignDriverScreen> createState() => _AssignDriverScreenState();
+}
+
+class _AssignDriverScreenState extends State<AssignDriverScreen> {
+  late DriverController _driverController;
+  late RxString searchQuery = ''.obs;
+  bool _isInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeController();
+  }
+
+  void _initializeController() {
+    try {
+      // Check if controller is already registered
+      if (Get.isRegistered<DriverController>()) {
+        _driverController = Get.find<DriverController>();
+        debugPrint('✅ Found existing DriverController');
+        
+        // If controller already has data and no error, use it
+        // Otherwise fetch fresh data
+        if (_driverController.drivers.isEmpty && _driverController.errorMessage.isEmpty) {
+          debugPrint('🔄 Existing controller has no data, fetching...');
+          _driverController.fetchDrivers();
+        }
+      } else {
+        // Create and register a new instance if not exists
+        debugPrint('🔨 Creating new DriverController instance');
+        final apiClient = ApiClient();
+        final remoteDataSource = DriverRemoteDataSourceImpl(apiClient: apiClient);
+        final repository = DriverRepositoryImpl(remoteDataSource: remoteDataSource);
+        _driverController = DriverController(repository: repository);
+        Get.put(_driverController);
+        // onInit() is called automatically by Get.put, which calls fetchDrivers()
+        debugPrint('✅ New DriverController registered and onInit() called');
+      }
+      
+      // Mark as initialized - UI will now show via Obx
+      setState(() => _isInitialized = true);
+      
+      debugPrint('✅ DriverController initialization complete');
+    } catch (e) {
+      debugPrint('❌ Error initializing DriverController: $e');
+      setState(() => _isInitialized = true);
+      
+      // Show error in UI
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error initializing driver list: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final RxList<Map<String, String>> drivers = <Map<String, String>>[
-      {
-        "name": "Jakob Bator",
-        "image": "https://randomuser.me/api/portraits/men/1.jpg"
-      },
-      {
-        "name": "Leo Passaquindici Arcand",
-        "image": "https://randomuser.me/api/portraits/men/2.jpg"
-      },
-      {
-        "name": "Charlie Lubin",
-        "image": "https://randomuser.me/api/portraits/men/3.jpg"
-      },
-      {
-        "name": "Gustavo Botosh",
-        "image": "https://randomuser.me/api/portraits/men/4.jpg"
-      },
-      {
-        "name": "Jakob Botosh",
-        "image": "https://randomuser.me/api/portraits/men/5.jpg"
-      },
-      {
-        "name": "Leo Calzoni",
-        "image": "https://randomuser.me/api/portraits/men/6.jpg"
-      },
-      {
-        "name": "Alfredo Culhane",
-        "image": "https://randomuser.me/api/portraits/men/7.jpg"
-      },
-      {
-        "name": "Justin Passaquindici Arcand",
-        "image": "https://randomuser.me/api/portraits/men/8.jpg"
-      },
-    ].obs;
-
-    RxString searchQuery = ''.obs;
+    if (!_isInitialized) {
+      return Scaffold(
+        appBar: const CustomAppBar(title: "Assign Driver"),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        title: const Text(
-          "Assign driver",
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
+      appBar: const CustomAppBar(title: "Assign Driver"),
       backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -76,7 +103,7 @@ class AssignDriverScreen extends StatelessWidget {
                   borderSide: BorderSide.none,
                 ),
                 contentPadding:
-                const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+                    const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
               ),
             ),
             const SizedBox(height: 20),
@@ -90,78 +117,61 @@ class AssignDriverScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // Driver list
+            // Driver list with Obx for reactive updates
             Expanded(
               child: Obx(() {
-                final filtered = drivers
+                // Show loading state
+                if (_driverController.isLoading.value) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                // Show error state
+                if (_driverController.errorMessage.value.isNotEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Error: ${_driverController.errorMessage.value}',
+                          style: const TextStyle(color: Colors.red),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: () => _driverController.fetchDrivers(),
+                          child: const Text('Retry'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                // Show empty state
+                if (_driverController.drivers.isEmpty) {
+                  return const Center(
+                    child: Text('No drivers available'),
+                  );
+                }
+
+                // Filter drivers based on search query
+                final filtered = _driverController.drivers
                     .where((d) =>
-                    d["name"]!.toLowerCase().contains(searchQuery.value))
+                        d.name.toLowerCase().contains(searchQuery.value))
                     .toList();
+
+                if (filtered.isEmpty) {
+                  return const Center(
+                    child: Text('No drivers found matching your search'),
+                  );
+                }
 
                 return ListView.separated(
                   itemCount: filtered.length,
                   separatorBuilder: (_, __) =>
-                  const Divider(height: 10, color: Colors.transparent),
+                      const Divider(height: 10, color: Colors.transparent),
                   itemBuilder: (context, index) {
                     final driver = filtered[index];
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.grey.shade300),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.05),
-                            blurRadius: 2,
-                            offset: const Offset(0, 1),
-                          ),
-                        ],
-                      ),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        leading: CircleAvatar(
-                          backgroundImage: NetworkImage(driver["image"]!),
-                          radius: 22,
-                        ),
-                        title: Text(
-                          driver["name"]!,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                          ),
-                        ),
-                        trailing: TextButton(
-                          onPressed: () {
-                            Get.snackbar(
-                              "Driver Assigned",
-                              "${driver["name"]} assigned successfully!",
-                              snackPosition: SnackPosition.BOTTOM,
-                              backgroundColor: Colors.blue.shade50,
-                              colorText: Colors.blue.shade900,
-                              margin: const EdgeInsets.all(12),
-                              duration: const Duration(seconds: 2),
-                            );
-                          },
-                          style: TextButton.styleFrom(
-                            backgroundColor: Colors.blue.shade50,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 4),
-                          ),
-                          child: const Text(
-                            "Assign",
-                            style: TextStyle(
-                              color: Colors.blue,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
+                    return _buildDriverCard(driver);
                   },
                 );
               }),
@@ -170,5 +180,90 @@ class AssignDriverScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildDriverCard(Driver driver) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade300),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.05),
+            blurRadius: 2,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      child: ListTile(
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        leading: CircleAvatar(
+          backgroundImage: driver.imageUrl != null
+              ? NetworkImage(driver.imageUrl!)
+              : const AssetImage('assets/images/driver.png')
+                  as ImageProvider,
+          radius: 22,
+          onBackgroundImageError: (exception, stackTrace) {
+            debugPrint('❌ Error loading driver image: $exception');
+          },
+        ),
+        title: Text(
+          driver.name,
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+          ),
+        ),
+        subtitle: driver.phone.isNotEmpty
+            ? Text(
+                driver.phone,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey,
+                ),
+              )
+            : null,
+        trailing: TextButton(
+          onPressed: () => _assignDriver(driver),
+          style: TextButton.styleFrom(
+            backgroundColor: Colors.blue.shade50,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          ),
+          child: const Text(
+            "Assign",
+            style: TextStyle(
+              color: Colors.blue,
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _assignDriver(Driver driver) {
+    debugPrint(
+        '🚗 Assigning driver: ${driver.name} (ID: ${driver.id}) to load: ${widget.loadId}');
+
+    Get.snackbar(
+      "Driver Assigned",
+      "${driver.name} assigned successfully to load ${widget.loadId}!",
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.blue.shade50,
+      colorText: Colors.blue.shade900,
+      margin: const EdgeInsets.all(12),
+      duration: const Duration(seconds: 2),
+    );
+
+    // TODO: Call API to assign driver to load
+    // Future.delayed(const Duration(seconds: 2), () {
+    //   Get.back();
+    // });
   }
 }
