@@ -21,7 +21,6 @@ class MessageController extends GetxController {
   void onInit() {
     super.onInit();
     // Initialize currentUserId from storage if available, else use default
-    // In production, fetch from auth service
     try {
       currentUserId = box.read('currentUserId') ?? 'default_user_id';
     } catch (_) {
@@ -32,7 +31,7 @@ class MessageController extends GetxController {
   void init(String id) {
     chatId = id;
 
-    // Load cached messages first for instant UX (offline-first)
+    // Always load cached messages first for instant UX (offline-first)
     final cached = box.read<List>('chat_$id');
     if (cached != null && cached.isNotEmpty) {
       try {
@@ -42,30 +41,32 @@ class MessageController extends GetxController {
               .toList(),
         );
       } catch (_) {
-        // If deserialization fails, clear cache and fetch fresh
-        box.erase();
+        box.remove('chat_$id');
+        messages.clear();
       }
+    } else {
+      messages.clear();
     }
 
-    // Then load fresh messages from server
     loadMessages();
   }
 
-  /// Load chat messages (API call)
+  void reloadMessages() {
+    loadMessages();  // Refresh messages from the API
+  }
+
   void loadMessages() async {
     final result = await _repository.fetchMessages(chatId);
     result.fold(
-      (failure) =>
-          Get.snackbar("Error", failure.message ?? "Failed to load messages"),
-      (data) {
+          (failure) => Get.snackbar("Error", failure.message ?? "Failed to load messages"),
+          (data) {
         messages.assignAll(data);
-        _cacheMessages(); // save to local storage
-        _scrollToBottom(); // scroll to latest
+        _cacheMessages();
+        _scrollToBottom();
       },
     );
   }
 
-  /// Send new message
   void sendMessage(String message) async {
     if (message.trim().isEmpty) return;
 
@@ -76,11 +77,11 @@ class MessageController extends GetxController {
       message: message.trim(),
     );
     result.fold(
-      (failure) => Get.snackbar("Error", failure.message ?? "Send failed"),
-      (data) {
+          (failure) => Get.snackbar("Error", failure.message ?? "Send failed"),
+          (data) {
         messages.assignAll(data);
         _cacheMessages();
-        messageInput.value = '';
+        messageInput.value = '';  // Clear the input field after sending
         _scrollToBottom();
       },
     );
@@ -88,21 +89,15 @@ class MessageController extends GetxController {
     isSending.value = false;
   }
 
-  /// Cache messages locally for offline persistence
   void _cacheMessages() {
     final jsonList = messages.map((msg) => msg.toJson()).toList();
     box.write('chat_$chatId', jsonList);
   }
 
-  /// Auto-scroll to bottom
   void _scrollToBottom() {
-    Future.delayed(const Duration(milliseconds: 300), () {
+    Future.delayed(const Duration(milliseconds: 100), () {
       if (scrollController.hasClients) {
-        scrollController.animateTo(
-          scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 400),
-          curve: Curves.easeOut,
-        );
+        scrollController.jumpTo(scrollController.position.minScrollExtent);
       }
     });
   }

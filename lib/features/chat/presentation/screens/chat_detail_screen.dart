@@ -21,17 +21,19 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   @override
   void initState() {
     super.initState();
-    // Get or create controller with permanent flag so it persists across navigation
-    if (Get.isRegistered<MessageController>()) {
-      controller = Get.find<MessageController>();
-    } else {
-      controller = Get.put(MessageController(), permanent: true);
-    }
 
-    // Initialize with chatId (loads cached messages, then fetches fresh)
+    // Initialize the controller
+    controller = Get.put(MessageController());
+
+    // Initialize and load cached/fresh messages
     controller.init(widget.chatId);
 
-    // Create persistent TextEditingController
+    // Ensure messages are reloaded when the screen reappears
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.reloadMessages();
+    });
+
+    // Create a persistent text controller
     _textController = TextEditingController();
   }
 
@@ -105,24 +107,18 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
               return ListView.builder(
                 controller: controller.scrollController,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                reverse: true,  // Newest messages appear at the bottom
                 itemCount: controller.messages.length,
                 itemBuilder: (_, index) {
-                  final msg = controller.messages[index];
-                  bool isMe = false;
-                  try {
-                    isMe = controller.currentUserId == msg.user.id;
-                  } catch (_) {
-                    isMe = false;
-                  }
-                  return MessageBubble(message: msg, isMe: isMe);
+                  final msg = controller.messages[controller.messages.length - 1 - index];
+                  bool isMe = controller.currentUserId == msg.user.id;  // Determine if the message is from the current user
+                  return MessageBubble(message: msg, isMe: isMe);  // Pass isMe to MessageBubble
                 },
               );
             }),
           ),
+
 
           // little handle above input
           Container(
@@ -188,12 +184,15 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
                 // Send button (outlined)
                 Obx(
-                  () => OutlinedButton(
+                      () => OutlinedButton(
                     onPressed: controller.isSending.value
                         ? null
-                        : () => controller.sendMessage(
-                            controller.messageInput.value,
-                          ),
+                        : () {
+                      // Send the message and clear the text field
+                      controller.sendMessage(controller.messageInput.value);
+                      _textController.clear();  // Clear the text field after sending
+                      controller.messageInput.value = '';  // Reset message input in controller
+                    },
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(color: TColors.primary),
                       shape: const StadiumBorder(),
@@ -205,17 +204,17 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                     ),
                     child: controller.isSending.value
                         ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
                         : const Text(
-                            "Send",
-                            style: TextStyle(color: Colors.white),
-                          ),
+                      "Send",
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
               ],
