@@ -8,4 +8,5 @@ import '../model/dariver_model.dart';
 abstract class DriverRepository {
   Future<Either<NetworkFailure, NetworkSuccess<List<Driver>>>> getDrivers();
   Future<Either<NetworkFailure, NetworkSuccess<DriverDetailsResponseModel>>> getDriverDetails(String driverId);
+  Future<Either<NetworkFailure, NetworkSuccess<void>>> removeDriver(String driverId);
 }

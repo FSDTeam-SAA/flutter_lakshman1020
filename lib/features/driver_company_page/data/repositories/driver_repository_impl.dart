@@ -22,4 +22,9 @@ class DriverRepositoryImpl implements DriverRepository {
   Future<Either<NetworkFailure, NetworkSuccess<DriverDetailsResponseModel>>> getDriverDetails(String driverId) {
     return _remoteDataSource.getDriverDetails(driverId);
   }
+
+  @override
+  Future<Either<NetworkFailure, NetworkSuccess<void>>> removeDriver(String driverId) {
+    return _remoteDataSource.removeDriver(driverId);
+  }
 }

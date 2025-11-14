@@ -143,4 +143,5 @@ class CompanyEndpoints {
   final String getDrivers = '$_base/driver';
   String removeDispatcher(String id) => '$_base/dispacher/$id';
   String getDriverDetails(String id) => '$_base/driver/$id';
+  String removeDriver(String id) => '$_base/driver/$id';
 }

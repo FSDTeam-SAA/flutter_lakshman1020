@@ -11,6 +11,7 @@ import '../models/driver_details_response_model.dart';
 abstract class DriverRemoteDataSource {
   Future<Either<NetworkFailure, NetworkSuccess<List<Driver>>>> getDrivers();
   Future<Either<NetworkFailure, NetworkSuccess<DriverDetailsResponseModel>>> getDriverDetails(String driverId);
+  Future<Either<NetworkFailure, NetworkSuccess<void>>> removeDriver(String driverId);
 }
 
 class DriverRemoteDataSourceImpl implements DriverRemoteDataSource {
@@ -89,6 +90,45 @@ class DriverRemoteDataSourceImpl implements DriverRemoteDataSource {
       return Left(
         NetworkFailure(
           message: 'Failed to fetch driver details: $e',
+          statusCode: 0,
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<NetworkFailure, NetworkSuccess<void>>> removeDriver(String driverId) async {
+    try {
+      DPrint.log("🗑️ Removing driver with ID: $driverId");
+      
+      final result = await _apiClient.get<void>(
+        ApiConstants.company.removeDriver(driverId),
+        fromJsonT: (json) {
+          DPrint.log("📦 Remove Driver Response: $json");
+          // API returns driver object but we don't need to use it
+          return;
+        },
+      );
+
+      return result.fold(
+        (failure) {
+          DPrint.error("❌ Remove Driver API Error: ${failure.message}");
+          return Left(failure);
+        },
+        (success) {
+          DPrint.log("✅ Driver removed successfully");
+          return Right(NetworkSuccess<void>(
+            data: null,
+            message: 'Driver removed successfully',
+            statusCode: 200,
+          ));
+        },
+      );
+    } catch (e) {
+      DPrint.error("❌ Exception in removeDriver: $e");
+      return Left(
+        NetworkFailure(
+          message: 'Failed to remove driver: $e',
           statusCode: 0,
         ),
       );

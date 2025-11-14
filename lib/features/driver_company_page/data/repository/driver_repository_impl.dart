@@ -45,4 +45,20 @@ class DriverRepositoryImpl implements DriverRepository {
       );
     }
   }
+
+  @override
+  Future<Either<NetworkFailure, NetworkSuccess<void>>> removeDriver(String driverId) async {
+    try {
+      DPrint.log("📡 DriverRepository: Removing driver ID: $driverId");
+      return await _remoteDataSource.removeDriver(driverId);
+    } catch (e) {
+      DPrint.error("❌ DriverRepository Error: $e");
+      return Left(
+        NetworkFailure(
+          message: 'An unexpected error occurred: $e',
+          statusCode: 0,
+        ),
+      );
+    }
+  }
 }

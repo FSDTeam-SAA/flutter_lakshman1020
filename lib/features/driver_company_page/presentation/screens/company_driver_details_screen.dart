@@ -4,6 +4,7 @@ import 'package:flutter_lakshman1020/features/driver_company_page/data/datasourc
 import 'package:flutter_lakshman1020/features/driver_company_page/data/models/driver_details_response_model.dart';
 import 'package:flutter_lakshman1020/features/driver_company_page/data/repositories/driver_repository_impl.dart';
 import 'package:flutter_lakshman1020/features/driver_company_page/model/dariver_model.dart';
+import 'package:flutter_lakshman1020/features/others/presentation/screen/dashboard_overview_scren.dart';
 import 'package:get/get.dart';
 
 class CompanyDriverDetailsScreen extends StatefulWidget {
@@ -19,6 +20,7 @@ class _CompanyDriverDetailsScreenState extends State<CompanyDriverDetailsScreen>
   late DriverRepositoryImpl _driverRepository;
   DriverDetailsResponseModel? _driverDetails;
   bool _isLoading = true;
+  bool _isRemoving = false;
   String _errorMessage = '';
 
   @override
@@ -71,6 +73,70 @@ class _CompanyDriverDetailsScreenState extends State<CompanyDriverDetailsScreen>
         _errorMessage = e.toString();
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _handleRemoveDriver() async {
+    setState(() => _isRemoving = true);
+
+    try {
+      debugPrint('🗑️ Removing driver ${widget.driver.name} (${widget.driver.id})');
+
+      final result = await _driverRepository.removeDriver(widget.driver.id);
+
+      setState(() => _isRemoving = false);
+
+      result.fold(
+        (failure) {
+          // API call failed
+          debugPrint('❌ Remove driver API failed: ${failure.message}');
+          Get.snackbar(
+            'Error',
+            'Failed to remove driver: ${failure.message}',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red.shade50,
+            colorText: Colors.red.shade900,
+            margin: const EdgeInsets.all(12),
+            duration: const Duration(seconds: 3),
+          );
+        },
+        (success) {
+          // API call success
+          debugPrint('✅ Driver removed successfully!');
+
+          Get.snackbar(
+            'Success',
+            '${widget.driver.name} removed successfully!',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.green.shade50,
+            colorText: Colors.green.shade900,
+            margin: const EdgeInsets.all(12),
+            duration: const Duration(seconds: 2),
+          );
+
+          // Navigate to Dashboard after delay
+          Future.delayed(const Duration(milliseconds: 1500), () {
+            if (mounted) {
+              debugPrint('🔙 Navigating to Company Dashboard...');
+              Get.offAll(
+                () => const DashboardScreen(),
+                transition: Transition.leftToRight,
+              );
+            }
+          });
+        },
+      );
+    } catch (e) {
+      setState(() => _isRemoving = false);
+      debugPrint('❌ Unexpected error: $e');
+      Get.snackbar(
+        'Error',
+        'Unexpected error: $e',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.shade50,
+        colorText: Colors.red.shade900,
+        margin: const EdgeInsets.all(12),
+      );
     }
   }
 
@@ -177,7 +243,7 @@ class _CompanyDriverDetailsScreenState extends State<CompanyDriverDetailsScreen>
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
-                              onPressed: () => _showRemoveConfirmationDialog(context),
+                              onPressed: _isRemoving ? null : () => _showRemoveConfirmationDialog(context),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Color(0xFFEB5757),
                                 foregroundColor: Colors.white,
@@ -187,13 +253,22 @@ class _CompanyDriverDetailsScreenState extends State<CompanyDriverDetailsScreen>
                                 ),
                                 elevation: 0,
                               ),
-                              child: const Text(
-                                'Remove',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
+                              child: _isRemoving
+                                  ? SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                      ),
+                                    )
+                                  : const Text(
+                                      'Remove',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                             ),
                           ),
                         ],
@@ -266,7 +341,10 @@ class _CompanyDriverDetailsScreenState extends State<CompanyDriverDetailsScreen>
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () => Navigator.of(context).pop(true),
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                    _handleRemoveDriver();
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFEB5757),
                     foregroundColor: Colors.white,
