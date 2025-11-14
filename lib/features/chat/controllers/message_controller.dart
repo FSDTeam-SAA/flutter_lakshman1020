@@ -52,14 +52,15 @@ class MessageController extends GetxController {
   }
 
   void reloadMessages() {
-    loadMessages();  // Refresh messages from the API
+    loadMessages(); // Refresh messages from the API
   }
 
   void loadMessages() async {
     final result = await _repository.fetchMessages(chatId);
     result.fold(
-          (failure) => Get.snackbar("Error", failure.message ?? "Failed to load messages"),
-          (data) {
+      (failure) =>
+          Get.snackbar("Error", failure.message ?? "Failed to load messages"),
+      (data) {
         messages.assignAll(data);
         _cacheMessages();
         _scrollToBottom();
@@ -77,11 +78,11 @@ class MessageController extends GetxController {
       message: message.trim(),
     );
     result.fold(
-          (failure) => Get.snackbar("Error", failure.message ?? "Send failed"),
-          (data) {
+      (failure) => Get.snackbar("Error", failure.message ?? "Send failed"),
+      (data) {
         messages.assignAll(data);
         _cacheMessages();
-        messageInput.value = '';  // Clear the input field after sending
+        messageInput.value = ''; // Clear the input field after sending
         _scrollToBottom();
       },
     );
