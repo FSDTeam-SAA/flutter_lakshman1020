@@ -14,6 +14,7 @@ class FetchProfileResponseModel {
   final String updatedAt;
   final Avatar avatar;
   final VerificationInfo verificationInfo;
+  final Dashboard? dashboard;
 
   FetchProfileResponseModel({
     required this.id,
@@ -31,6 +32,7 @@ class FetchProfileResponseModel {
     required this.updatedAt,
     required this.avatar,
     required this.verificationInfo,
+    this.dashboard,
   });
 
   factory FetchProfileResponseModel.fromJson(Map<String, dynamic> json) {
@@ -102,6 +104,9 @@ class FetchProfileResponseModel {
                 ? (data['user'] as Map<String, dynamic>)['verificationInfo'] ?? {}
                 : {},
       ),
+      dashboard: data.containsKey('dashboard') && data['dashboard'] is Map
+          ? Dashboard.fromJson(data['dashboard'] as Map<String, dynamic>)
+          : null,
     );
   }
 
@@ -124,6 +129,7 @@ class FetchProfileResponseModel {
       'nationality': nationality,
       'phone': phone,
       "verificationInfo": verificationInfo.toJson(),
+      if (dashboard != null) "dashboard": dashboard!.toJson(),
     };
   }
 }
@@ -172,6 +178,34 @@ class VerificationInfo {
     return {
       "verified": verified,
       "token": token,
+    };
+  }
+}
+
+class Dashboard {
+  final int pendingRequests;
+  final int readyToLoad;
+  final int availableDrivers;
+
+  Dashboard({
+    required this.pendingRequests,
+    required this.readyToLoad,
+    required this.availableDrivers,
+  });
+
+  factory Dashboard.fromJson(Map<String, dynamic> json) {
+    return Dashboard(
+      pendingRequests: json['pendingRequests'] ?? 0,
+      readyToLoad: json['readyToLoad'] ?? 0,
+      availableDrivers: json['availableDrivers'] ?? 0,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "pendingRequests": pendingRequests,
+      "readyToLoad": readyToLoad,
+      "availableDrivers": availableDrivers,
     };
   }
 }

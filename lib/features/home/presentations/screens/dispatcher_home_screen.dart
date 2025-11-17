@@ -37,17 +37,38 @@ class _DispatcherHomeScreenState extends State<DispatcherHomeScreen> {
   }
 
   Widget _buildHomePage() {
+    final accountController = Get.find<AccountController>();
+    
     return SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            HeaderSection(),
-            SizedBox(height: 20),
-            StatsSection(),
-            SizedBox(height: 24),
-            RecentSection(),
+          children: [
+            const HeaderSection(),
+            const SizedBox(height: 20),
+            // Observe userInfo for dashboard data
+            Obx(() {
+              final dashboard = accountController.userInfo.value?.dashboard;
+              
+              // Show loading or default values while data is being fetched
+              if (dashboard == null) {
+                return const StatsSection(
+                  pendingRequests: 0,
+                  readyToLoad: 0,
+                  availableDrivers: 0,
+                );
+              }
+              
+              // Show real data from API
+              return StatsSection(
+                pendingRequests: dashboard.pendingRequests,
+                readyToLoad: dashboard.readyToLoad,
+                availableDrivers: dashboard.availableDrivers,
+              );
+            }),
+            const SizedBox(height: 24),
+            const RecentSection(),
           ],
         ),
       ),
