@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_lakshman1020/core/network/services/auth_storage_service.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_bottom_nav.dart';
 import 'package:flutter_lakshman1020/features/accounts/controller/account_controller.dart';
 import 'package:flutter_lakshman1020/features/accounts/presentation/screens/accounts_screen.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_lakshman1020/features/home/presentations/widgets/dispatc
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/dispatcher_home_widgets/recent_section.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/dispatcher_home_widgets/stats_section.dart';
 import 'package:flutter_lakshman1020/features/notification/presentation/screens/messages_screen.dart';
+import 'package:flutx_core/flutx_core.dart';
 import 'package:get/get.dart';
 
 import '../bindings/load_binding.dart';
@@ -21,6 +23,7 @@ class DispatcherHomeScreen extends StatefulWidget {
 
 class _DispatcherHomeScreenState extends State<DispatcherHomeScreen> {
   int _currentIndex = 0;
+  final AuthStorageService _authStorageService = Get.find<AuthStorageService>();
 
   @override
   void initState() {
@@ -29,11 +32,37 @@ class _DispatcherHomeScreenState extends State<DispatcherHomeScreen> {
     if (!Get.isRegistered<LoadController>()) {
       LoadBinding().dependencies();
     }
-    // Ensure AccountController is initialized and fetches profile
-    Future.delayed(const Duration(milliseconds: 200), () {
+    
+    // Fetch profile and company-specific loads
+    Future.delayed(const Duration(milliseconds: 200), () async {
       final accountController = Get.find<AccountController>();
       accountController.fetchProfile();
+      
+      // Fetch company-specific loads for dispatcher
+      await _fetchDispatcherLoads();
     });
+  }
+
+  Future<void> _fetchDispatcherLoads() async {
+    try {
+      final loadController = Get.find<LoadController>();
+      final companyId = await _authStorageService.getCompanyId();
+      
+      DPrint.log('========== DISPATCHER HOME SCREEN ==========');
+      DPrint.log('📦 Company ID: ${companyId ?? "null"}');
+      
+      if (companyId != null && companyId.isNotEmpty) {
+        DPrint.log('🔄 Fetching loads for dispatcher company...');
+        await loadController.fetchLoadsByCompany(companyId);
+        DPrint.log('✅ Dispatcher loads fetched successfully');
+      } else {
+        DPrint.log('⚠️ No company ID, fetching all loads...');
+        await loadController.fetchLoads();
+      }
+      DPrint.log('============================================');
+    } catch (e) {
+      DPrint.error('❌ Error fetching dispatcher loads: $e');
+    }
   }
 
   Widget _buildHomePage() {

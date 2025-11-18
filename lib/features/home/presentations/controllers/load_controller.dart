@@ -19,7 +19,8 @@ class LoadController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchLoads();
+    // Don't auto-fetch loads here - let the calling screen decide
+    // whether to fetch all loads or company-specific loads
   }
 
   /// Fetch loads from API

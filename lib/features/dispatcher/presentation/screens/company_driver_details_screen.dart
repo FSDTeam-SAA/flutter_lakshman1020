@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/network/api_client.dart';
+import 'package:flutter_lakshman1020/core/network/services/auth_storage_service.dart';
 import 'package:flutter_lakshman1020/features/driver_company_page/model/dariver_model.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/controllers/load_controller.dart';
+import 'package:flutter_lakshman1020/features/home/presentations/screens/dispatcher_home_screen.dart';
 import 'package:flutter_lakshman1020/features/others/data/models/assign_driver_request_model.dart';
 import 'package:flutter_lakshman1020/features/others/data/repo/load_repo_impl.dart';
 import 'package:flutter_lakshman1020/features/others/domain/load_repo.dart';
@@ -20,12 +22,14 @@ class CompanyDriverDetailsScreen extends StatefulWidget {
 
 class _CompanyDriverDetailsScreenState extends State<CompanyDriverDetailsScreen> {
   late final AskPriceRepository _loadRepository;
+  late final AuthStorageService _authStorageService;
   bool _isAssigning = false;
 
   @override
   void initState() {
     super.initState();
     _loadRepository = LoadRepositoryImpl(apiClient: ApiClient());
+    _authStorageService = Get.find<AuthStorageService>();
   }
 
   Future<void> _handleAssignDriver() async {
@@ -90,14 +94,27 @@ class _CompanyDriverDetailsScreenState extends State<CompanyDriverDetailsScreen>
             debugPrint('⚠️ Could not refresh LoadController: $e');
           }
 
-          // Navigate to Dashboard after delay
-          Future.delayed(const Duration(milliseconds: 1500), () {
+          // Navigate to appropriate dashboard based on user role after delay
+          Future.delayed(const Duration(milliseconds: 1500), () async {
             if (mounted) {
-              debugPrint('🔙 Navigating to Company Dashboard...');
-              Get.offAll(
-                () => const DashboardScreen(),
-                transition: Transition.leftToRight,
-              );
+              // Get user role from auth storage
+              final role = await _authStorageService.getRole();
+              debugPrint('👤 User role: $role');
+              
+              if (role?.toLowerCase() == 'dispatcher') {
+                debugPrint('🔙 Navigating to Dispatcher Home Screen...');
+                Get.offAll(
+                  () => const DispatcherHomeScreen(),
+                  transition: Transition.leftToRight,
+                );
+              } else {
+                // Default to company dashboard for company role
+                debugPrint('🔙 Navigating to Company Dashboard...');
+                Get.offAll(
+                  () => const DashboardScreen(),
+                  transition: Transition.leftToRight,
+                );
+              }
             }
           });
         },
