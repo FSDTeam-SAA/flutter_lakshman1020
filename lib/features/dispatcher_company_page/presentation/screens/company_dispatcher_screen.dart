@@ -29,7 +29,101 @@ class _CompanyDispatcherScreenState extends State<CompanyDispatcherScreen> {
   }
 
   void _removeDispatcher(String dispatcherId) async {
-    await _dispatcherController.removeDispatcher(dispatcherId);
+    // Show confirmation dialog
+    final confirmed = await _showRemoveConfirmationDialog();
+    
+    if (confirmed == true) {
+      // Call API to remove dispatcher
+      await _dispatcherController.removeDispatcher(dispatcherId);
+      
+      // Check if removal was successful by checking if error is empty
+      if (_dispatcherController.errorMessage.isEmpty) {
+        // Show success snackbar
+        Get.snackbar(
+          'Success',
+          'Dispatcher removed successfully',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green.shade50,
+          colorText: Colors.green.shade900,
+          margin: const EdgeInsets.all(12),
+          duration: const Duration(seconds: 2),
+        );
+      } else {
+        // Show error snackbar
+        Get.snackbar(
+          'Error',
+          _dispatcherController.errorMessage.value,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red.shade50,
+          colorText: Colors.red.shade900,
+          margin: const EdgeInsets.all(12),
+          duration: const Duration(seconds: 3),
+        );
+      }
+    }
+  }
+
+  Future<bool?> _showRemoveConfirmationDialog() {
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          backgroundColor: Colors.white,
+          contentPadding: const EdgeInsets.all(24),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Confirm removal\nof dispatcher?',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF18191A),
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'This action cannot be undone.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF6B7280),
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFEB5757),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    'Remove',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildHomeContent() {

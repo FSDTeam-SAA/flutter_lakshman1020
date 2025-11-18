@@ -62,11 +62,20 @@ class DispatcherController extends GetxController {
     try {
       DPrint.log("🗑️ Removing dispatcher: $dispatcherId");
       
-      // TODO: Implement API call to remove dispatcher
-      // For now, just remove locally
-      dispatchers.removeWhere((dispatcher) => dispatcher.id == dispatcherId);
+      final result = await _repository.removeDispatcher(dispatcherId);
       
-      DPrint.log("✅ Dispatcher removed locally");
+      result.fold(
+        (failure) {
+          DPrint.error("❌ Failed to remove dispatcher: ${failure.message}");
+          errorMessage.value = failure.message;
+        },
+        (success) {
+          DPrint.log("✅ Dispatcher removed successfully from API");
+          // Remove from local list
+          dispatchers.removeWhere((dispatcher) => dispatcher.id == dispatcherId);
+          errorMessage.value = '';
+        },
+      );
     } catch (e) {
       DPrint.error("❌ Error removing dispatcher: $e");
       errorMessage.value = 'Failed to remove dispatcher';

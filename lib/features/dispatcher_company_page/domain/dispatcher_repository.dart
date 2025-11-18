@@ -6,4 +6,5 @@ import '../models/dispatcher_model.dart';
 
 abstract class DispatcherRepository {
   Future<Either<NetworkFailure, NetworkSuccess<List<Dispatcher>>>> getDispatchers();
+  Future<Either<NetworkFailure, NetworkSuccess<void>>> removeDispatcher(String dispatcherId);
 }

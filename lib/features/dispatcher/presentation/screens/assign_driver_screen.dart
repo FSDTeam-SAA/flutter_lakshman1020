@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/network/api_client.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
+import 'package:flutter_lakshman1020/features/dispatcher/presentation/screens/company_driver_details_screen.dart';
 import 'package:flutter_lakshman1020/features/driver_company_page/data/datasources/driver_remote_datasource.dart';
 import 'package:flutter_lakshman1020/features/driver_company_page/data/repository/driver_repository_impl.dart';
 import 'package:flutter_lakshman1020/features/driver_company_page/model/dariver_model.dart';
@@ -200,10 +201,9 @@ class _AssignDriverScreenState extends State<AssignDriverScreen> {
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         leading: CircleAvatar(
-          backgroundImage: driver.imageUrl != null
+          backgroundImage: (driver.imageUrl != null && driver.imageUrl!.isNotEmpty)
               ? NetworkImage(driver.imageUrl!)
-              : const AssetImage('assets/images/driver.png')
-                  as ImageProvider,
+              : const AssetImage('assets/images/profile_d.png'),
           radius: 22,
           onBackgroundImageError: (exception, stackTrace) {
             debugPrint('❌ Error loading driver image: $exception');
@@ -248,22 +248,9 @@ class _AssignDriverScreenState extends State<AssignDriverScreen> {
   }
 
   void _assignDriver(Driver driver) {
-    debugPrint(
-        '🚗 Assigning driver: ${driver.name} (ID: ${driver.id}) to load: ${widget.loadId}');
+    debugPrint('🚗 Navigating to driver details for ${driver.name}');
 
-    Get.snackbar(
-      "Driver Assigned",
-      "${driver.name} assigned successfully to load ${widget.loadId}!",
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.blue.shade50,
-      colorText: Colors.blue.shade900,
-      margin: const EdgeInsets.all(12),
-      duration: const Duration(seconds: 2),
-    );
-
-    // TODO: Call API to assign driver to load
-    // Future.delayed(const Duration(seconds: 2), () {
-    //   Get.back();
-    // });
+    // Navigate to the company driver details screen where user can confirm assignment
+    Get.to(() => CompanyDriverDetailsScreen(driver: driver, loadId: widget.loadId));
   }
 }

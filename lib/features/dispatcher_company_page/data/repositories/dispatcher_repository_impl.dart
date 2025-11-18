@@ -16,4 +16,9 @@ class DispatcherRepositoryImpl implements DispatcherRepository {
   Future<Either<NetworkFailure, NetworkSuccess<List<Dispatcher>>>> getDispatchers() {
     return _remoteDataSource.getDispatchers();
   }
+
+  @override
+  Future<Either<NetworkFailure, NetworkSuccess<void>>> removeDispatcher(String dispatcherId) {
+    return _remoteDataSource.removeDispatcher(dispatcherId);
+  }
 }
