@@ -3,8 +3,8 @@ import 'package:flutter_lakshman1020/core/network/services/auth_storage_service.
 import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/bindings/load_binding.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/controllers/load_controller.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:flutx_core/flutx_core.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 
 class DispatcherNavigateScreen extends StatefulWidget {
