@@ -2,6 +2,7 @@ import 'dart:developer' as DPrint;
 import 'dart:io';
 
 import 'package:flutter_lakshman1020/features/accounts/data/models/change_password_request_model.dart';
+import 'package:flutter_lakshman1020/features/accounts/data/models/driver_profile_response_model.dart';
 import 'package:flutter_lakshman1020/features/accounts/data/models/fetch_profile_response_model.dart';
 import 'package:flutter_lakshman1020/features/accounts/domain/repo/account_repo.dart';
 import 'package:get/get.dart';
@@ -19,6 +20,7 @@ class AccountController extends BaseController {
   AccountController(this._accountRepository);
 
   final Rxn<FetchProfileResponseModel> userInfo = Rxn<FetchProfileResponseModel>();
+  final Rxn<DriverProfileResponseModel> driverProfile = Rxn<DriverProfileResponseModel>();
   @override
   void onInit() {
     super.onInit();
