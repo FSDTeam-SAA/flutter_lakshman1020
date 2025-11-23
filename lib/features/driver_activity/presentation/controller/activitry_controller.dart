@@ -10,6 +10,7 @@ class ActivityController extends ChangeNotifier {
   
   bool _isLoading = false;
   bool get isLoading => _isLoading;
+  bool _isDisposed = false; // Flag to prevent background processing after dispose
 
   // User info
   String userName = 'Driver';
@@ -82,6 +83,12 @@ class ActivityController extends ChangeNotifier {
   Future<void> _geocodeAllAddresses() async {
     if (_loads.isEmpty) return;
     
+    // Don't proceed if controller is disposed
+    if (_isDisposed) {
+      DPrint.log('⏹️ Controller disposed - skipping geocoding');
+      return;
+    }
+    
     try {
       DPrint.log('🌍 Starting parallel geocoding for ${_loads.length} load(s)');
       
@@ -93,6 +100,12 @@ class ActivityController extends ChangeNotifier {
           load.deliveryLocation,
         )),
       );
+      
+      // Check if disposed after async operation
+      if (_isDisposed) {
+        DPrint.log('⏹️ Controller disposed during geocoding - discarding results');
+        return;
+      }
       
       DPrint.log('✅ Geocoding completed for all loads');
       notifyListeners();
@@ -107,6 +120,9 @@ class ActivityController extends ChangeNotifier {
     String pickupLatLng,
     String deliveryLatLng,
   ) async {
+    // Don't proceed if controller is disposed
+    if (_isDisposed) return;
+    
     try {
       _geocodingInProgress[loadId] = true;
       notifyListeners();
@@ -139,6 +155,12 @@ class ActivityController extends ChangeNotifier {
         _getAddressFromCoordinates(deliveryLat, deliveryLng),
       ]);
 
+      // Check if disposed after async operation
+      if (_isDisposed) {
+        DPrint.log('⏹️ Controller disposed during load geocoding - discarding results for $loadId');
+        return;
+      }
+
       _geocodedAddresses[loadId] = {
         'pickup': results[0],
         'delivery': results[1],
@@ -152,6 +174,10 @@ class ActivityController extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       DPrint.error('❌ Error geocoding load $loadId: $e');
+      
+      // Check if disposed before updating state
+      if (_isDisposed) return;
+      
       _geocodedAddresses[loadId] = {
         'pickup': pickupLatLng,
         'delivery': deliveryLatLng,
@@ -187,6 +213,8 @@ class ActivityController extends ChangeNotifier {
   
   @override
   void dispose() {
+    _isDisposed = true; // Stop any background geocoding
+    DPrint.log('🛑 ActivityController disposed - stopping all geocoding operations');
     super.dispose();
   }
 }

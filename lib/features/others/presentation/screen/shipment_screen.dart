@@ -3,6 +3,7 @@ import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/shipment_filter_tabs.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/shipment_item.dart';
 import 'package:get/get.dart';
+
 import '../../../home/presentations/bindings/load_binding.dart';
 import '../../../home/presentations/controllers/load_controller.dart';
 
@@ -23,6 +24,12 @@ class _ShipmentScreenState extends State<ShipmentScreen> {
     // Initialize bindings if not already initialized
     if (!Get.isRegistered<LoadController>()) {
       LoadBinding().dependencies();
+    }
+    
+    // Fetch loads only if not already loaded (first time or empty)
+    final LoadController loadController = Get.find<LoadController>();
+    if (loadController.loads.isEmpty) {
+      loadController.fetchLoads();
     }
   }
 

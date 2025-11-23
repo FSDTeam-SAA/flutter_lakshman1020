@@ -25,7 +25,8 @@ class _ActivityBodyState extends State<ActivityBody> {
 
   @override
   void dispose() {
-    // If ActivityController later uses streams or disposables, dispose here.
+    // Properly dispose the controller to stop background geocoding
+    _controller.dispose();
     super.dispose();
   }
 

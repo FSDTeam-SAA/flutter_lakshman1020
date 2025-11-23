@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 
 class DriverHomeController extends GetxController {
   final ApiClient _apiClient = Get.find<ApiClient>();
+  bool _isDisposed = false; // Flag to prevent background processing after dispose
 
   DriverHomeController();
 
@@ -23,6 +24,13 @@ class DriverHomeController extends GetxController {
   void onInit() {
     super.onInit();
     _loadCurrentLoads();
+  }
+
+  @override
+  void onClose() {
+    _isDisposed = true; // Stop any background geocoding
+    DPrint.log('🛑 DriverHomeController disposed - stopping all geocoding operations');
+    super.onClose();
   }
 
   /// Load current loads from AccountController's driver profile
@@ -118,6 +126,12 @@ class DriverHomeController extends GetxController {
 
   /// Geocode all addresses for all loads in parallel
   Future<void> _geocodeAllAddresses() async {
+    // Don't proceed if controller is disposed
+    if (_isDisposed) {
+      DPrint.log('⏹️ Controller disposed - skipping geocoding');
+      return;
+    }
+    
     try {
       DPrint.log('🌍 Starting parallel geocoding for ${currentLoads.length} load(s)');
       
@@ -129,6 +143,12 @@ class DriverHomeController extends GetxController {
           load.deliveryLocation,
         )),
       );
+      
+      // Check if disposed after async operation
+      if (_isDisposed) {
+        DPrint.log('⏹️ Controller disposed during geocoding - discarding results');
+        return;
+      }
       
       DPrint.log('✅ Geocoding completed for all loads');
     } catch (e) {
@@ -142,6 +162,9 @@ class DriverHomeController extends GetxController {
     String pickupLatLng,
     String deliveryLatLng,
   ) async {
+    // Don't proceed if controller is disposed
+    if (_isDisposed) return;
+    
     try {
       geocodingInProgress[loadId] = true;
 
@@ -174,6 +197,12 @@ class DriverHomeController extends GetxController {
         _getAddressFromCoordinates(deliveryLat, deliveryLng),
       ]);
 
+      // Check if disposed after async operation
+      if (_isDisposed) {
+        DPrint.log('⏹️ Controller disposed during load geocoding - discarding results for $loadId');
+        return;
+      }
+
       geocodedAddresses[loadId] = {
         'pickup': results[0],
         'delivery': results[1],
@@ -186,6 +215,10 @@ class DriverHomeController extends GetxController {
       geocodingInProgress[loadId] = false;
     } catch (e) {
       DPrint.error('❌ Error geocoding load $loadId: $e');
+      
+      // Check if disposed before updating state
+      if (_isDisposed) return;
+      
       geocodedAddresses[loadId] = {
         'pickup': pickupLatLng,
         'delivery': deliveryLatLng,

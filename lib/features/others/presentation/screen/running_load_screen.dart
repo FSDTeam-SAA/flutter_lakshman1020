@@ -26,6 +26,11 @@ class _RunningLoadScreenState extends State<RunningLoadScreen> {
     }
     
     _loadController = Get.find<LoadController>();
+    
+    // Fetch loads only if not already loaded (first time or empty)
+    if (_loadController.loads.isEmpty) {
+      _loadController.fetchLoads();
+    }
   }
 
   @override

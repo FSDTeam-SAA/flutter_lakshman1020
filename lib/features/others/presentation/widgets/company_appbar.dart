@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_lakshman1020/features/notification/presentations/screens/notification_alert.dart';
+import 'package:get/get.dart';
 
 class CompanyAppbar extends StatelessWidget implements PreferredSizeWidget {
   const CompanyAppbar({super.key});
@@ -25,11 +27,20 @@ class CompanyAppbar extends StatelessWidget implements PreferredSizeWidget {
       ),
       actions: [
         Padding(
-          padding: const EdgeInsets.only(right: 12),
-          child: Image(
-            height: 24,
-            width: 24,
-            image: AssetImage("assets/images/notification_square.png"),
+          padding: const EdgeInsets.only(right: 20),
+          child: GestureDetector(
+            onTap: () {
+              // Handle notification tap
+              Get.to(
+                () => const NotificationAlertScreen(),
+                transition: Transition.rightToLeft,
+              );
+            },
+            child: Image(
+              height: 30,
+              width: 30,
+              image: AssetImage("assets/images/notification_square.png"),
+            ),
           ),
         ),
       ],

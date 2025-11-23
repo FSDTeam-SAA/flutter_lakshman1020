@@ -26,6 +26,9 @@ class _ShipmentItemState extends State<ShipmentItem> {
   String _pickupAddress = '';
   String _deliveryAddress = '';
   bool _isLoading = true;
+  bool _isDisposed = false; // Flag to prevent background processing after dispose
+  int _retryCount = 0; // Limit retry attempts
+  static const int _maxRetries = 3; // Maximum retry attempts
 
   @override
   void initState() {
@@ -34,12 +37,25 @@ class _ShipmentItemState extends State<ShipmentItem> {
     _resolveAddresses();
   }
 
+  @override
+  void dispose() {
+    _isDisposed = true; // Stop any background geocoding
+    debugPrint('🛑 ShipmentItem disposed - stopping geocoding for ${widget.load?.id ?? widget.shipment?.title}');
+    super.dispose();
+  }
+
   Future<void> _resolveAddresses() async {
+    // Don't proceed if widget is disposed
+    if (_isDisposed || !mounted) {
+      debugPrint('⏹️ Widget disposed or unmounted - skipping geocoding');
+      return;
+    }
+
     try {
       final pickupLocation = widget.load?.pickupLocation ?? widget.shipment?.origin ?? '';
       final deliveryLocation = widget.load?.deliveryLocation ?? widget.shipment?.destination ?? '';
 
-      debugPrint('🌍 Starting parallel address resolution...');
+      debugPrint('🌍 Starting parallel address resolution (attempt ${_retryCount + 1}/$_maxRetries)...');
       debugPrint('   Pickup: $pickupLocation');
       debugPrint('   Delivery: $deliveryLocation');
 
@@ -53,42 +69,73 @@ class _ShipmentItemState extends State<ShipmentItem> {
         eagerError: false,
       );
 
+      // Check if widget was disposed during async operation
+      if (_isDisposed || !mounted) {
+        debugPrint('⏹️ Widget disposed during geocoding - discarding results');
+        return;
+      }
+
       debugPrint('✅ All addresses resolved simultaneously');
       debugPrint('   Pickup: ${results[0].formattedAddress}');
       debugPrint('   Delivery: ${results[1].formattedAddress}');
 
       // Update UI with ALL addresses at once - only if we got REAL addresses
-      if (mounted) {
-        final pickupAddr = results[0].formattedAddress.trim();
-        final deliveryAddr = results[1].formattedAddress.trim();
+      final pickupAddr = results[0].formattedAddress.trim();
+      final deliveryAddr = results[1].formattedAddress.trim();
+      
+      // Check if addresses are valid (not empty and not just coordinates)
+      final hasValidPickup = pickupAddr.isNotEmpty && !_isJustCoordinates(pickupAddr);
+      final hasValidDelivery = deliveryAddr.isNotEmpty && !_isJustCoordinates(deliveryAddr);
+      
+      if (hasValidPickup && hasValidDelivery) {
+        // Got real addresses - update UI
+        setState(() {
+          _pickupAddress = pickupAddr;
+          _deliveryAddress = deliveryAddr;
+          _isLoading = false;
+        });
+      } else if (_retryCount < _maxRetries) {
+        // Retry if we didn't get real addresses and haven't exceeded max retries
+        _retryCount++;
+        debugPrint('⚠️ Got incomplete addresses, retrying... (attempt $_retryCount/$_maxRetries)');
+        debugPrint('   Pickup valid: $hasValidPickup');
+        debugPrint('   Delivery valid: $hasValidDelivery');
+        await Future.delayed(const Duration(seconds: 1));
         
-        // Check if addresses are valid (not empty and not just coordinates)
-        final hasValidPickup = pickupAddr.isNotEmpty && !_isJustCoordinates(pickupAddr);
-        final hasValidDelivery = deliveryAddr.isNotEmpty && !_isJustCoordinates(deliveryAddr);
-        
-        if (hasValidPickup && hasValidDelivery) {
-          // Got real addresses - update UI
-          setState(() {
-            _pickupAddress = pickupAddr;
-            _deliveryAddress = deliveryAddr;
-            _isLoading = false;
-          });
-        } else {
-          // Retry if we didn't get real addresses
-          debugPrint('⚠️ Got incomplete addresses, retrying...');
-          debugPrint('   Pickup valid: $hasValidPickup');
-          debugPrint('   Delivery valid: $hasValidDelivery');
-          await Future.delayed(const Duration(seconds: 1));
+        // Check again before retry
+        if (!_isDisposed && mounted) {
           return await _resolveAddresses();
         }
+      } else {
+        // Max retries exceeded - use whatever we have
+        debugPrint('⚠️ Max retries exceeded - using available addresses');
+        setState(() {
+          _pickupAddress = pickupAddr.isNotEmpty ? pickupAddr : pickupLocation;
+          _deliveryAddress = deliveryAddr.isNotEmpty ? deliveryAddr : deliveryLocation;
+          _isLoading = false;
+        });
       }
     } catch (e) {
       debugPrint('❌ Error resolving addresses: $e');
-      if (mounted) {
+      
+      // Check if disposed before retry
+      if (_isDisposed || !mounted) return;
+      
+      if (_retryCount < _maxRetries) {
         // Retry on error
+        _retryCount++;
         await Future.delayed(const Duration(seconds: 2));
-        if (mounted) {
+        if (!_isDisposed && mounted) {
           return await _resolveAddresses();
+        }
+      } else {
+        // Max retries exceeded - show error state
+        if (mounted) {
+          setState(() {
+            _pickupAddress = 'Address unavailable';
+            _deliveryAddress = 'Address unavailable';
+            _isLoading = false;
+          });
         }
       }
     }
