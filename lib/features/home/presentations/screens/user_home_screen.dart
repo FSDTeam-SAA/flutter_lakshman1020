@@ -32,6 +32,13 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
     if (!Get.isRegistered<LoadController>()) {
       LoadBinding().dependencies();
     }
+    
+    // Fetch loads only if not already loaded (first time or empty)
+    final LoadController loadController = Get.find<LoadController>();
+    if (loadController.loads.isEmpty) {
+      loadController.fetchLoads();
+    }
+    
     // Ensure AccountController is initialized and fetches profile
     Future.delayed(const Duration(milliseconds: 200), () {
       final accountController = Get.find<AccountController>();
