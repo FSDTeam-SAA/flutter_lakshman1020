@@ -16,13 +16,16 @@ class SubscriptionFeatureItem extends StatelessWidget {
 
     if (value is bool) {
       // Show check icon for true, no icon for false (just empty space)
-      valueWidget = value
-          ? const Icon(
-              Icons.check,
-              color: Colors.white,
-              size: 20,
-            )
-          : const SizedBox(width: 20);
+      valueWidget = SizedBox(
+        width: 20,
+        child: value
+            ? const Icon(
+                Icons.check,
+                color: Colors.white,
+                size: 20,
+              )
+            : const SizedBox(width: 20),
+      );
     } else if (value is int || value is double) {
       // Show numeric value
       valueWidget = Text(
@@ -32,15 +35,20 @@ class SubscriptionFeatureItem extends StatelessWidget {
           fontWeight: FontWeight.w500,
           color: Colors.white,
         ),
+        overflow: TextOverflow.ellipsis,
       );
     } else {
       // Show text value (like "Unlimited")
-      valueWidget = Text(
-        value.toString(),
-        style: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-          color: Colors.white,
+      valueWidget = Flexible(
+        child: Text(
+          value.toString(),
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Colors.white,
+          ),
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.right,
         ),
       );
     }
@@ -50,14 +58,18 @@ class SubscriptionFeatureItem extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: Colors.white,
+          Expanded(
+            child: Text(
+              title,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: Colors.white,
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
+          const SizedBox(width: 8), // Add spacing between title and value
           valueWidget,
         ],
       ),

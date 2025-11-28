@@ -17,6 +17,11 @@ class SubscriptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 600;
+    final horizontalPadding = isMobile ? 16.0 : 20.0;
+    final featurePadding = isMobile ? 16.0 : 20.0;
+    
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -53,18 +58,22 @@ class SubscriptionCard extends StatelessWidget {
           
           // Plan Header
           Padding(
-            padding: EdgeInsets.fromLTRB(20, isPopular ? 16 : 20, 20, 16),
+            padding: EdgeInsets.fromLTRB(horizontalPadding, isPopular ? 12 : 16, horizontalPadding, 12),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  plan.name,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF18191A),
+                Expanded(
+                  child: Text(
+                    plan.name,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF18191A),
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
+                const SizedBox(width: 8),
                 Text(
                   "\$${plan.price}/${plan.period}",
                   style: const TextStyle(
@@ -81,8 +90,8 @@ class SubscriptionCard extends StatelessWidget {
           Expanded(
             child: Container(
               width: double.infinity,
-              margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-              padding: const EdgeInsets.all(20),
+              margin: EdgeInsets.fromLTRB(horizontalPadding, 0, horizontalPadding, horizontalPadding),
+              padding: EdgeInsets.all(featurePadding),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   begin: Alignment.topLeft,

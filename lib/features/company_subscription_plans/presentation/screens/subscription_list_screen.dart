@@ -23,7 +23,7 @@ class SubscriptionListScreen extends StatelessWidget {
     return AppScaffold(
       appBar: const CustomAppBar(title: "Subscription plans", titleCenter: true),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 12),
         child: Column(
           children: [
             const SizedBox(height: 20),
@@ -46,12 +46,15 @@ class SubscriptionListScreen extends StatelessWidget {
             const SizedBox(height: 20),
             
             // General subscribe button
-            SubscribeButton(
-              text: "Choose a Plan",
-              onPressed: () {
-                // Show plan selection dialog or navigate
-                _showPlanSelectionDialog(context, plans);
-              },
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: SubscribeButton(
+                text: "Choose a Plan",
+                onPressed: () {
+                  // Show plan selection dialog or navigate
+                  _showPlanSelectionDialog(context, plans);
+                },
+              ),
             ),
             
             const SizedBox(height: 30),
