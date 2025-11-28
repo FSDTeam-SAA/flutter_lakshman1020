@@ -8,7 +8,6 @@ import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_ho
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/recent_shipment_header.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/shipment_filter_tabs.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/shipment_item.dart';
-import 'package:flutter_lakshman1020/features/notification/presentation/screens/messages_screen.dart';
 // Pages used for bottom navigation
 import 'package:flutter_lakshman1020/features/others/presentation/screen/shipment_screen.dart';
 import 'package:get/get.dart';
