@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_lakshman1020/features/others/presentation/widgets/company_appbar.dart';
 import 'package:flutter_lakshman1020/features/others/presentation/widgets/company_drawer.dart';
 import 'package:get/get.dart';
 
@@ -302,7 +303,7 @@ class _CompanyDispatcherScreenState extends State<CompanyDispatcherScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Spark delivery"), centerTitle: true),
+      appBar: CompanyAppbar(),
       drawer: CompanyDrawer(),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18),

@@ -13,6 +13,7 @@ import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/Ot
 import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/SignInRoleScreen.dart';
 import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/set_new_password_screen.dart';
 import 'package:flutter_lakshman1020/features/company_subscription_plans/presentation/controllers/subscription_controller.dart';
+import 'package:flutter_lakshman1020/features/company_subscription_plans/presentation/screens/subscription_screen.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/controllers/load_controller.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/screens/dispatcher_home_screen.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/screens/driver_home_screen.dart';
@@ -28,6 +29,9 @@ class AuthController extends BaseController {
   final AuthStorageService _authStorageService;
 
   AuthController(this._authRepository, this._authStorageService);
+
+  // Flag to track if user is in signup flow (for subscription paywall)
+  final RxBool isSignupFlow = false.obs;
 
   Future<void> login(String email, String password) async {
     setLoading(true);
@@ -251,7 +255,7 @@ class AuthController extends BaseController {
         DPrint.log("Register failed: ${fail.message}");
         setLoading(false);
       },
-      (success) {
+      (success) async {
         DPrint.log("Register success: ${success.data.id}");
 
         Get.snackbar(
@@ -265,8 +269,35 @@ class AuthController extends BaseController {
           duration: const Duration(seconds: 2),
         );
 
-        // Navigate to login screen after signup
-        Get.off(() => LoginRoleScreen());
+        // ✅ IMPORTANT: Store auth tokens from signup response
+        await _authStorageService.storeAuthData(
+          accessToken: success.data.accessToken,
+          refreshToken: success.data.refreshToken,
+          userId: success.data.id,
+          role: success.data.role,
+          companyId: role == 'company' ? success.data.id : null,
+        );
+        
+        DPrint.log("✅ Auth tokens stored from signup response");
+
+        // Check if registered as company
+        if (role == 'company') {
+          // Mark as signup flow for subscription paywall
+          isSignupFlow.value = true;
+          
+          // Reset AccountController to ensure fresh profile fetch with new tokens
+          if (Get.isRegistered<AccountController>()) {
+            Get.delete<AccountController>();
+          }
+          
+          // Redirect to subscription screen for mandatory subscription
+          DPrint.log('🎯 Company signup successful - Redirecting to subscription screen');
+          Get.off(() => const SubscriptionScreen());
+        } else {
+          // Navigate to login screen for other roles after signup
+          Get.off(() => LoginRoleScreen());
+        }
+        
         setLoading(false);
       },
     );

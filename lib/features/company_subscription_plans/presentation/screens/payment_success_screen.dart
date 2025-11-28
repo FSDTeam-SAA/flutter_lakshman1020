@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_lakshman1020/features/auth/users/presentation/controller/auth_controller.dart';
 import 'package:flutter_lakshman1020/features/company_subscription_plans/data/models/confirm_payment_request_model.dart';
 import 'package:flutter_lakshman1020/features/company_subscription_plans/domain/payment_repo.dart';
 import 'package:flutter_lakshman1020/features/others/presentation/screen/dashboard_overview_scren.dart';
@@ -37,6 +38,18 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
       await _paymentRepository.confirmPayment(request);
       
       print("✅ Payment confirmation API called");
+
+      // Check if this is from signup flow
+      try {
+        final authController = Get.find<AuthController>();
+        if (authController.isSignupFlow.value) {
+          // Reset signup flag
+          authController.isSignupFlow.value = false;
+          print("🎯 Post-signup subscription completed - Redirecting to dashboard");
+        }
+      } catch (e) {
+        print("ℹ️ AuthController not found, continuing to dashboard");
+      }
 
       // Navigate to dashboard
       Get.offAll(DashboardScreen());

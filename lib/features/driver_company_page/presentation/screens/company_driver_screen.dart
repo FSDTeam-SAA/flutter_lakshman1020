@@ -3,6 +3,7 @@ import 'package:flutter_lakshman1020/core/widgets/app_scaffold.dart';
 import 'package:flutter_lakshman1020/features/manage_users/presentation/add_driver_screen.dart';
 import 'package:get/get.dart';
 
+import '../../../others/presentation/widgets/company_appbar.dart';
 import '../../../others/presentation/widgets/company_drawer.dart';
 import '../bindings/driver_binding.dart';
 import '../controllers/driver_controller.dart';
@@ -36,7 +37,7 @@ class _CompanyDriverScreenState extends State<CompanyDriverScreen> {
     });
 
     return AppScaffold(
-      appBar: AppBar(title: Text("Spark delivery"), centerTitle: true),
+      appBar: CompanyAppbar(),
       drawer: CompanyDrawer(),
       body: Obx(
         () {
