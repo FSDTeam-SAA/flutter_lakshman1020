@@ -9,10 +9,13 @@ import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../../../core/constants/app_icons.dart';
+import '../../data/datasources/category_remote_datasource.dart';
 import '../../data/datasources/load_remote_datasource.dart';
+import '../../data/repositories/category_repository_impl.dart';
 import '../../data/repositories/load_repository_impl.dart';
 import '../../models/app_text_styles.dart';
 import '../bindings/company_binding.dart';
+import '../controllers/category_controller.dart';
 import '../controllers/company_controller.dart';
 import '../controllers/load_controller.dart';
 import 'location_picker_screen.dart';
@@ -39,6 +42,7 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
   final TextEditingController _noteController = TextEditingController();
 
   String _categorySelected = 'Medicine';
+  String? _selectedCategoryId;
   String _companySelected = 'Default';
   String? _selectedCompanyId;
   LatLng? _pickupLatLng;
@@ -152,15 +156,8 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Category
-              _buildDropdown(
-                label: "Category",
-                items: ["Medicine", "Furniture"],
-                value: _categorySelected,
-                onChanged: (v) {
-                  if (v != null) setState(() => _categorySelected = v);
-                },
-              ),
+              // Category - Dynamic from API
+              _buildCategoryDropdown(),
               const SizedBox(height: 16),
 
               // Company - Dynamic from API
@@ -320,6 +317,7 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
 
                         // Reset dropdown selections
                         _categorySelected = 'Medicine';
+                        _selectedCategoryId = null;
                         _companySelected = 'Default';
                         _selectedCompanyId = null;
 
@@ -367,6 +365,21 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
       // Fetch companies when controller is initialized
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Get.find<CompanyController>().fetchCompanies();
+      });
+    }
+
+    // Initialize category controller
+    if (!Get.isRegistered<CategoryController>()) {
+      // Set up dependencies manually for immediate availability
+      final apiClient = Get.find<ApiClient>();
+      final categoryDataSource = CategoryRemoteDataSourceImpl(apiClient: apiClient);
+      final categoryRepository = CategoryRepositoryImpl(remoteDataSource: categoryDataSource);
+      final categoryController = CategoryController(repository: categoryRepository);
+      Get.put(categoryController, permanent: true);
+      
+      // Fetch categories when controller is initialized
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        categoryController.fetchCategories();
       });
     }
   }
@@ -521,34 +534,7 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
     }
   }
 
-  Widget _buildDropdown({
-    required String label,
-    required List<String> items,
-    String? value,
-    ValueChanged<String?>? onChanged,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: TTextStyles.label),
-        const SizedBox(height: 6),
-        DropdownButtonFormField<String>(
-          value: value ?? items.first,
-          items: items
-              .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-              .toList(),
-          onChanged: onChanged ?? (v) {},
-          decoration: InputDecoration(
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 14,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+
 
   Widget _buildCompanyDropdown() {
     return Column(
@@ -656,6 +642,124 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
               ),
             ),
           );
+        }),
+      ],
+    );
+  }
+
+  Widget _buildCategoryDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("Category", style: TTextStyles.label),
+        const SizedBox(height: 6),
+        Obx(() {
+          try {
+            final categoryController = Get.find<CategoryController>();
+            
+            if (categoryController.isLoading.value) {
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      height: 16,
+                      width: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                    SizedBox(width: 12),
+                    Text("Loading categories...", style: TTextStyles.hint),
+                  ],
+                ),
+              );
+            }
+
+            if (categoryController.categories.isEmpty) {
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text("No categories available", style: TTextStyles.hint),
+              );
+            }
+
+            final categoryItems = categoryController.categoryDisplayItems;
+
+            // If we have categories but no selection, select the first one
+            if ((_categorySelected == 'Medicine' || _selectedCategoryId == null) &&
+                categoryItems.isNotEmpty) {
+              _categorySelected = categoryItems.first['name']!;
+              _selectedCategoryId = categoryItems.first['id']!;
+            }
+
+            // Find current selection display value
+            String? currentDisplayValue;
+            if (_selectedCategoryId != null) {
+              try {
+                final currentItem = categoryItems
+                    .where((item) => item['id'] == _selectedCategoryId)
+                    .first;
+                currentDisplayValue = currentItem['display'];
+              } catch (e) {
+                // If not found, will use fallback
+                currentDisplayValue = null;
+              }
+            }
+
+            return DropdownButtonFormField<String>(
+              value: currentDisplayValue ?? (categoryItems.isNotEmpty ? categoryItems.first['display'] : null),
+              items: categoryItems
+                  .map(
+                    (item) => DropdownMenuItem(
+                      value: item['display'],
+                      child: Text(item['display']!),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (selectedDisplay) {
+                if (selectedDisplay != null) {
+                  // Find the item by display name
+                  try {
+                    final selectedItem = categoryItems
+                        .where((item) => item['display'] == selectedDisplay)
+                        .first;
+                    setState(() {
+                      _categorySelected = selectedItem['name']!;
+                      _selectedCategoryId = selectedItem['id']!;
+                    });
+                  } catch (e) {
+                    // Handle case where item is not found
+                    debugPrint('Category item not found for display: $selectedDisplay');
+                  }
+                }
+              },
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 14,
+                ),
+              ),
+            );
+          } catch (e) {
+            // Fallback if CategoryController is not found
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text("Initializing categories...", style: TTextStyles.hint),
+            );
+          }
         }),
       ],
     );

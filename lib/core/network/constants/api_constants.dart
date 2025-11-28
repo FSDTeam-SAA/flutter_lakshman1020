@@ -40,6 +40,7 @@ class ApiConstants {
   static PaymentEndpoints get payment => PaymentEndpoints();
   
   static CompanyEndpoints get company => CompanyEndpoints();
+  static CategoryEndpoints get category => CategoryEndpoints();
   static ChatEndpoints get chat => ChatEndpoints();// Soykot
 }
 
@@ -146,6 +147,12 @@ class CompanyEndpoints {
   String removeDispatcher(String id) => '$_base/dispacher/$id';
   String getDriverDetails(String id) => '$_base/driver/$id';
   String removeDriver(String id) => '$_base/driver/$id';
+}
+
+class CategoryEndpoints {
+  static const String _base = '${ApiConstants.baseUrl}/category';
+
+  final String getAllCategories = _base;
 }
 
 //Soykot
