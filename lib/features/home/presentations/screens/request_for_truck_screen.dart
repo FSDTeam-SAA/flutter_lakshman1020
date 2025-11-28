@@ -12,6 +12,8 @@ import '../../../../core/constants/app_icons.dart';
 import '../../data/datasources/load_remote_datasource.dart';
 import '../../data/repositories/load_repository_impl.dart';
 import '../../models/app_text_styles.dart';
+import '../bindings/company_binding.dart';
+import '../controllers/company_controller.dart';
 import '../controllers/load_controller.dart';
 import 'location_picker_screen.dart';
 
@@ -38,6 +40,7 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
 
   String _categorySelected = 'Medicine';
   String _companySelected = 'Default';
+  String? _selectedCompanyId;
   LatLng? _pickupLatLng;
   LatLng? _deliveryLatLng;
 
@@ -160,15 +163,8 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Company
-              _buildDropdown(
-                label: "Company",
-                items: ["Default", "Company A"],
-                value: _companySelected,
-                onChanged: (v) {
-                  if (v != null) setState(() => _companySelected = v);
-                },
-              ),
+              // Company - Dynamic from API
+              _buildCompanyDropdown(),
               const SizedBox(height: 32),
 
               // Pickup Location
@@ -293,7 +289,9 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
                       'deliveryLocation': _deliveryLatLng != null
                           ? '${_deliveryLatLng!.latitude}, ${_deliveryLatLng!.longitude}'
                           : delivery,
-                      'companyToken': '68e9cee3c24ab343ad8335b1', // placeholder
+                      'companyToken':
+                          _selectedCompanyId ??
+                          '68e9cee3c24ab343ad8335b1', // Use selected company ID or fallback
                       'loadBy': '68f3387fa6174ce77995a604', // placeholder
                       'orderStatus': 'pending',
                       if (pickupDateIso != null) 'pickupDate': pickupDateIso,
@@ -305,7 +303,9 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
 
                       // Show success message
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Load created successfully ')),
+                        const SnackBar(
+                          content: Text('Load created successfully '),
+                        ),
                       );
 
                       // Reset form fields to default state
@@ -321,6 +321,7 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
                         // Reset dropdown selections
                         _categorySelected = 'Medicine';
                         _companySelected = 'Default';
+                        _selectedCompanyId = null;
 
                         // Reset stored LatLngs and date/time
                         _pickupLatLng = null;
@@ -336,11 +337,10 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
                         SnackBar(content: Text('Failed to create load: $e')),
                       );
                     }
-
                   },
                 );
-              }
-              ),const SizedBox(height: 30,),
+              }),
+              const SizedBox(height: 30),
             ],
           ),
         ),
@@ -351,16 +351,23 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
   @override
   void initState() {
     super.initState();
-    // Initialize controller using the binding setup to ensure proper DI
+    // Initialize controllers using the binding setup to ensure proper DI
     if (!Get.isRegistered<LoadController>()) {
-      final remoteDataSource = LoadRemoteDataSourceImpl(
-        apiClient: ApiClient(),
-      );
+      final remoteDataSource = LoadRemoteDataSourceImpl(apiClient: ApiClient());
       final repository = LoadRepositoryImpl(
         remoteDataSource: remoteDataSource,
         apiClient: ApiClient(),
       );
       Get.put(LoadController(repository: repository));
+    }
+
+    // Initialize company controller and binding
+    if (!Get.isRegistered<CompanyController>()) {
+      CompanyBinding().dependencies();
+      // Fetch companies when controller is initialized
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Get.find<CompanyController>().fetchCompanies();
+      });
     }
   }
 
@@ -442,9 +449,9 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
   }
 
   Future<void> _openMapAndSetController(
-      TextEditingController controller, {
-        required bool isPickup,
-      }) async {
+    TextEditingController controller, {
+    required bool isPickup,
+  }) async {
     // Parse existing coordinates if available
     LatLng? initial;
     if (controller.text.isNotEmpty && controller.text.contains(',')) {
@@ -483,12 +490,12 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
           final p = placemarks.first;
           setState(() {
             controller.text =
-            '${p.name ?? ''}, ${p.locality ?? ''}, ${p.country ?? ''}';
+                '${p.name ?? ''}, ${p.locality ?? ''}, ${p.country ?? ''}';
           });
         } else {
           setState(() {
             controller.text =
-            '${result.latitude.toStringAsFixed(5)}, ${result.longitude.toStringAsFixed(5)}';
+                '${result.latitude.toStringAsFixed(5)}, ${result.longitude.toStringAsFixed(5)}';
           });
         }
 
@@ -496,7 +503,7 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
       } catch (_) {
         setState(() {
           controller.text =
-          '${result.latitude.toStringAsFixed(5)}, ${result.longitude.toStringAsFixed(5)}';
+              '${result.latitude.toStringAsFixed(5)}, ${result.longitude.toStringAsFixed(5)}';
         });
         FocusScope.of(context).unfocus();
       }
@@ -512,11 +519,9 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
         ),
       );
     }
-}
+  }
 
-
-
-    Widget _buildDropdown({
+  Widget _buildDropdown({
     required String label,
     required List<String> items,
     String? value,
@@ -541,6 +546,117 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
             ),
           ),
         ),
+      ],
+    );
+  }
+
+  Widget _buildCompanyDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("Company", style: TTextStyles.label),
+        const SizedBox(height: 6),
+        Obx(() {
+          final companyController = Get.find<CompanyController>();
+          if (companyController.isLoading.value) {
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  SizedBox(
+                    height: 16,
+                    width: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                  SizedBox(width: 12),
+                  Text("Loading companies...", style: TTextStyles.hint),
+                ],
+              ),
+            );
+          }
+
+          if (companyController.companies.isEmpty) {
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text("No companies available", style: TTextStyles.hint),
+            );
+          }
+
+          final companyItems = companyController.companyDisplayItems;
+
+          // If we have companies but no selection, select the first one or default
+          if ((_companySelected == 'Default' || _selectedCompanyId == null) &&
+              companyItems.isNotEmpty) {
+            final defaultCompany = companyController.getDefaultCompany();
+            if (defaultCompany != null) {
+              _companySelected = defaultCompany.name;
+              _selectedCompanyId = defaultCompany.id;
+            } else {
+              _companySelected = companyItems.first['name']!;
+              _selectedCompanyId = companyItems.first['id']!;
+            }
+          }
+
+          // Find current selection display value
+          String? currentDisplayValue;
+          if (_selectedCompanyId != null) {
+            try {
+              final currentItem = companyItems
+                  .where((item) => item['id'] == _selectedCompanyId)
+                  .first;
+              currentDisplayValue = currentItem['display'];
+            } catch (e) {
+              // If not found, will use fallback
+              currentDisplayValue = null;
+            }
+          }
+
+            return DropdownButtonFormField<String>(
+              value: currentDisplayValue ?? (companyItems.isNotEmpty ? companyItems.first['display'] : null),
+            items: companyItems
+                .map(
+                  (item) => DropdownMenuItem(
+                    value: item['display'],
+                    child: Text(item['display']!),
+                  ),
+                )
+                .toList(),
+            onChanged: (selectedDisplay) {
+              if (selectedDisplay != null) {
+                // Find the item by display name
+                try {
+                  final selectedItem = companyItems
+                      .where((item) => item['display'] == selectedDisplay)
+                      .first;
+                  setState(() {
+                    _companySelected = selectedItem['name']!;
+                    _selectedCompanyId = selectedItem['id']!;
+                  });
+                } catch (e) {
+                  // Handle case where item is not found
+                    debugPrint('Company item not found for display: $selectedDisplay');
+                }
+              }
+            },
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 14,
+              ),
+            ),
+          );
+        }),
       ],
     );
   }

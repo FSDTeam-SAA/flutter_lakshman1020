@@ -138,6 +138,7 @@ class AskPriceEndpoints{
 class CompanyEndpoints {
   static const String _base = '${ApiConstants.baseUrl}/company';
 
+  final String getAllCompanies = '$_base/all-company';
   final String createDriver = '$_base/create-driver';
   final String createDispatcher = '$_base/create-dispacher';
   final String getDispatchers = '$_base/dispacher'; // Note: API has typo "dispacher"
