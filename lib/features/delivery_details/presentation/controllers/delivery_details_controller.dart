@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/constants/api_constants.dart';
+import '../../../../core/network/services/auth_storage_service.dart';
 import '../../../home/data/models/load_model.dart';
 import '../../data/services/geocoding_service.dart';
 
@@ -28,6 +29,13 @@ class DeliveryDetailsController extends GetxController {
 
   /// Local loading flag for price-action calls
   final isActionLoading = false.obs;
+
+  /// Payment-related fields
+  final price = 0.0.obs;
+  final isPaymentLoading = false.obs;
+
+  /// Auth storage service for getting user ID
+  final AuthStorageService _authStorageService = AuthStorageService();
 
   DeliveryDetailsController({this.initialLoadId});
 
@@ -107,9 +115,9 @@ class DeliveryDetailsController extends GetxController {
       // DeliveryInfoCard shows the map keys as labels.
       final mapped = <String, String>{
         'title': (data['title'] ?? 'Delivery Details').toString(),
-        // Driver info / contact / delivery id remain untouched for now
-        'Driver Name': 'Michael ken',
-        'Mobile': '+7853665363',
+        // Driver info will be updated when fetchLoadDetailById is called
+        'Driver Name': 'N/A',
+        'Mobile': 'N/A',
         'Pickup Address': pickupAddressModel.formattedAddress,
         'Delivery Address': deliveryAddressModel.formattedAddress,
         'Delivered Date': _formatDateSafe(data['pickupDate']?.toString()),
@@ -153,6 +161,14 @@ class DeliveryDetailsController extends GetxController {
           // data is expected to be the load object
           final load = LoadModel.fromJson(data);
 
+          // Extract askPrice from load if available
+          if (load.askPrice != null && load.askPrice! > 0) {
+            price.value = load.askPrice!;
+            print('💰 askPrice extracted from load: ${price.value}');
+          } else {
+            print('⚠️ No askPrice found in load response');
+          }
+
           // Map orderStatus to step
           // Keep the raw orderStatus so the UI can make decisions (e.g., 'asked')
           orderStatus.value = load.orderStatus.toString();
@@ -192,10 +208,17 @@ class DeliveryDetailsController extends GetxController {
             final pickupAddress = results[0].formattedAddress;
             final deliveryAddress = results[1].formattedAddress;
 
+            // Get driver name and phone using helper methods
+            final driverName = load.getDriverName();
+            final driverPhone = load.getDriverPhone() ?? 'N/A';
+
+            print('👤 Driver Name: $driverName');
+            print('📱 Driver Phone: $driverPhone');
+
             final mapped = <String, String>{
               'title': load.title,
-              'Driver Name': 'Michael ken',
-              'Mobile': '+7853665363',
+              'Driver Name': driverName,
+              'Mobile': driverPhone,
               'Pickup Address': pickupAddress,
               'Delivery Address': deliveryAddress,
               'Delivered Date': pickupDateString.value,
@@ -306,6 +329,12 @@ class DeliveryDetailsController extends GetxController {
                   }
                   final load = LoadModel.fromJson(data);
 
+                  // Extract askPrice if available
+                  if (load.askPrice != null && load.askPrice! > 0) {
+                    price.value = load.askPrice!;
+                    print('💰 askPrice extracted from price action (PATCH): ${price.value}');
+                  }
+
                   orderStatus.value = load.orderStatus.toString();
                   switch (orderStatus.value.toLowerCase()) {
                     case 'ask_pending':
@@ -334,10 +363,13 @@ class DeliveryDetailsController extends GetxController {
                   final pickupAddress = results[0].formattedAddress;
                   final deliveryAddress = results[1].formattedAddress;
 
+                  final driverName = load.getDriverName();
+                  final driverPhone = load.getDriverPhone() ?? 'N/A';
+
                   final mapped = <String, String>{
                     'title': load.title,
-                    'Driver Name': 'Michael ken',
-                    'Mobile': '+7853665363',
+                    'Driver Name': driverName,
+                    'Mobile': driverPhone,
                     'Pickup Address': pickupAddress,
                     'Delivery Address': deliveryAddress,
                     'Delivered Date': pickupDateString.value,
@@ -396,6 +428,12 @@ class DeliveryDetailsController extends GetxController {
           }
           final load = LoadModel.fromJson(data);
 
+          // Extract askPrice if available
+          if (load.askPrice != null && load.askPrice! > 0) {
+            price.value = load.askPrice!;
+            print('💰 askPrice extracted from price action (POST): ${price.value}');
+          }
+
           // Update raw order status and computed step
           orderStatus.value = load.orderStatus.toString();
           switch (orderStatus.value.toLowerCase()) {
@@ -427,10 +465,13 @@ class DeliveryDetailsController extends GetxController {
           final pickupAddress = results[0].formattedAddress;
           final deliveryAddress = results[1].formattedAddress;
 
+          final driverName = load.getDriverName();
+          final driverPhone = load.getDriverPhone() ?? 'N/A';
+
           final mapped = <String, String>{
             'title': load.title,
-            'Driver Name': 'Michael ken',
-            'Mobile': '+7853665363',
+            'Driver Name': driverName,
+            'Mobile': driverPhone,
             'Pickup Address': pickupAddress,
             'Delivery Address': deliveryAddress,
             'Delivered Date': pickupDateString.value,
@@ -469,6 +510,147 @@ class DeliveryDetailsController extends GetxController {
       return '$dd/$mm/$yyyy';
     } catch (_) {
       return iso.split('T').first; // fallback to date portion if parse fails
+    }
+  }
+
+  /// Create payment for the current load
+  Future<String?> createOrderPayment() async {
+    try {
+      isPaymentLoading.value = true;
+
+      // Get loadId from initialLoadId or deliveryList
+      final loadId = initialLoadId ??
+          (deliveryList.isNotEmpty ? deliveryList[0]['Delivered ID'] : null);
+      
+      if (loadId == null || loadId.isEmpty) {
+        print('❌ No load ID available for payment');
+        Get.snackbar(
+          'Error',
+          'Load ID not found',
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 3),
+        );
+        return null;
+      }
+
+      // Check if price is set (you should set this from API response when status changes to 'driver_assigned')
+      if (price.value <= 0) {
+        print('❌ Price not available');
+        Get.snackbar(
+          'Error',
+          'Price information not available. Please contact support.',
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 3),
+        );
+        return null;
+      }
+
+      print('🔍 Creating order payment for load: $loadId, price: ${price.value}');
+
+      // Get user ID from secure storage
+      final userId = await _authStorageService.getUserId();
+      if (userId == null || userId.isEmpty) {
+        print('❌ User ID not found');
+        Get.snackbar(
+          'Error',
+          'User authentication required. Please log in again.',
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 3),
+        );
+        return null;
+      }
+
+      final apiClient = ApiClient();
+      final payload = {
+        'loadId': loadId,
+        'userId': userId,
+        'price': price.value,
+        'type': 'order',
+      };
+
+      print('📦 Payment request payload: $payload');
+
+      final result = await apiClient.post<Map<String, dynamic>>(
+        ApiConstants.payment.createPayment,
+        data: payload,
+        fromJsonT: (json) => json as Map<String, dynamic>,
+      );
+
+      return result.fold(
+        (failure) {
+          print('❌ Failed to create payment: ${failure.message}');
+          Get.snackbar(
+            'Payment Error',
+            failure.message,
+            snackPosition: SnackPosition.BOTTOM,
+            duration: const Duration(seconds: 3),
+          );
+          return null;
+        },
+        (success) {
+          final clientSecret = success.data['clientSecret'] as String?;
+          if (clientSecret == null || clientSecret.isEmpty) {
+            print('❌ Client secret not found in response');
+            Get.snackbar(
+              'Payment Error',
+              'Invalid payment response',
+              snackPosition: SnackPosition.BOTTOM,
+              duration: const Duration(seconds: 3),
+            );
+            return null;
+          }
+          
+          print('✅ Payment created successfully. Client Secret: $clientSecret');
+          return clientSecret;
+        },
+      );
+    } catch (e) {
+      print('❌ Exception creating payment: $e');
+      Get.snackbar(
+        'Error',
+        'Failed to create payment: $e',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 3),
+      );
+      return null;
+    } finally {
+      isPaymentLoading.value = false;
+    }
+  }
+
+  /// Confirm payment after successful Stripe payment
+  Future<bool> confirmPayment(String paymentIntentId) async {
+    try {
+      print('🔄 Confirming payment with Payment Intent ID: $paymentIntentId');
+
+      final apiClient = ApiClient();
+      final payload = {
+        'paymentIntentId': paymentIntentId,
+      };
+
+      print('📦 Confirm payment request payload: $payload');
+
+      final result = await apiClient.post<Map<String, dynamic>>(
+        ApiConstants.payment.confirmPayment,
+        data: payload,
+        fromJsonT: (json) => json as Map<String, dynamic>,
+      );
+
+      return result.fold(
+        (failure) {
+          print('❌ Failed to confirm payment: ${failure.message}');
+          // Don't show error to user since payment was successful on Stripe side
+          return false;
+        },
+        (success) {
+          print('✅ Payment confirmed successfully on backend');
+          return true;
+        },
+      );
+    } catch (e) {
+      print('❌ Exception confirming payment: $e');
+      // Don't show error to user since payment was successful on Stripe side
+      return false;
     }
   }
 }

@@ -13,6 +13,8 @@ class LoadModel extends LoadEntity {
     required super.orderStatus,
     required super.pickupDate,
     required super.note,
+    super.askPrice,
+    super.driver,
     required super.createdAt,
     required super.updatedAt,
   });
@@ -64,6 +66,19 @@ class LoadModel extends LoadEntity {
       loadBy = UserModel.fromJson({});
     }
 
+    // Handle driver - can be null, a string ID, or a populated object
+    dynamic driver;
+    final driverData = json['driver'];
+    if (driverData == null) {
+      driver = null;
+    } else if (driverData is String) {
+      // Just an ID string, keep it as string
+      driver = driverData;
+    } else if (driverData is Map<String, dynamic>) {
+      // Populated driver object, parse as UserModel
+      driver = UserModel.fromJson(driverData);
+    }
+
     return LoadModel(
       id: json['_id'] ?? '',
       title: json['title'] ?? '',
@@ -78,6 +93,8 @@ class LoadModel extends LoadEntity {
           ? DateTime.parse(json['pickupDate'])
           : DateTime.now(),
       note: json['note'] ?? '',
+      askPrice: json['askPrice'] != null ? (json['askPrice'] as num).toDouble() : null,
+      driver: driver,
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'])
           : DateTime.now(),
@@ -100,6 +117,8 @@ class LoadModel extends LoadEntity {
       'orderStatus': orderStatus,
       'pickupDate': pickupDate.toIso8601String(),
       'note': note,
+      if (askPrice != null) 'askPrice': askPrice,
+      if (driver != null) 'driver': driver,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
     };

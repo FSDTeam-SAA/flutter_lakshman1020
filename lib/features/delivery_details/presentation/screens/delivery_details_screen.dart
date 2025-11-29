@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
 import 'package:flutter_lakshman1020/core/widgets/skeleton_loader.dart';
+import 'package:flutter_lakshman1020/features/company_subscription_plans/data/services/stripe_service.dart';
 import 'package:get/get.dart';
 
 import '../controllers/delivery_details_controller.dart';
@@ -10,6 +11,8 @@ import '../widgets/products_details_card.dart'; // Adjust import path as needed
 
 class DeliveryDetailsScreen extends StatelessWidget {
   DeliveryDetailsScreen({super.key});
+
+  final _stripeServices = StripeServices();
 
   static String? _resolveIdFromArgs() {
     final args = Get.arguments;
@@ -223,22 +226,35 @@ class DeliveryDetailsScreen extends StatelessWidget {
                             ),
                             const SizedBox(width: 12),
                             Expanded(
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color(0xff1E66FF),
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 14,
+                              child: Obx(
+                                () => ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color(0xff1E66FF),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 14,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
                                   ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                                onPressed: () {
-                                  // TODO: implement pay action
-                                },
-                                child: const Text(
-                                  'Pay',
-                                  style: TextStyle(color: Colors.white),
+                                  onPressed: controller.isPaymentLoading.value
+                                      ? null
+                                      : () => _handlePayment(context, controller),
+                                  child: controller.isPaymentLoading.value
+                                      ? const SizedBox(
+                                          height: 16,
+                                          width: 16,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            valueColor: AlwaysStoppedAnimation(
+                                              Colors.white,
+                                            ),
+                                          ),
+                                        )
+                                      : const Text(
+                                          'Pay',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
                                 ),
                               ),
                             ),
@@ -255,5 +271,157 @@ class DeliveryDetailsScreen extends StatelessWidget {
         );
       }),
     );
+  }
+
+  /// Handle payment flow for the order
+  Future<void> _handlePayment(
+    BuildContext context,
+    DeliveryDetailsController controller,
+  ) async {
+    try {
+      print('🎯 Starting order payment process');
+
+      // Validate that price is available from API
+      if (controller.price.value <= 0) {
+        print('❌ Price not available from API');
+        Get.snackbar(
+          'Error',
+          'Price information not available. Please try again or contact support.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          icon: const Icon(Icons.error, color: Colors.white),
+          duration: const Duration(seconds: 3),
+        );
+        return;
+      }
+
+      print('💰 Using price from API: ${controller.price.value}');
+
+      // Show loading dialog
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator(),
+              const SizedBox(height: 16),
+              Text("Creating payment for \$${controller.price.value.toStringAsFixed(2)}..."),
+            ],
+          ),
+        ),
+      );
+
+      // Step 1: Create payment and get client secret
+      final clientSecret = await controller.createOrderPayment();
+
+      // Close loading dialog
+      if (context.mounted) Navigator.of(context).pop();
+
+      if (clientSecret == null || clientSecret.isEmpty) {
+        print('❌ Failed to create payment');
+        return;
+      }
+
+      print('✅ Client secret received: ${clientSecret.substring(0, 20)}...');
+
+      // Show Stripe payment dialog
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text("Processing payment..."),
+            ],
+          ),
+        ),
+      );
+
+      // Step 2: Process payment with Stripe
+      final paymentIntentId = await _stripeServices.makePaymentWithClientSecret(
+        clientSecret: clientSecret,
+      );
+
+      // Close loading dialog
+      if (context.mounted) Navigator.of(context).pop();
+
+      if (paymentIntentId != null && paymentIntentId.isNotEmpty) {
+        print('✅ Payment completed successfully');
+        print('🎫 Payment Intent ID: $paymentIntentId');
+
+        // Step 3: Confirm payment with backend
+        await controller.confirmPayment(paymentIntentId);
+
+        // Show success message
+        Get.snackbar(
+          'Payment Successful',
+          'Payment of \$${controller.price.value.toStringAsFixed(2)} completed successfully!',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          icon: const Icon(Icons.check_circle, color: Colors.white),
+          duration: const Duration(seconds: 4),
+        );
+
+        // Refresh load details to get updated status
+        if (controller.initialLoadId != null && controller.initialLoadId!.isNotEmpty) {
+          await controller.fetchLoadDetailById(controller.initialLoadId!);
+        }
+      } else {
+        print('❌ Payment Intent ID is null');
+        if (context.mounted) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text("Payment Error"),
+              content: const Text("Could not retrieve payment information. Please try again."),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text("OK"),
+                ),
+              ],
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      print('❌ Payment failed with error: $e');
+
+      // Close any open dialogs
+      if (context.mounted) {
+        // Try to pop dialogs safely
+        try {
+          Navigator.of(context).pop();
+        } catch (_) {}
+      }
+
+      // Show error dialog
+      if (context.mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("Payment Failed"),
+            content: Text(
+              "Failed to process payment: ${e.toString()}",
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text("Try Again"),
+              ),
+            ],
+          ),
+        );
+      }
+    }
   }
 }

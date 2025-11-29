@@ -10,6 +10,8 @@ class LoadEntity {
   final String orderStatus;
   final DateTime pickupDate;
   final String note;
+  final double? askPrice;  // Price asked by company (optional as older loads may not have it)
+  final dynamic driver;  // Can be String (ID) or UserEntity (populated driver object)
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -25,9 +27,31 @@ class LoadEntity {
     required this.orderStatus,
     required this.pickupDate,
     required this.note,
+    this.askPrice,  // Optional askPrice
+    this.driver,  // Optional driver (String ID or UserEntity)
     required this.createdAt,
     required this.updatedAt,
   });
+
+  // Helper method to get driver name
+  String getDriverName() {
+    if (driver == null) return 'N/A';
+    if (driver is UserEntity) {
+      return (driver as UserEntity).name;
+    }
+    if (driver is String && (driver as String).isNotEmpty) {
+      return 'N/A'; // Driver ID only, no name available
+    }
+    return 'N/A';
+  }
+
+  // Helper method to get driver phone
+  String? getDriverPhone() {
+    if (driver != null && driver is UserEntity) {
+      return (driver as UserEntity).phone;
+    }
+    return null;
+  }
 }
 
 class CompanyEntity {
