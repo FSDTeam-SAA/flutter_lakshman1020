@@ -93,6 +93,7 @@ class NotificationEndpoints {
   static const String _base = '${ApiConstants.baseUrl}/notification';
 
   final String getnotifications = '$_base/getnotifications';
+  final String getAllNotifications = _base;
 }
 
 class TeamEndpointcs {
