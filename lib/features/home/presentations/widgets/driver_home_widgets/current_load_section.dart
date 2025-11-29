@@ -5,6 +5,7 @@ import 'package:flutter_lakshman1020/core/widgets/skeleton_loader.dart';
 import 'package:flutter_lakshman1020/features/accounts/data/models/driver_profile_response_model.dart';
 import 'package:flutter_lakshman1020/features/delivery_details/presentation/screens/driver_delivery_details_screen.dart';
 import 'package:flutter_lakshman1020/features/home/controller/driver_home_controller.dart';
+import 'package:flutter_lakshman1020/features/home/presentations/screens/load_navigation_screen.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/driver_home_widgets/load_stop.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -287,7 +288,12 @@ class _LoadCard extends StatelessWidget {
               Row(
                 children: [
                   TextButton.icon(
-                    onPressed: () {},
+                    onPressed: () {
+                      // Navigate to map screen with load details
+                      Get.to(
+                        () => LoadNavigationScreen(load: load),
+                      );
+                    },
                     icon: const Image(
                       image: AssetImage(AppImages.truckIcon),
                       height: 12,
