@@ -35,6 +35,10 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
     
     // Fetch loads only if not already loaded (first time or empty)
     final LoadController loadController = Get.find<LoadController>();
+    
+    // Clear any previous error messages
+    loadController.errorMessage.value = '';
+    
     if (loadController.loads.isEmpty) {
       loadController.fetchLoads();
     }

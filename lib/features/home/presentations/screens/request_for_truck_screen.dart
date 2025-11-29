@@ -15,10 +15,12 @@ import '../../data/repositories/category_repository_impl.dart';
 import '../../data/repositories/load_repository_impl.dart';
 import '../../models/app_text_styles.dart';
 import '../bindings/company_binding.dart';
+import '../bindings/load_binding.dart';
 import '../controllers/category_controller.dart';
 import '../controllers/company_controller.dart';
 import '../controllers/load_controller.dart';
 import 'location_picker_screen.dart';
+import 'user_home_screen.dart';
 
 class RequestInformationScreen extends StatefulWidget {
   const RequestInformationScreen({super.key});
@@ -296,43 +298,52 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
                     };
 
                     try {
-                      await loadController.createLoad(payload);
+                      final result = await loadController.createLoad(payload);
 
-                      // Show success message
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Load created successfully '),
-                        ),
-                      );
+                      // Check if load was created successfully
+                      if (result != null) {
+                        // Hide keyboard if open
+                        FocusScope.of(context).unfocus();
 
-                      // Reset form fields to default state
-                      setState(() {
-                        _titleController.clear();
-                        _descriptionController.clear();
-                        _pickupController.clear();
-                        _deliveryController.clear();
-                        _noteController.clear();
-                        _dateController.clear();
-                        _timeController.clear();
+                        // Clear any error messages
+                        loadController.errorMessage.value = '';
 
-                        // Reset dropdown selections
-                        _categorySelected = 'Medicine';
-                        _selectedCategoryId = null;
-                        _companySelected = 'Default';
-                        _selectedCompanyId = null;
+                        // Navigate to home screen and clear navigation stack
+                        // Use binding to ensure LoadController is available
+                        Get.offAll(
+                          () => const UserHomeScreen(),
+                          binding: LoadBinding(),
+                        );
 
-                        // Reset stored LatLngs and date/time
-                        _pickupLatLng = null;
-                        _deliveryLatLng = null;
-                        selectedDate = null;
-                        selectedTime = null;
-                      });
-
-                      // Hide keyboard if open
-                      FocusScope.of(context).unfocus();
+                        // Show success snackbar after navigation
+                        Get.snackbar(
+                          'Success',
+                          'Your truck request has been submitted successfully!',
+                          snackPosition: SnackPosition.TOP,
+                          backgroundColor: Colors.green,
+                          colorText: Colors.white,
+                          icon: const Icon(Icons.check_circle, color: Colors.white),
+                          duration: const Duration(seconds: 3),
+                          margin: const EdgeInsets.all(16),
+                          borderRadius: 8,
+                        );
+                      } else {
+                        // Show error from controller
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(loadController.errorMessage.value.isNotEmpty
+                                ? loadController.errorMessage.value
+                                : 'Failed to create load. Please try again.'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Failed to create load: $e')),
+                        SnackBar(
+                          content: Text('Failed to create load: $e'),
+                          backgroundColor: Colors.red,
+                        ),
                       );
                     }
                   },

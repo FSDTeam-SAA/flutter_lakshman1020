@@ -18,6 +18,56 @@ class LoadModel extends LoadEntity {
   });
 
   factory LoadModel.fromJson(Map<String, dynamic> json) {
+    // Handle companyToken - can be either a String ID or an Object
+    CompanyModel companyToken;
+    final companyData = json['companyToken'];
+    if (companyData is String) {
+      // If it's just an ID string, create a minimal company object
+      companyToken = CompanyModel(
+        id: companyData,
+        name: '',
+        email: '',
+        owner: '',
+        isDefault: false,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+    } else if (companyData is Map<String, dynamic>) {
+      // If it's a full object, parse it normally
+      companyToken = CompanyModel.fromJson(companyData);
+    } else {
+      // Fallback to empty object
+      companyToken = CompanyModel.fromJson({});
+    }
+
+    // Handle loadBy - can be either a String ID or an Object
+    UserModel loadBy;
+    final loadByData = json['loadBy'];
+    if (loadByData is String) {
+      // If it's just an ID string, create a minimal user object
+      loadBy = UserModel(
+        id: loadByData,
+        name: '',
+        email: '',
+        role: '',
+        verificationInfo: VerificationInfoModel(verified: false, token: ''),
+        stripeAccountId: '',
+        isStripeOnboarded: false,
+        address: '',
+        dob: '',
+        nationality: '',
+        phone: '',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+    } else if (loadByData is Map<String, dynamic>) {
+      // If it's a full object, parse it normally
+      loadBy = UserModel.fromJson(loadByData);
+    } else {
+      // Fallback to empty object
+      loadBy = UserModel.fromJson({});
+    }
+
     return LoadModel(
       id: json['_id'] ?? '',
       title: json['title'] ?? '',
@@ -25,8 +75,8 @@ class LoadModel extends LoadEntity {
       category: json['category'] ?? '',
       pickupLocation: json['pickupLocation'] ?? '',
       deliveryLocation: json['deliveryLocation'] ?? '',
-      companyToken: CompanyModel.fromJson(json['companyToken'] ?? {}),
-      loadBy: UserModel.fromJson(json['loadBy'] ?? {}),
+      companyToken: companyToken,
+      loadBy: loadBy,
       orderStatus: json['orderStatus'] ?? '',
       pickupDate: json['pickupDate'] != null
           ? DateTime.parse(json['pickupDate'])
@@ -52,7 +102,7 @@ class LoadModel extends LoadEntity {
       'companyToken': companyToken,
       'loadBy': loadBy,
       'orderStatus': orderStatus,
-      'pickupDate': pickupDate?.toIso8601String(),
+      'pickupDate': pickupDate.toIso8601String(),
       'note': note,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
