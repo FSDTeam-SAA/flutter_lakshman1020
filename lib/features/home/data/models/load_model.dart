@@ -18,11 +18,11 @@ class LoadModel extends LoadEntity {
   });
 
   factory LoadModel.fromJson(Map<String, dynamic> json) {
-    // Handle companyToken - can be either a String ID or an Object
-    CompanyModel companyToken;
+    // Handle companyToken - can be either a string ID or an object
+    CompanyEntity companyToken;
     final companyData = json['companyToken'];
     if (companyData is String) {
-      // If it's just an ID string, create a minimal company object
+      // If it's just an ID string, create a minimal CompanyModel
       companyToken = CompanyModel(
         id: companyData,
         name: '',
@@ -33,18 +33,16 @@ class LoadModel extends LoadEntity {
         updatedAt: DateTime.now(),
       );
     } else if (companyData is Map<String, dynamic>) {
-      // If it's a full object, parse it normally
       companyToken = CompanyModel.fromJson(companyData);
     } else {
-      // Fallback to empty object
       companyToken = CompanyModel.fromJson({});
     }
 
-    // Handle loadBy - can be either a String ID or an Object
-    UserModel loadBy;
+    // Handle loadBy - can be either a string ID or an object
+    UserEntity loadBy;
     final loadByData = json['loadBy'];
     if (loadByData is String) {
-      // If it's just an ID string, create a minimal user object
+      // If it's just an ID string, create a minimal UserModel
       loadBy = UserModel(
         id: loadByData,
         name: '',
@@ -61,10 +59,8 @@ class LoadModel extends LoadEntity {
         updatedAt: DateTime.now(),
       );
     } else if (loadByData is Map<String, dynamic>) {
-      // If it's a full object, parse it normally
       loadBy = UserModel.fromJson(loadByData);
     } else {
-      // Fallback to empty object
       loadBy = UserModel.fromJson({});
     }
 

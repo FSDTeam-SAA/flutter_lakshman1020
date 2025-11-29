@@ -109,7 +109,7 @@ class DeliveryDetailsScreen extends StatelessWidget {
                           'No description available',
                     ),
                     // Show Accept/Reject buttons when orderStatus is 'ask_pending'
-                    if (controller.orderStatus.value.toLowerCase() == 'ask_pending') ...[
+                    if (controller.orderStatus.value.toLowerCase() == 'asked') ...[
                       const SizedBox(height: 20),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -195,7 +195,7 @@ class DeliveryDetailsScreen extends StatelessWidget {
                       const SizedBox(height: 16),
                     ],
                     // After orderStatus becomes 'asked', show Contact Driver and Pay buttons
-                    if (controller.orderStatus.value.toLowerCase() == 'asked') ...[
+                    if (controller.orderStatus.value.toLowerCase() == 'driver_assigned') ...[
                       const SizedBox(height: 20),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),

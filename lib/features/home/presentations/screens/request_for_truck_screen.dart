@@ -15,7 +15,6 @@ import '../../data/repositories/category_repository_impl.dart';
 import '../../data/repositories/load_repository_impl.dart';
 import '../../models/app_text_styles.dart';
 import '../bindings/company_binding.dart';
-import '../bindings/load_binding.dart';
 import '../controllers/category_controller.dart';
 import '../controllers/company_controller.dart';
 import '../controllers/load_controller.dart';
@@ -309,11 +308,7 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
                         loadController.errorMessage.value = '';
 
                         // Navigate to home screen and clear navigation stack
-                        // Use binding to ensure LoadController is available
-                        Get.offAll(
-                          () => const UserHomeScreen(),
-                          binding: LoadBinding(),
-                        );
+                        Get.offAll(() => const UserHomeScreen());
 
                         // Show success snackbar after navigation
                         Get.snackbar(

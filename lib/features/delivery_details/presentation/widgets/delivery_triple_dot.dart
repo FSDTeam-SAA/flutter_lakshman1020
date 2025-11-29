@@ -31,10 +31,10 @@ class TripleZeroIndicator extends StatelessWidget {
         // - 'processing' => first dot processing (amber border), others pending
         if (orderStatus != null) {
           final s = orderStatus!.toLowerCase();
-          if (s == 'ask_pending') {
+          if (s == 'asked') {
             isCompleted = index == 0; // first tick
             isProcessing = index == 1; // second shows processing ring
-          } else if (s == 'asked') {
+          } else if (s == 'driver_assigned') {
             isCompleted = index < 2; // first AND second tick
             isProcessing = index == 2; // third shows processing ring
           } else if (s == 'processing') {

@@ -14,7 +14,6 @@ import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/Si
 import 'package:flutter_lakshman1020/features/auth/users/presentation/screens/set_new_password_screen.dart';
 import 'package:flutter_lakshman1020/features/company_subscription_plans/presentation/controllers/subscription_controller.dart';
 import 'package:flutter_lakshman1020/features/company_subscription_plans/presentation/screens/subscription_screen.dart';
-import 'package:flutter_lakshman1020/features/home/presentations/bindings/load_binding.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/controllers/load_controller.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/screens/dispatcher_home_screen.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/screens/driver_home_screen.dart';
@@ -95,7 +94,7 @@ class AuthController extends BaseController {
 
         // Navigate based on role from API response
         if (user.role == 'user') {
-          Get.offAll(() => UserHomeScreen(), binding: LoadBinding());
+          Get.offAll(() => UserHomeScreen());
         } else if (user.role == 'company') {
           Get.offAll(() => DashboardScreen());
         } else if (user.role == 'driver') {
@@ -405,7 +404,7 @@ class AuthController extends BaseController {
         // Navigate automatically based on role
         final role = await _authStorageService.getRole();
         if (role == "user") {
-          Get.offAll(() => UserHomeScreen(), binding: LoadBinding());
+          Get.offAll(() => UserHomeScreen());
         } else if (role == "company") {
           Get.offAll(() => DashboardScreen());
         } else if (role == "driver") {
