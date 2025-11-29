@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_lakshman1020/core/widgets/skeleton_loader.dart';
 import 'package:get/get.dart';
+
 import '../../controllers/chat_controller.dart';
 import 'chat_detail_screen.dart';
 
@@ -26,7 +28,14 @@ class ChatInboxScreen extends StatelessWidget {
         final chatList = controller.filteredChatList;
 
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            itemCount: 8,
+            itemBuilder: (context, index) => const SkeletonListItem(
+              hasLeading: true,
+              lines: 2,
+            ),
+          );
         }
 
         // When inbox and search are both empty

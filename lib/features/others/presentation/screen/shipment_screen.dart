@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
+import 'package:flutter_lakshman1020/core/widgets/skeleton_loader.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/shipment_filter_tabs.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/shipment_item.dart';
 import 'package:get/get.dart';
@@ -60,7 +61,10 @@ class _ShipmentScreenState extends State<ShipmentScreen> {
                 Expanded(
                   child: Obx(() {
                     if (loadController.isLoading.value) {
-                      return const Center(child: CircularProgressIndicator());
+                      return ListView.builder(
+                        itemCount: 5,
+                        itemBuilder: (context, index) => const SkeletonShipmentCard(),
+                      );
                     }
 
                     if (loadController.errorMessage.value.isNotEmpty) {

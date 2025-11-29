@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
+import 'package:flutter_lakshman1020/core/widgets/skeleton_loader.dart';
 import 'package:get/get.dart';
 
 import '../controllers/delivery_details_controller.dart';
@@ -29,8 +30,33 @@ class DriverDeliveryDetailsScreen extends StatelessWidget {
         () {
           // Show loading while fetching
           if (controller.deliveryList.isEmpty) {
-            return const Center(
-              child: CircularProgressIndicator(),
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Center(child: SkeletonText(width: 180, height: 20)),
+                  const SizedBox(height: 30),
+                  ...List.generate(
+                    8,
+                    (index) => Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              SkeletonText(width: 120, height: 14),
+                              SkeletonText(width: 150, height: 14),
+                            ],
+                          ),
+                        ),
+                        Divider(color: Colors.grey.shade200),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             );
           }
 

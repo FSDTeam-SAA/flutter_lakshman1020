@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/app_icons.dart';
 import 'package:flutter_lakshman1020/core/widgets/notification_tile.dart';
+import 'package:flutter_lakshman1020/core/widgets/skeleton_loader.dart';
 import 'package:get/get.dart';
 
 import '../bindings/notification_binding.dart';
@@ -97,8 +98,12 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
         onRefresh: () => notificationController.refreshNotifications(),
         child: Obx(() {
           if (notificationController.isLoading.value) {
-            return const Center(
-              child: CircularProgressIndicator(),
+            return ListView.builder(
+              itemCount: 8,
+              itemBuilder: (context, index) => const SkeletonListItem(
+                hasLeading: true,
+                lines: 3,
+              ),
             );
           }
 

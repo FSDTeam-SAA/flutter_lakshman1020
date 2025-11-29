@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_lakshman1020/core/widgets/skeleton_loader.dart';
 import 'package:flutter_lakshman1020/features/others/presentation/widgets/company_appbar.dart';
 import 'package:flutter_lakshman1020/features/others/presentation/widgets/company_drawer.dart';
 import 'package:flutter_lakshman1020/features/others/presentation/widgets/revenue_graph.dart';
@@ -41,7 +42,37 @@ class _DashboardScreenState extends State<DashboardScreen> {
       body: Obx(() {
         // Loading state
         if (_dashboardController.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SkeletonText(width: 150, height: 24),
+                const SizedBox(height: 24),
+                const SkeletonDashboardStats(),
+                const SizedBox(height: 24),
+                SkeletonLoader(
+                  width: double.infinity,
+                  height: 250,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                const SizedBox(height: 24),
+                const SkeletonText(width: 120, height: 20),
+                const SizedBox(height: 16),
+                ...List.generate(
+                  4,
+                  (index) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: SkeletonLoader(
+                      width: double.infinity,
+                      height: 80,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
         }
 
         // Error state

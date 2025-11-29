@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/app_images.dart';
+import 'package:flutter_lakshman1020/features/notification/presentations/bindings/notification_binding.dart';
+import 'package:flutter_lakshman1020/features/notification/presentations/controllers/notification_controller.dart';
+import 'package:flutter_lakshman1020/features/notification/presentations/screens/notification_list.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -83,7 +86,21 @@ class HeaderSection extends StatelessWidget {
                 height: 32,
                 width: 32,
               ),
-              onPressed: () {},
+              onPressed: () async {
+                // Initialize notification binding if needed
+                if (!Get.isRegistered<NotificationController>()) {
+                  NotificationBinding().dependencies();
+                }
+                
+                // Get controller and fetch notifications if empty
+                final notificationController = Get.find<NotificationController>();
+                if (notificationController.notifications.isEmpty) {
+                  await notificationController.fetchNotifications();
+                }
+                
+                // Navigate to notification list screen
+                Get.to(() => const NotificationListScreen());
+              },
             ),
           ],
         ),

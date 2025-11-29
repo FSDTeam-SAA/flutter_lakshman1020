@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/network/api_client.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
+import 'package:flutter_lakshman1020/core/widgets/skeleton_loader.dart';
 import 'package:flutter_lakshman1020/features/dispatcher/presentation/screens/company_driver_details_screen.dart';
 import 'package:flutter_lakshman1020/features/driver_company_page/data/datasources/driver_remote_datasource.dart';
 import 'package:flutter_lakshman1020/features/driver_company_page/data/repository/driver_repository_impl.dart';
@@ -123,7 +124,14 @@ class _AssignDriverScreenState extends State<AssignDriverScreen> {
               child: Obx(() {
                 // Show loading state
                 if (_driverController.isLoading.value) {
-                  return const Center(child: CircularProgressIndicator());
+                  return ListView.builder(
+                    itemCount: 6,
+                    itemBuilder: (context, index) => const SkeletonListItem(
+                      hasLeading: true,
+                      hasTrailing: true,
+                      lines: 2,
+                    ),
+                  );
                 }
 
                 // Show error state

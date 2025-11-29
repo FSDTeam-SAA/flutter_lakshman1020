@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/network/services/auth_storage_service.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
+import 'package:flutter_lakshman1020/core/widgets/skeleton_loader.dart';
 import 'package:flutter_lakshman1020/features/others/presentation/widgets/company_drawer.dart';
 import 'package:flutter_lakshman1020/features/others/presentation/widgets/pending_request_filter.dart';
 import 'package:flutter_lakshman1020/features/others/presentation/widgets/pending_request_item.dart';
@@ -92,7 +93,25 @@ class _CompanyPendingReqScreenState extends State<CompanyPendingReqScreen> {
         child: Obx(
           () {
             if (_loadController.isLoading.value) {
-              return const Center(child: CircularProgressIndicator());
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const PendingRequestFilter(),
+                    const SizedBox(height: 16),
+                    ...List.generate(
+                      5,
+                      (index) => const Padding(
+                        padding: EdgeInsets.only(bottom: 12),
+                        child: SkeletonListItem(
+                          hasLeading: true,
+                          hasTrailing: true,
+                          lines: 3,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
             }
 
             if (_loadController.errorMessage.isNotEmpty) {

@@ -150,7 +150,35 @@ class _AssignPriceScreenState extends State<AssignPriceScreen> {
     return Scaffold(
       appBar: CustomAppBar(title: screenTitle),
       body: _isLoadingData
-          ? const Center(child: CircularProgressIndicator())
+          ? SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SkeletonLoader(
+                    width: double.infinity,
+                    height: 200,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  const SizedBox(height: 24),
+                  const SkeletonText(width: 150, height: 20),
+                  const SizedBox(height: 16),
+                  ...List.generate(
+                    6,
+                    (index) => Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: const [
+                          SkeletonText(width: 100, height: 14),
+                          SkeletonText(width: 150, height: 14),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
           : _loadError != null
               ? Center(
                   child: Column(

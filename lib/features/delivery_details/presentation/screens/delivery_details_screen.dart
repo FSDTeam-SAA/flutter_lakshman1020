@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
+import 'package:flutter_lakshman1020/core/widgets/skeleton_loader.dart';
 import 'package:get/get.dart';
 
 import '../controllers/delivery_details_controller.dart';
@@ -31,7 +32,33 @@ class DeliveryDetailsScreen extends StatelessWidget {
       ),
       body: Obx(() {
         if (controller.deliveryList.isEmpty) {
-          return const Center(child: CircularProgressIndicator());
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                const SizedBox(height: 15),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: List.generate(
+                    3,
+                    (index) => const SkeletonCircle(size: 32),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                ...List.generate(
+                  3,
+                  (index) => Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: SkeletonLoader(
+                      width: double.infinity,
+                      height: 120,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
         }
         final selectedDelivery =
             controller.deliveryList[controller.selectedIndex.value];

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/widgets/app_scaffold.dart';
+import 'package:flutter_lakshman1020/core/widgets/skeleton_loader.dart';
 import 'package:flutter_lakshman1020/features/manage_users/presentation/add_driver_screen.dart';
 import 'package:get/get.dart';
 
@@ -43,7 +44,18 @@ class _CompanyDriverScreenState extends State<CompanyDriverScreen> {
         () {
           // Loading state
           if (_driverController.isLoading.value) {
-            return Center(child: CircularProgressIndicator());
+            return ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: 6,
+              itemBuilder: (context, index) => const Padding(
+                padding: EdgeInsets.only(bottom: 12),
+                child: SkeletonListItem(
+                  hasLeading: true,
+                  hasTrailing: true,
+                  lines: 2,
+                ),
+              ),
+            );
           }
 
           // Error state

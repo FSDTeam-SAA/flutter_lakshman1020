@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_bottom_nav.dart';
+import 'package:flutter_lakshman1020/core/widgets/skeleton_loader.dart';
 import 'package:flutter_lakshman1020/features/accounts/controller/account_controller.dart';
 import 'package:flutter_lakshman1020/features/accounts/presentation/screens/accounts_screen.dart';
 import 'package:flutter_lakshman1020/features/chat/presentation/screens/chat_inbox_screen.dart';
@@ -69,10 +70,10 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
               // Obx for reactive UI updates
               Obx(() {
                 if (loadController.isLoading.value) {
-                  return const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(20.0),
-                      child: CircularProgressIndicator(),
+                  return Column(
+                    children: List.generate(
+                      3,
+                      (index) => const SkeletonShipmentCard(),
                     ),
                   );
                 }

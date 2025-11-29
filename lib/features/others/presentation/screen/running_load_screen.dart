@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_lakshman1020/core/widgets/skeleton_loader.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/bindings/load_binding.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/controllers/load_controller.dart';
-import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/shipment_item.dart';
 import 'package:flutter_lakshman1020/features/others/presentation/widgets/company_appbar.dart';
 import 'package:flutter_lakshman1020/features/others/presentation/widgets/company_drawer.dart';
+import 'package:flutter_lakshman1020/features/others/presentation/widgets/optimized_shipment_item.dart';
 import 'package:get/get.dart';
 
 class RunningLoadScreen extends StatefulWidget {
@@ -60,8 +61,9 @@ class _RunningLoadScreenState extends State<RunningLoadScreen> {
             Expanded(
               child: Obx(() {
                 if (_loadController.isLoading.value) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
+                  return ListView.builder(
+                    itemCount: 5,
+                    itemBuilder: (context, index) => const SkeletonShipmentCard(),
                   );
                 }
 
@@ -97,7 +99,7 @@ class _RunningLoadScreenState extends State<RunningLoadScreen> {
                   itemCount: loads.length,
                   itemBuilder: (context, index) {
                     final load = loads[index];
-                    return ShipmentItem(
+                    return OptimizedShipmentItem(
                       load: load,
                     );
                   },

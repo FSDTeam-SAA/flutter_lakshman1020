@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/app_images.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_text.dart';
+import 'package:flutter_lakshman1020/core/widgets/skeleton_loader.dart';
 import 'package:flutter_lakshman1020/features/accounts/controller/account_controller.dart';
 import 'package:flutter_lakshman1020/features/auth/users/presentation/controller/auth_controller.dart';
 import 'package:flutx_core/core/theme/extensions/string_extension.dart';
@@ -45,7 +46,12 @@ class _AccountsScreenState extends State<AccountsScreen> {
           ),
           Obx(() {
             if (controller.isLoading.value) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: SkeletonProfileHeader(),
+                ),
+              );
             }
 
             final user = controller.userInfo.value;
@@ -125,12 +131,15 @@ class _AccountsScreenState extends State<AccountsScreen> {
                               }
                             }),
 
-                            Divider(color: TColors.grey2.withOpacity(.4)),
-                            _buildMenuItem(
-                              AppImages.paymentMethod,
-                              'Payment Method',
-                              () {},
-                            ),
+                            // Show Payment Method only for company users
+                            if (user?.role == 'company') ...[
+                              Divider(color: TColors.grey2.withOpacity(.4)),
+                              _buildMenuItem(
+                                AppImages.paymentMethod,
+                                'Payment Method',
+                                () {},
+                              ),
+                            ],
 
                             Divider(color: TColors.grey2.withOpacity(.4)),
                             _buildMenuItem(AppImages.settings, 'Settings', () {

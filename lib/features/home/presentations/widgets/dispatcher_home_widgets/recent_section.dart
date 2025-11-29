@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
+import 'package:flutter_lakshman1020/core/widgets/skeleton_loader.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/screens/pending_request_screen.dart';
-import 'package:flutter_lakshman1020/features/others/presentation/screen/pending_req_screen.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
-import '../../../domain/repositories/load_repository.dart';
 import '../../controllers/load_controller.dart';
 
 class RecentSection extends StatelessWidget {
@@ -40,7 +38,15 @@ class RecentSection extends StatelessWidget {
 
         Obx(() {
           if (loadController.isLoading.value) {
-            return const Center(child: CircularProgressIndicator());
+            return Column(
+              children: List.generate(
+                3,
+                (index) => const Padding(
+                  padding: EdgeInsets.only(bottom: 8),
+                  child: SkeletonListItem(hasLeading: false, lines: 2),
+                ),
+              ),
+            );
           }
 
           if (loadController.errorMessage.isNotEmpty) {
@@ -69,7 +75,7 @@ class RecentSection extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 8),
                 child: _RecentCard(
                   id: "#${load.id.substring(load.id.length - 5)}",
-                  subtitle: load.description ?? "No description",
+                  subtitle: load.description,
                 ),
               );
             }).toList(),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_lakshman1020/core/widgets/skeleton_loader.dart';
 import 'package:flutter_lakshman1020/features/others/presentation/widgets/company_appbar.dart';
 import 'package:flutter_lakshman1020/features/others/presentation/widgets/company_drawer.dart';
 import 'package:get/get.dart';
@@ -131,7 +132,18 @@ class _CompanyDispatcherScreenState extends State<CompanyDispatcherScreen> {
     return Obx(() {
       // Loading state
       if (_dispatcherController.isLoading.value) {
-        return const Center(child: CircularProgressIndicator());
+        return ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: 6,
+          itemBuilder: (context, index) => const Padding(
+            padding: EdgeInsets.only(bottom: 12),
+            child: SkeletonListItem(
+              hasLeading: true,
+              hasTrailing: true,
+              lines: 2,
+            ),
+          ),
+        );
       }
 
       // Error state

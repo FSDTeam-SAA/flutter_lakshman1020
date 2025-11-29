@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_lakshman1020/core/widgets/skeleton_loader.dart';
 
 import '../controller/activitry_controller.dart';
 import 'activity_list_widgets.dart';
@@ -46,7 +47,17 @@ class _ActivityBodyState extends State<ActivityBody> {
             animation: _controller,
             builder: (context, _) {
               if (_controller.isLoading) {
-                return const Center(child: CircularProgressIndicator());
+                return ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: 5,
+                  itemBuilder: (context, index) => const Padding(
+                    padding: EdgeInsets.only(bottom: 12),
+                    child: SkeletonListItem(
+                      hasLeading: false,
+                      lines: 3,
+                    ),
+                  ),
+                );
               }
               return ActivityListWidget(controller: _controller);
             },

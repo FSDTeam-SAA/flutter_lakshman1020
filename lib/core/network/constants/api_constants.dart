@@ -1,8 +1,8 @@
 class ApiConstants {
   /// [Base Configuration]
-  // static const String baseDomain = 'https://karlfive223-backend.onrender.com';
+  static const String baseDomain = 'https://backend-lakshman-ezy6.onrender.com';
 
-  static const String baseDomain = 'http://10.10.5.88:8001';
+  // static const String baseDomain = 'http://10.10.5.88:8001';
   static const String baseUrl = '$baseDomain/api/v1';
 
   /// Google Maps API key for geocoding addresses from coordinates

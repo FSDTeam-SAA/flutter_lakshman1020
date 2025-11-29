@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/network/services/auth_storage_service.dart';
 import 'package:flutter_lakshman1020/core/widgets/custom_appbar.dart';
+import 'package:flutter_lakshman1020/core/widgets/skeleton_loader.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/bindings/load_binding.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/controllers/load_controller.dart';
 import 'package:flutx_core/flutx_core.dart';
@@ -164,7 +165,18 @@ class _DispatcherNavigateScreenState extends State<DispatcherNavigateScreen> {
       body: Obx(
         () {
           if (_loadController.isLoading.value) {
-            return const Center(child: CircularProgressIndicator());
+            return ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: 5,
+              itemBuilder: (context, index) => const Padding(
+                padding: EdgeInsets.only(bottom: 12),
+                child: SkeletonListItem(
+                  hasLeading: false,
+                  hasTrailing: true,
+                  lines: 4,
+                ),
+              ),
+            );
           }
 
           if (_loadController.errorMessage.isNotEmpty) {

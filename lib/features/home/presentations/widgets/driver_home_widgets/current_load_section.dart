@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lakshman1020/core/constants/app_colors.dart';
 import 'package:flutter_lakshman1020/core/constants/app_images.dart';
+import 'package:flutter_lakshman1020/core/widgets/skeleton_loader.dart';
 import 'package:flutter_lakshman1020/features/accounts/data/models/driver_profile_response_model.dart';
 import 'package:flutter_lakshman1020/features/delivery_details/presentation/screens/driver_delivery_details_screen.dart';
 import 'package:flutter_lakshman1020/features/home/controller/driver_home_controller.dart';
@@ -29,8 +30,28 @@ class CurrentLoadSection extends StatelessWidget {
           if (controller.isLoading.value) {
             return const Card(
               child: Padding(
-                padding: EdgeInsets.all(48.0),
-                child: Center(child: CircularProgressIndicator()),
+                padding: EdgeInsets.all(24.0),
+                child: Column(
+                  children: [
+                    SkeletonText(width: 150, height: 20),
+                    SizedBox(height: 24),
+                    SkeletonText(width: double.infinity, height: 16),
+                    SizedBox(height: 12),
+                    SkeletonText(width: double.infinity, height: 14),
+                    SizedBox(height: 24),
+                    SkeletonText(width: double.infinity, height: 16),
+                    SizedBox(height: 12),
+                    SkeletonText(width: double.infinity, height: 14),
+                    SizedBox(height: 24),
+                    Row(
+                      children: [
+                        SkeletonText(width: 100, height: 36),
+                        Spacer(),
+                        SkeletonText(width: 100, height: 36),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             );
           }
