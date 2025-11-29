@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_lakshman1020/core/network/services/auth_storage_service.dart';
 import 'package:get/get.dart';
 
 import '../../domain/entities/load_entity.dart';
@@ -6,6 +7,7 @@ import '../../domain/repositories/load_repository.dart';
 
 class LoadController extends GetxController {
   final LoadRepository repository;
+  final AuthStorageService _authStorageService = AuthStorageService();
 
   LoadController({required this.repository});
 
@@ -15,12 +17,22 @@ class LoadController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxString errorMessage = ''.obs;
   final RxString selectedFilter = 'All'.obs;
+  final RxString userRole = ''.obs;
 
   @override
   void onInit() {
     super.onInit();
+    // Get user role on initialization
+    _getUserRole();
     // Don't auto-fetch loads here - let the calling screen decide
     // whether to fetch all loads or company-specific loads
+  }
+
+  /// Get user role from storage
+  Future<void> _getUserRole() async {
+    final role = await _authStorageService.getRole();
+    userRole.value = role ?? 'user';
+    debugPrint('👤 User role detected: ${userRole.value}');
   }
 
   /// Fetch loads from API
@@ -68,36 +80,82 @@ class LoadController extends GetxController {
     debugPrint('========== FILTER LOADS ==========');
     debugPrint('🔍 Filter selected: $filter');
     debugPrint('📦 Total loads: ${loads.length}');
+    debugPrint('👤 User role: ${userRole.value}');
     
-    if (filter == 'All') {
-      // Show only pending or accepted loads in "All" tab
-      debugPrint('🔎 Showing only pending or accepted loads in All tab');
-      filteredLoads.value = loads.where((load) {
-        final status = load.orderStatus.toLowerCase();
-        final matches = status == 'pending' || status == 'accepted';
-        debugPrint('   - ${load.id}: status="${load.orderStatus}" ($status) -> $matches');
-        return matches;
-      }).toList();
-      debugPrint('✅ Showing ${filteredLoads.length} loads (pending + accepted)');
-    } else if (filter == 'Assign price') {
-      debugPrint('🔎 Looking for loads with status: "pending"');
-      filteredLoads.value = loads.where((load) {
-        final matches = load.orderStatus.toLowerCase() == 'pending';
-        debugPrint('   - ${load.id}: status="${load.orderStatus}" (${load.orderStatus.toLowerCase()}) -> $matches');
-        return matches;
-      }).toList();
-      debugPrint('✅ Filtered to ${filteredLoads.length} pending loads');
-    } else if (filter == 'Assign driver') {
-      debugPrint('🔎 Looking for loads with status: "accepted"');
-      filteredLoads.value = loads.where((load) {
-        final matches = load.orderStatus.toLowerCase() == 'accepted';
-        debugPrint('   - ${load.id}: status="${load.orderStatus}" (${load.orderStatus.toLowerCase()}) -> $matches');
-        return matches;
-      }).toList();
-      debugPrint('✅ Filtered to ${filteredLoads.length} accepted loads');
-    } else {
-      filteredLoads.value = [];
-      debugPrint('⚠️ Unknown filter, showing 0 loads');
+    // USER-SPECIFIC FILTER LOGIC
+    if (userRole.value == 'user') {
+      if (filter == 'All') {
+        // Show all loads for user
+        debugPrint('🔎 [USER] Showing all loads');
+        filteredLoads.value = loads.toList();
+        debugPrint('✅ Showing ${filteredLoads.length} loads');
+      } else if (filter == 'Pending') {
+        // Show loads with status = "pending"
+        debugPrint('🔎 [USER] Looking for loads with status: "pending"');
+        filteredLoads.value = loads.where((load) {
+          final status = load.orderStatus.toLowerCase();
+          final matches = status == 'pending';
+          debugPrint('   - ${load.id}: status="${load.orderStatus}" -> $matches');
+          return matches;
+        }).toList();
+        debugPrint('✅ Filtered to ${filteredLoads.length} pending loads');
+      } else if (filter == 'Processing') {
+        // Show loads with status = "asked" OR "driver_assigned"
+        debugPrint('🔎 [USER] Looking for loads with status: "asked" OR "driver_assigned"');
+        filteredLoads.value = loads.where((load) {
+          final status = load.orderStatus.toLowerCase();
+          final matches = status == 'asked' || status == 'driver_assigned';
+          debugPrint('   - ${load.id}: status="${load.orderStatus}" -> $matches');
+          return matches;
+        }).toList();
+        debugPrint('✅ Filtered to ${filteredLoads.length} processing loads');
+      } else if (filter == 'Delivered') {
+        // Show loads with status = "delivered"
+        debugPrint('🔎 [USER] Looking for loads with status: "delivered"');
+        filteredLoads.value = loads.where((load) {
+          final status = load.orderStatus.toLowerCase();
+          final matches = status == 'delivered';
+          debugPrint('   - ${load.id}: status="${load.orderStatus}" -> $matches');
+          return matches;
+        }).toList();
+        debugPrint('✅ Filtered to ${filteredLoads.length} delivered loads');
+      } else {
+        filteredLoads.value = [];
+        debugPrint('⚠️ Unknown filter, showing 0 loads');
+      }
+    } 
+    // COMPANY/DRIVER/DISPATCHER FILTER LOGIC (EXISTING LOGIC PRESERVED)
+    else {
+      if (filter == 'All') {
+        // Show only pending or accepted loads in "All" tab
+        debugPrint('🔎 [COMPANY] Showing only pending or accepted loads in All tab');
+        filteredLoads.value = loads.where((load) {
+          final status = load.orderStatus.toLowerCase();
+          final matches = status == 'pending' || status == 'accepted';
+          debugPrint('   - ${load.id}: status="${load.orderStatus}" ($status) -> $matches');
+          return matches;
+        }).toList();
+        debugPrint('✅ Showing ${filteredLoads.length} loads (pending + accepted)');
+      } else if (filter == 'Assign price') {
+        debugPrint('🔎 [COMPANY] Looking for loads with status: "pending"');
+        filteredLoads.value = loads.where((load) {
+          final matches = load.orderStatus.toLowerCase() == 'pending';
+          debugPrint('   - ${load.id}: status="${load.orderStatus}" (${load.orderStatus.toLowerCase()}) -> $matches');
+          return matches;
+        }).toList();
+        debugPrint('✅ Filtered to ${filteredLoads.length} pending loads');
+      } else if (filter == 'Assign driver') {
+        debugPrint('🔎 [COMPANY] Looking for loads with status: "accepted"');
+        filteredLoads.value = loads.where((load) {
+          final matches = load.orderStatus.toLowerCase() == 'accepted';
+          debugPrint('   - ${load.id}: status="${load.orderStatus}" (${load.orderStatus.toLowerCase()}) -> $matches');
+          return matches;
+        }).toList();
+        debugPrint('✅ Filtered to ${filteredLoads.length} accepted loads');
+      } else {
+        filteredLoads.value = [];
+        debugPrint('⚠️ Unknown filter, showing 0 loads');
+      }
     }
     debugPrint('==================================');
   }
