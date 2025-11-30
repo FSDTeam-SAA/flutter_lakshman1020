@@ -3,7 +3,9 @@ import 'package:get/get.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/constants/api_constants.dart';
 import '../../../../core/network/services/auth_storage_service.dart';
+import '../../../chat/data/chat_repository.dart';
 import '../../../home/data/models/load_model.dart';
+import '../../../notification/presentation/screens/chat_detail_screen.dart';
 import '../../data/services/geocoding_service.dart';
 
 class DeliveryDetailsController extends GetxController {
@@ -36,6 +38,15 @@ class DeliveryDetailsController extends GetxController {
 
   /// Auth storage service for getting user ID
   final AuthStorageService _authStorageService = AuthStorageService();
+
+  /// Chat repository for creating chats
+  final ChatRepository _chatRepository = ChatRepository();
+
+  /// Loading state for create chat
+  final isCreatingChat = false.obs;
+
+  /// Current driver ID for the load
+  String? currentDriverId;
 
   DeliveryDetailsController({this.initialLoadId});
 
@@ -208,12 +219,14 @@ class DeliveryDetailsController extends GetxController {
             final pickupAddress = results[0].formattedAddress;
             final deliveryAddress = results[1].formattedAddress;
 
-            // Get driver name and phone using helper methods
+            // Get driver name, phone and ID using helper methods
             final driverName = load.getDriverName();
             final driverPhone = load.getDriverPhone() ?? 'N/A';
+            currentDriverId = load.getDriverId(); // Store driver ID for chat creation
 
             print('👤 Driver Name: $driverName');
             print('📱 Driver Phone: $driverPhone');
+            print('🆔 Driver ID: $currentDriverId');
 
             final mapped = <String, String>{
               'title': load.title,
@@ -651,6 +664,66 @@ class DeliveryDetailsController extends GetxController {
       print('❌ Exception confirming payment: $e');
       // Don't show error to user since payment was successful on Stripe side
       return false;
+    }
+  }
+
+  /// Create chat with driver and navigate to chat detail screen
+  Future<void> contactDriver() async {
+    try {
+      // Validate driver ID is available
+      if (currentDriverId == null || currentDriverId!.isEmpty) {
+        print('❌ No driver ID available');
+        Get.snackbar(
+          'Error',
+          'Driver information not available. Please try again later.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Get.theme.colorScheme.error,
+          colorText: Get.theme.colorScheme.onError,
+          duration: const Duration(seconds: 3),
+        );
+        return;
+      }
+
+      isCreatingChat.value = true;
+      print('📞 Contacting driver with ID: $currentDriverId');
+
+      final result = await _chatRepository.createChat(sellerId: currentDriverId!);
+
+      result.fold(
+        (failure) {
+          print('❌ Failed to create chat: ${failure.message}');
+          Get.snackbar(
+            'Error',
+            failure.message.isNotEmpty 
+                ? failure.message 
+                : 'Failed to create chat. Please try again.',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Get.theme.colorScheme.error,
+            colorText: Get.theme.colorScheme.onError,
+            duration: const Duration(seconds: 3),
+          );
+        },
+        (chatModel) {
+          print('✅ Chat created successfully with ID: ${chatModel.id}');
+          
+          // Navigate to chat detail screen with the new chat ID
+          Get.to(
+            () => ChatDetailScreen(conversationId: chatModel.id),
+          );
+        },
+      );
+    } catch (e) {
+      print('❌ Exception creating chat: $e');
+      Get.snackbar(
+        'Error',
+        'Failed to create chat: $e',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Get.theme.colorScheme.error,
+        colorText: Get.theme.colorScheme.onError,
+        duration: const Duration(seconds: 3),
+      );
+    } finally {
+      isCreatingChat.value = false;
     }
   }
 }

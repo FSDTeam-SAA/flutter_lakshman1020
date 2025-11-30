@@ -1,8 +1,8 @@
 class ApiConstants {
   /// [Base Configuration]
-  static const String baseDomain = 'https://backend-lakshman-ezy6.onrender.com';
+  // static const String baseDomain = 'https://backend-lakshman-ezy6.onrender.com';
 
-  // static const String baseDomain = 'http://10.10.5.88:8001';
+  static const String baseDomain = 'http://10.10.5.88:8001';
   static const String baseUrl = '$baseDomain/api/v1';
 
   /// Google Maps API key for geocoding addresses from coordinates
@@ -162,7 +162,7 @@ class ChatEndpoints {
 
   final String getAllChats = '$_base/get-chat';
   String getSingleChat(String chatId) => '$_base/get-single-chat/$chatId';
-  final String createChat = '$_base/create';
+  final String createChat = '$_base/create-chat';
   final String sendMessage = '$_base/send-message';
   final String updateMessage = '$_base/update-message';
   final String getUserAllChat = '$_base/user/all';

@@ -52,6 +52,18 @@ class LoadEntity {
     }
     return null;
   }
+
+  // Helper method to get driver ID
+  String? getDriverId() {
+    if (driver == null) return null;
+    if (driver is UserEntity) {
+      return (driver as UserEntity).id;
+    }
+    if (driver is String && (driver as String).isNotEmpty) {
+      return driver as String;
+    }
+    return null;
+  }
 }
 
 class CompanyEntity {

@@ -36,4 +36,15 @@ class ChatRepository {
           (success) => Right(success.data),
     );
   }
+
+  Future<Either<NetworkFailure, ChatModel>> createChat({
+    required String sellerId,
+  }) async {
+    final response = await _chatApi.createChat(sellerId: sellerId);
+
+    return response.fold(
+          (failure) => Left(failure),
+          (success) => Right(success.data),
+    );
+  }
 }

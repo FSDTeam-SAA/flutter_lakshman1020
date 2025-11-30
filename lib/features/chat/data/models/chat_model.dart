@@ -77,13 +77,40 @@ class ChatMessageModel {
     required this.read,
   });
 
-  factory ChatMessageModel.fromJson(Map<String, dynamic> json) => ChatMessageModel(
-    id: json['_id'] ?? '',
-    text: json['text'] ?? '',
-    user: ChatMessageUser.fromJson(json['user']),
-    date: json['date'] ?? '',
-    read: json['read'] ?? false,
-  );
+  factory ChatMessageModel.fromJson(Map<String, dynamic> json) {
+    // Handle user field - can be either a String (ID only) or Map (populated user object)
+    final userData = json['user'];
+    ChatMessageUser user;
+    
+    if (userData is String) {
+      // User is just an ID string - create minimal user object
+      user = ChatMessageUser(
+        id: userData,
+        name: 'User',
+        role: '',
+        avatar: ChatAvatar(publicId: '', url: ''),
+      );
+    } else if (userData is Map<String, dynamic>) {
+      // User is a populated object
+      user = ChatMessageUser.fromJson(userData);
+    } else {
+      // Fallback for null or unexpected format
+      user = ChatMessageUser(
+        id: '',
+        name: 'Unknown',
+        role: '',
+        avatar: ChatAvatar(publicId: '', url: ''),
+      );
+    }
+    
+    return ChatMessageModel(
+      id: json['_id'] ?? '',
+      text: json['text'] ?? '',
+      user: user,
+      date: json['date'] ?? '',
+      read: json['read'] ?? false,
+    );
+  }
 }
 
 /// Nested user inside message for ChatModel

@@ -63,4 +63,27 @@ class ChatApi {
     );
     return result;
   }
+
+  /// 🔹 Create New Chat with Driver
+  Future<Either<NetworkFailure, NetworkSuccess<ChatModel>>> createChat({
+    required String sellerId,
+  }) async {
+    print('📤 Creating chat with seller: $sellerId');
+    final data = {
+      'sellerId': sellerId,
+    };
+
+    final result = await _apiClient.post<ChatModel>(
+      ApiConstants.chat.createChat,
+      data: data,
+      fromJsonT: (json) {
+        print('✅ Chat created successfully');
+        if (json is Map<String, dynamic>) {
+          return ChatModel.fromJson(json);
+        }
+        throw Exception('Invalid response format');
+      },
+    );
+    return result;
+  }
 }
