@@ -21,13 +21,15 @@ class DispatcherHomeScreen extends StatefulWidget {
   State<DispatcherHomeScreen> createState() => _DispatcherHomeScreenState();
 }
 
-class _DispatcherHomeScreenState extends State<DispatcherHomeScreen> {
+class _DispatcherHomeScreenState extends State<DispatcherHomeScreen> with WidgetsBindingObserver {
   int _currentIndex = 0;
   final AuthStorageService _authStorageService = Get.find<AuthStorageService>();
+  int _navigateScreenRefreshKey = 0;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
 
     if (!Get.isRegistered<LoadController>()) {
       LoadBinding().dependencies();
@@ -41,6 +43,42 @@ class _DispatcherHomeScreenState extends State<DispatcherHomeScreen> {
       // Fetch company-specific loads for dispatcher
       await _fetchDispatcherLoads();
     });
+  }
+  
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+  
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Refresh data when app comes to foreground
+    if (state == AppLifecycleState.resumed) {
+      _refreshCurrentPage();
+    }
+  }
+  
+  void _refreshCurrentPage() async {
+    final accountController = Get.find<AccountController>();
+    
+    switch (_currentIndex) {
+      case 0: // Home
+        accountController.fetchProfile();
+        await _fetchDispatcherLoads();
+        break;
+      case 1: // Activity/Navigate
+        await _fetchDispatcherLoads();
+        // Force rebuild of DispatcherNavigateScreen by incrementing key
+        setState(() => _navigateScreenRefreshKey++);
+        break;
+      case 2: // Messages
+        // Messages screen has its own controller that auto-fetches on init
+        break;
+      case 3: // Profile
+        accountController.fetchProfile();
+        break;
+    }
   }
 
   Future<void> _fetchDispatcherLoads() async {
@@ -108,7 +146,7 @@ class _DispatcherHomeScreenState extends State<DispatcherHomeScreen> {
   Widget build(BuildContext context) {
     final pages = [
       _buildHomePage(),
-      const DispatcherNavigateScreen(),
+      DispatcherNavigateScreen(key: ValueKey(_navigateScreenRefreshKey)),
       MessagesScreen(),
       AccountsScreen(),
     ];
@@ -118,7 +156,13 @@ class _DispatcherHomeScreenState extends State<DispatcherHomeScreen> {
       body: IndexedStack(index: _currentIndex, children: pages),
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: _currentIndex,
-        onTap: (index) => setState(() => _currentIndex = index),
+        onTap: (index) {
+          // Refresh data when switching to a different tab
+          if (index != _currentIndex) {
+            setState(() => _currentIndex = index);
+            _refreshCurrentPage();
+          }
+        },
         items: [
           NavItemData(
             icon: Icons.home_outlined,

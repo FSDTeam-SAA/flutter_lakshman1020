@@ -71,8 +71,8 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      avatar: Avatar.fromJson(json["avatar"] ?? {}),
-      address: Address.fromJson(json["address"] ?? {}),
+      avatar: Avatar.fromJson(json["avatar"]),
+      address: Address.fromJson(json["address"]),
       verificationInfo: VerificationInfo.fromJson(json["verificationInfo"] ?? {}),
       id: json["_id"] ?? "",
       name: json["name"] ?? "",
@@ -119,11 +119,25 @@ class Avatar {
     required this.url,
   });
 
-  factory Avatar.fromJson(Map<String, dynamic> json) {
-    return Avatar(
-      publicId: json["public_id"] ?? "",
-      url: json["url"] ?? "",
-    );
+  factory Avatar.fromJson(dynamic json) {
+    // Handle null
+    if (json == null) return Avatar(publicId: '', url: '');
+    
+    // Handle if avatar is a String (direct URL)
+    if (json is String) {
+      return Avatar(publicId: '', url: json);
+    }
+    
+    // Handle if avatar is a Map (object with url and public_id)
+    if (json is Map<String, dynamic>) {
+      return Avatar(
+        publicId: json["public_id"] ?? "",
+        url: json["url"] ?? "",
+      );
+    }
+    
+    // Fallback for unexpected format
+    return Avatar(publicId: '', url: '');
   }
 
   Map<String, dynamic> toJson() {
@@ -147,13 +161,27 @@ class Address {
     required this.zipCode,
   });
 
-  factory Address.fromJson(Map<String, dynamic> json) {
-    return Address(
-      street: json["street"] ?? "",
-      city: json["city"] ?? "",
-      state: json["state"] ?? "",
-      zipCode: json["zipCode"] ?? "",
-    );
+  factory Address.fromJson(dynamic json) {
+    // Handle null
+    if (json == null) return Address(street: '', city: '', state: '', zipCode: '');
+    
+    // Handle if address is a String (direct address or single field)
+    if (json is String) {
+      return Address(street: json, city: '', state: '', zipCode: '');
+    }
+    
+    // Handle if address is a Map (object with street, city, state, zipCode)
+    if (json is Map<String, dynamic>) {
+      return Address(
+        street: json["street"] ?? "",
+        city: json["city"] ?? "",
+        state: json["state"] ?? "",
+        zipCode: json["zipCode"] ?? "",
+      );
+    }
+    
+    // Fallback for unexpected format
+    return Address(street: '', city: '', state: '', zipCode: '');
   }
 
   Map<String, dynamic> toJson() {

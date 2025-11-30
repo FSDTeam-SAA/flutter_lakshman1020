@@ -15,13 +15,16 @@ class DispatcherNavigateScreen extends StatefulWidget {
   State<DispatcherNavigateScreen> createState() => _DispatcherNavigateScreenState();
 }
 
-class _DispatcherNavigateScreenState extends State<DispatcherNavigateScreen> {
+class _DispatcherNavigateScreenState extends State<DispatcherNavigateScreen> with AutomaticKeepAliveClientMixin {
   final AuthStorageService _authStorageService = Get.find<AuthStorageService>();
   late LoadController _loadController;
   
   // Map to store geocoded addresses: loadId -> {pickup, delivery}
   final Map<String, Map<String, String>> _geocodedAddresses = {};
   final Map<String, bool> _geocodingInProgress = {};
+  
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -34,6 +37,11 @@ class _DispatcherNavigateScreenState extends State<DispatcherNavigateScreen> {
     
     _loadController = Get.find<LoadController>();
     _loadCompanyIdAndFetchLoads();
+  }
+  
+  /// Public method to refresh data when tab becomes visible
+  Future<void> refreshData() async {
+    await _loadCompanyIdAndFetchLoads();
   }
 
   Future<void> _loadCompanyIdAndFetchLoads() async {
@@ -154,6 +162,7 @@ class _DispatcherNavigateScreenState extends State<DispatcherNavigateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // Required for AutomaticKeepAliveClientMixin
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),

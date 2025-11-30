@@ -142,11 +142,24 @@ class ChatAvatar {
 
   ChatAvatar({required this.publicId, required this.url});
 
-  factory ChatAvatar.fromJson(Map<String, dynamic>? json) {
+  factory ChatAvatar.fromJson(dynamic json) {
+    // Handle null
     if (json == null) return ChatAvatar(publicId: '', url: '');
-    return ChatAvatar(
-      publicId: json['public_id'] ?? '',
-      url: json['url'] ?? '',
-    );
+    
+    // Handle if avatar is a String (direct URL)
+    if (json is String) {
+      return ChatAvatar(publicId: '', url: json);
+    }
+    
+    // Handle if avatar is a Map (object with url and public_id)
+    if (json is Map<String, dynamic>) {
+      return ChatAvatar(
+        publicId: json['public_id'] ?? '',
+        url: json['url'] ?? '',
+      );
+    }
+    
+    // Fallback for unexpected format
+    return ChatAvatar(publicId: '', url: '');
   }
 }

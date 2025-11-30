@@ -20,12 +20,13 @@ class DriverHomeScreen extends StatefulWidget {
   State<DriverHomeScreen> createState() => _DriverHomeScreenState();
 }
 
-class _DriverHomeScreenState extends State<DriverHomeScreen> {
+class _DriverHomeScreenState extends State<DriverHomeScreen> with WidgetsBindingObserver {
   int _currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     
     // Initialize LoadBinding for LoadRepository and LoadController
     LoadBinding().dependencies();
@@ -39,7 +40,46 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     Future.delayed(const Duration(milliseconds: 200), () {
       final accountController = Get.find<AccountController>();
       accountController.fetchProfile();
+      
+      // Fetch driver's current load
+      final driverHomeController = Get.find<DriverHomeController>();
+      driverHomeController.refreshLoads();
     });
+  }
+  
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+  
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Refresh data when app comes to foreground
+    if (state == AppLifecycleState.resumed) {
+      _refreshCurrentPage();
+    }
+  }
+  
+  void _refreshCurrentPage() {
+    final accountController = Get.find<AccountController>();
+    final driverHomeController = Get.find<DriverHomeController>();
+    
+    switch (_currentIndex) {
+      case 0: // Home
+        accountController.fetchProfile();
+        driverHomeController.refreshLoads();
+        break;
+      case 1: // Activity
+        // Activity screen has its own controller that handles data
+        break;
+      case 2: // Messages
+        // Messages screen has its own controller that auto-fetches on init
+        break;
+      case 3: // Profile
+        accountController.fetchProfile();
+        break;
+    }
   }
 
   @override
@@ -87,9 +127,13 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: _currentIndex,
         onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
+          // Refresh data when switching to a different tab
+          if (index != _currentIndex) {
+            setState(() {
+              _currentIndex = index;
+            });
+            _refreshCurrentPage();
+          }
         },
         items: [
           NavItemData(

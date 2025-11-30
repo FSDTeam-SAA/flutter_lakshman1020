@@ -198,7 +198,6 @@ class _RequestInformationScreenState extends State<RequestInformationScreen> {
               _buildTextField(
                 label: "Add Stoppage",
                 hint: "Ex: Banani Road No. 11",
-                suffixAsset: AppIcons.addstopies,
               ),
               const SizedBox(height: 16),
 

@@ -63,31 +63,72 @@ class AccountController extends BaseController {
     setLoading(true);
     setError('');
 
-    if (image != null) _multiFormDataManager.addImageFile(image, key: "avatar");
-    _multiFormDataManager.addTextData("name", name);
-    _multiFormDataManager.addTextData("email", mail);
-    _multiFormDataManager.addTextData("phone", mobile);
-    _multiFormDataManager.addTextData("dob", dob);
-    _multiFormDataManager.addTextData("address", address);
-    _multiFormDataManager.addTextData("nationality", nationality);
+    // Clear any previous form data
+    _multiFormDataManager.clear();
+
+    // Get user role to determine which fields to send
+    final userRole = userInfo.value?.role ?? 'user';
+    
+    // Only add fields that have values (non-empty)
+    if (image != null) {
+      _multiFormDataManager.addImageFile(image, key: "avatar");
+    }
+    
+    // For company: only send name, email, and avatar
+    if (userRole.toLowerCase() == 'company') {
+      if (name.isNotEmpty) _multiFormDataManager.addTextData("name", name);
+      if (mail.isNotEmpty) _multiFormDataManager.addTextData("email", mail);
+      DPrint.log('🏢 Updating company profile with: name, email, avatar');
+    } else {
+      // For user/driver/dispatcher: send all available fields
+      if (name.isNotEmpty) _multiFormDataManager.addTextData("name", name);
+      if (mail.isNotEmpty) _multiFormDataManager.addTextData("email", mail);
+      if (mobile.isNotEmpty) _multiFormDataManager.addTextData("phone", mobile);
+      if (dob.isNotEmpty) _multiFormDataManager.addTextData("dob", dob);
+      if (address.isNotEmpty) _multiFormDataManager.addTextData("address", address);
+      if (nationality.isNotEmpty) _multiFormDataManager.addTextData("nationality", nationality);
+      DPrint.log('👤 Updating user profile with all fields');
+    }
 
     final formRequest = await _multiFormDataManager.toFormDataAsync();
+    
+    // Log what we're sending
+    DPrint.log('📤 Sending update with fields: ${_multiFormDataManager.textData.keys.toList()}');
+    DPrint.log('📎 Image attached: ${image != null}');
+    
     final result = await _accountRepository.updatePersonalInfo(formRequest);
 
     result.fold(
           (fail) {
         setError(fail.message);
-        DPrint.log('Personal info update failed: ${fail.message}');
+        DPrint.log('❌ Personal info update failed: ${fail.message}');
         setLoading(false);
+        
+        // Show error snackbar
+        Get.snackbar(
+          'Error',
+          fail.message,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Get.theme.colorScheme.error,
+          colorText: Get.theme.colorScheme.onError,
+        );
       },
           (success) async {
-        DPrint.log('Personal info updated: ${success.message}');
+        DPrint.log('✅ Personal info updated: ${success.message}');
         await fetchProfile();
 
-        // ✅ Go back one or two screens instead of removing all
-        Get.close(2); // or Get.back(); if only one screen should close
+        // Show success snackbar
+        Get.snackbar(
+          'Success',
+          'Profile updated successfully',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Get.theme.colorScheme.primary,
+          colorText: Get.theme.colorScheme.onPrimary,
+        );
 
-        setError(success.message);
+        // Go back one or two screens instead of removing all
+        Get.close(2);
+
         setLoading(false);
       },
     );

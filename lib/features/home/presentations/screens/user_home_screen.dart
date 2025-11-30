@@ -8,6 +8,7 @@ import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_ho
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/recent_shipment_header.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/shipment_filter_tabs.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/shipment_item.dart';
+import 'package:flutter_lakshman1020/features/notification/presentation/controllers/messages_controller.dart';
 import 'package:flutter_lakshman1020/features/notification/presentation/screens/messages_screen.dart';
 // Pages used for bottom navigation
 import 'package:flutter_lakshman1020/features/others/presentation/screen/shipment_screen.dart';
@@ -23,11 +24,14 @@ class UserHomeScreen extends StatefulWidget {
   State<UserHomeScreen> createState() => _UserHomeScreenState();
 }
 
-class _UserHomeScreenState extends State<UserHomeScreen> {
+class _UserHomeScreenState extends State<UserHomeScreen> with WidgetsBindingObserver {
   int _currentIndex = 0;
+  
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    
     // Initialize bindings if not already initialized
     if (!Get.isRegistered<LoadController>()) {
       LoadBinding().dependencies();
@@ -44,6 +48,41 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
       final accountController = Get.find<AccountController>();
       accountController.fetchProfile();
     });
+  }
+  
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+  
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Refresh data when app comes to foreground
+    if (state == AppLifecycleState.resumed) {
+      _refreshCurrentPage();
+    }
+  }
+  
+  void _refreshCurrentPage() {
+    final LoadController loadController = Get.find<LoadController>();
+    final accountController = Get.find<AccountController>();
+    
+    switch (_currentIndex) {
+      case 0: // Home
+        loadController.fetchLoads();
+        break;
+      case 1: // Loads/Shipment
+        loadController.fetchLoads();
+        break;
+      case 2: // Messages
+        final messagesController = Get.find<MessagesController>();
+        messagesController.fetchConversations();
+        break;
+      case 3: // Profile
+        accountController.fetchProfile();
+        break;
+    }
   }
 
   @override
@@ -137,9 +176,13 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: _currentIndex,
         onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
+          // Refresh data when switching to a different tab
+          if (index != _currentIndex) {
+            setState(() {
+              _currentIndex = index;
+            });
+            _refreshCurrentPage();
+          }
         },
         items: [
           NavItemData(
