@@ -3,7 +3,7 @@ class ChatModel {
   final String name;
   final String? seller;
   final String? user;
-  final List<MessageModel> messages;
+  final List<ChatMessageModel> messages;
   final String createdAt;
   final String updatedAt;
 
@@ -24,7 +24,7 @@ class ChatModel {
     user: json['user'],
     messages:
         (json['messages'] as List<dynamic>?)
-            ?.map((e) => MessageModel.fromJson(e))
+            ?.map((e) => ChatMessageModel.fromJson(e))
             .toList() ??
         [],
     createdAt: json['createdAt'] ?? '',
@@ -61,15 +61,15 @@ class ChatModel {
   }
 }
 
-/// Nested message model
-class MessageModel {
+/// Nested message model for ChatModel
+class ChatMessageModel {
   final String id;
   final String text;
-  final MessageUser user;
+  final ChatMessageUser user;
   final String date;
   final bool read;
 
-  MessageModel({
+  ChatMessageModel({
     required this.id,
     required this.text,
     required this.user,
@@ -77,44 +77,49 @@ class MessageModel {
     required this.read,
   });
 
-  factory MessageModel.fromJson(Map<String, dynamic> json) => MessageModel(
+  factory ChatMessageModel.fromJson(Map<String, dynamic> json) => ChatMessageModel(
     id: json['_id'] ?? '',
     text: json['text'] ?? '',
-    user: MessageUser.fromJson(json['user']),
+    user: ChatMessageUser.fromJson(json['user']),
     date: json['date'] ?? '',
     read: json['read'] ?? false,
   );
 }
 
-/// Nested user inside message
-class MessageUser {
+/// Nested user inside message for ChatModel
+class ChatMessageUser {
   final String id;
   final String name;
   final String role;
-  final Avatar avatar;
+  final ChatAvatar avatar;
 
-  MessageUser({
+  ChatMessageUser({
     required this.id,
     required this.name,
     required this.role,
     required this.avatar,
   });
 
-  factory MessageUser.fromJson(Map<String, dynamic> json) => MessageUser(
+  factory ChatMessageUser.fromJson(Map<String, dynamic> json) => ChatMessageUser(
     id: json['_id'] ?? '',
     name: json['name'] ?? '',
     role: json['role'] ?? '',
-    avatar: Avatar.fromJson(json['avatar']),
+    avatar: ChatAvatar.fromJson(json['avatar']),
   );
 }
 
-/// Avatar model for user
-class Avatar {
+/// Avatar model for user in ChatModel
+class ChatAvatar {
   final String publicId;
   final String url;
 
-  Avatar({required this.publicId, required this.url});
+  ChatAvatar({required this.publicId, required this.url});
 
-  factory Avatar.fromJson(Map<String, dynamic> json) =>
-      Avatar(publicId: json['public_id'] ?? '', url: json['url'] ?? '');
+  factory ChatAvatar.fromJson(Map<String, dynamic>? json) {
+    if (json == null) return ChatAvatar(publicId: '', url: '');
+    return ChatAvatar(
+      publicId: json['public_id'] ?? '',
+      url: json['url'] ?? '',
+    );
+  }
 }

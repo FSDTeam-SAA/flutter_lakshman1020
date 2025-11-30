@@ -3,12 +3,12 @@ import 'package:flutter_lakshman1020/core/widgets/custom_bottom_nav.dart';
 import 'package:flutter_lakshman1020/core/widgets/skeleton_loader.dart';
 import 'package:flutter_lakshman1020/features/accounts/controller/account_controller.dart';
 import 'package:flutter_lakshman1020/features/accounts/presentation/screens/accounts_screen.dart';
-import 'package:flutter_lakshman1020/features/chat/presentation/screens/chat_inbox_screen.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/banner_section.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/header_section.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/recent_shipment_header.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/shipment_filter_tabs.dart';
 import 'package:flutter_lakshman1020/features/home/presentations/widgets/user_home_widgets/shipment_item.dart';
+import 'package:flutter_lakshman1020/features/notification/presentation/screens/messages_screen.dart';
 // Pages used for bottom navigation
 import 'package:flutter_lakshman1020/features/others/presentation/screen/shipment_screen.dart';
 import 'package:get/get.dart';
@@ -124,7 +124,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
     final List<Widget> pages = [
       homePage,
       const ShipmentScreen(),
-      ChatInboxScreen(),
+      MessagesScreen(),
       const AccountsScreen(),
     ];
 

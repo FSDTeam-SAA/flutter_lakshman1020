@@ -30,27 +30,41 @@ class MessageApi {
     return result;
   }
 
-  /// Corrected getMessages() implementation
+  /// Get messages for a specific chat ID
   Future<Either<NetworkFailure, NetworkSuccess<List<MessageModel>>>> getMessages(
       String chatId,
       ) async {
+    print('📡 Fetching messages for chatId: $chatId');
     final result = await _apiClient.get<List<MessageModel>>(
-      ApiConstants.chat.getAllChats, // no "/$chatId"
+      ApiConstants.chat.getAllChats,
       fromJsonT: (json) {
-        if (json is Map && json['data'] is List) {
-          final chats = json['data'] as List;
-
+        print('📦 Received API response: ${json.toString().substring(0, json.toString().length > 200 ? 200 : json.toString().length)}...');
+        
+        // The API returns an array of chat objects directly
+        if (json is List) {
+          print('✅ Response is a List with ${json.length} chats');
+          
           // Find the chat that matches the ID
-          final chat = chats.firstWhere(
+          final chat = json.firstWhere(
                 (e) => e['_id'] == chatId,
             orElse: () => null,
           );
 
-          if (chat != null && chat['messages'] is List) {
-            return (chat['messages'] as List)
-                .map((e) => MessageModel.fromJson(e))
-                .toList();
+          if (chat != null) {
+            print('✅ Found chat with ${chat['messages']?.length ?? 0} messages');
+            
+            if (chat['messages'] is List) {
+              final messages = (chat['messages'] as List)
+                  .map((e) => MessageModel.fromJson(e))
+                  .toList();
+              print('✅ Parsed ${messages.length} messages successfully');
+              return messages;
+            }
+          } else {
+            print('⚠️ Chat with ID $chatId not found in response');
           }
+        } else {
+          print('❌ Response is not a List: ${json.runtimeType}');
         }
         return <MessageModel>[];
       },

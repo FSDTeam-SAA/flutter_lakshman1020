@@ -161,6 +161,7 @@ class ChatEndpoints {
   static const String _base = '${ApiConstants.baseUrl}/chat';
 
   final String getAllChats = '$_base/get-chat';
+  String getSingleChat(String chatId) => '$_base/get-single-chat/$chatId';
   final String createChat = '$_base/create';
   final String sendMessage = '$_base/send-message';
   final String updateMessage = '$_base/update-message';

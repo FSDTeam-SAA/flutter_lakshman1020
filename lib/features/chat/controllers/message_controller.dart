@@ -1,11 +1,13 @@
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:flutter/material.dart';
+import '../../../core/network/services/auth_storage_service.dart';
 import '../data/message_repository.dart';
 import '../data/models/message_model.dart';
 
 class MessageController extends GetxController {
   final MessageRepository _repository = MessageRepository();
+  final AuthStorageService _authStorageService = AuthStorageService();
   final box = GetStorage();
   late String currentUserId;
 
@@ -20,16 +22,20 @@ class MessageController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // Initialize currentUserId from storage if available, else use default
-    try {
-      currentUserId = box.read('currentUserId') ?? 'default_user_id';
-    } catch (_) {
-      currentUserId = 'default_user_id';
-    }
+    _loadCurrentUserId();
   }
 
-  void init(String id) {
+  Future<void> _loadCurrentUserId() async {
+    // Get user ID from secure storage
+    final userId = await _authStorageService.getUserId();
+    currentUserId = userId ?? 'default_user_id';
+  }
+
+  Future<void> init(String id) async {
     chatId = id;
+
+    // Load current user ID first
+    await _loadCurrentUserId();
 
     // Always load cached messages first for instant UX (offline-first)
     final cached = box.read<List>('chat_$id');
@@ -52,15 +58,20 @@ class MessageController extends GetxController {
   }
 
   void reloadMessages() {
+    print('🔄 Reloading messages for chat: $chatId');
     loadMessages(); // Refresh messages from the API
   }
 
   void loadMessages() async {
+    print('📡 Fetching messages for chat: $chatId');
     final result = await _repository.fetchMessages(chatId);
     result.fold(
-      (failure) =>
-          Get.snackbar("Error", failure.message ?? "Failed to load messages"),
+      (failure) {
+        print('❌ Failed to fetch messages: ${failure.message}');
+        Get.snackbar("Error", failure.message);
+      },
       (data) {
+        print('✅ Loaded ${data.length} messages');
         messages.assignAll(data);
         _cacheMessages();
         _scrollToBottom();
@@ -78,7 +89,7 @@ class MessageController extends GetxController {
       message: message.trim(),
     );
     result.fold(
-      (failure) => Get.snackbar("Error", failure.message ?? "Send failed"),
+      (failure) => Get.snackbar("Error", failure.message),
       (data) {
         messages.assignAll(data);
         _cacheMessages();

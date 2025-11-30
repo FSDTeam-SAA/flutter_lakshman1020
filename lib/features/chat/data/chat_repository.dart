@@ -16,4 +16,13 @@ class ChatRepository {
           (success) => Right(success.data),
     );
   }
+
+  Future<Either<NetworkFailure, ChatModel>> fetchSingleChat(String chatId) async {
+    final response = await _chatApi.getSingleChat(chatId);
+
+    return response.fold(
+          (failure) => Left(failure),
+          (success) => Right(success.data),
+    );
+  }
 }

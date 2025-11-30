@@ -21,4 +21,20 @@ class ChatApi {
     );
     return result;
   }
+
+  /// 🔹 Fetch Single Chat by ID
+  Future<Either<NetworkFailure, NetworkSuccess<ChatModel>>> getSingleChat(String chatId) async {
+    print('📡 Fetching single chat for ID: $chatId');
+    final result = await _apiClient.get<ChatModel>(
+      ApiConstants.chat.getSingleChat(chatId),
+      fromJsonT: (json) {
+        print('📦 Received single chat response');
+        if (json is Map<String, dynamic>) {
+          return ChatModel.fromJson(json);
+        }
+        throw Exception('Invalid response format');
+      },
+    );
+    return result;
+  }
 }

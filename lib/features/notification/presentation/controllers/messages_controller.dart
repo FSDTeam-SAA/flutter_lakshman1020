@@ -1,132 +1,99 @@
-import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:flutter_lakshman1020/features/notification/models/message_model.dart';
+import 'package:flutter_lakshman1020/features/chat/data/chat_repository.dart';
+import 'package:flutter_lakshman1020/features/chat/data/models/chat_model.dart';
 
-class MessagesController extends ChangeNotifier {
-  late List<Conversation> _conversations;
+class MessagesController extends GetxController {
+  final ChatRepository _chatRepository = ChatRepository();
 
-  List<Conversation> get conversations => _conversations;
+  var conversations = <Conversation>[].obs;
+  var isLoading = false.obs;
 
-  MessagesController() {
-    _initializeDummyData();
+  @override
+  void onInit() {
+    super.onInit();
+    fetchConversations();
   }
 
-  void _initializeDummyData() {
-    _conversations = [
-      Conversation(
-        id: '1',
-        name: 'Michael Ken',
-        avatar: 'assets/images/account_user.png',
-        lastMessage: 'Customer decline delivery what can I do?',
-        lastMessageTime: '4:25 pm',
-        messages: [
-          Message(
-            id: '1',
-            senderName: 'Michael Ken',
-            senderAvatar: 'assets/images/account_user.png',
-            content: 'Customer decline delivery what can I do?',
-            timestamp: '4:25pm',
-            isFromMe: false,
-          ),
-        ],
-      ),
-      Conversation(
-        id: '2',
-        name: 'Bator Josh',
-        avatar: 'assets/images/account_user.png',
-        lastMessage: 'okay',
-        lastMessageTime: '3:25 pm',
-        messages: [
-          Message(
-            id: '1',
-            senderName: 'Bator Josh',
-            senderAvatar: 'assets/images/account_user.png',
-            content: 'Customer Not receiving call what can I do?',
-            timestamp: '6:45am',
-            isFromMe: false,
-          ),
-          Message(
-            id: '2',
-            senderName: 'You',
-            senderAvatar: 'assets/images/account_user.png',
-            content: 'okay',
-            timestamp: '8:45am',
-            isFromMe: true,
-          ),
-          Message(
-            id: '3',
-            senderName: 'Bator Josh',
-            senderAvatar: 'assets/images/account_user.png',
-            content: 'Customer Not receiving call what can I do?',
-            timestamp: '6:45am',
-            isFromMe: false,
-          ),
-          Message(
-            id: '4',
-            senderName: 'You',
-            senderAvatar: 'assets/images/account_user.png',
-            content: 'okay',
-            timestamp: '8:45am',
-            isFromMe: true,
-          ),
-        ],
-      ),
-      Conversation(
-        id: '3',
-        name: 'Jhon Moo',
-        avatar: 'assets/images/account_user.png',
-        lastMessage: 'you update please',
-        lastMessageTime: '3:15 pm',
-        messages: [
-          Message(
-            id: '1',
-            senderName: 'Jhon Moo',
-            senderAvatar: 'assets/images/account_user.png',
-            content: 'you update please',
-            timestamp: '3:15pm',
-            isFromMe: false,
-          ),
-        ],
-      ),
-      Conversation(
-        id: '4',
-        name: 'Jacob Bator',
-        avatar: 'assets/images/account_user.png',
-        lastMessage: 'you Any updates?',
-        lastMessageTime: '2:18 pm',
-        messages: [
-          Message(
-            id: '1',
-            senderName: 'Jacob Bator',
-            senderAvatar: 'assets/images/account_user.png',
-            content: 'you Any updates?',
-            timestamp: '2:18pm',
-            isFromMe: false,
-          ),
-        ],
-      ),
-    ];
+  Future<void> fetchConversations() async {
+    isLoading.value = true;
+
+    final result = await _chatRepository.fetchChats();
+    result.fold(
+      (failure) {
+        print('❌ Failed to fetch conversations: ${failure.message}');
+        Get.snackbar('Error', 'Failed to load messages');
+      },
+      (chats) {
+        print('✅ Loaded ${chats.length} conversations');
+        // Convert ChatModel to Conversation
+        conversations.assignAll(chats.map((chat) => _chatToConversation(chat)).toList());
+      },
+    );
+
+    isLoading.value = false;
+  }
+
+  Conversation _chatToConversation(ChatModel chat) {
+    // Get the last message
+    final lastMsg = chat.lastMessage;
+    final lastMsgTime = chat.time;
+
+    // Convert chat messages to Message objects (simple version for list display)
+    final messages = chat.messages.map((msg) {
+      return Message(
+        id: msg.id,
+        senderName: msg.user.name,
+        senderAvatar: msg.user.avatar.url,
+        content: msg.text,
+        timestamp: _formatTime(msg.date),
+        isFromMe: false, // Will be determined in detail screen
+      );
+    }).toList();
+
+    return Conversation(
+      id: chat.id,
+      name: chat.name,
+      avatar: chat.avatar,
+      lastMessage: lastMsg,
+      lastMessageTime: lastMsgTime,
+      messages: messages,
+    );
+  }
+
+  String _formatTime(String date) {
+    if (date.isEmpty) return '';
+    try {
+      final d = DateTime.parse(date).toLocal();
+      final hour = d.hour % 12 == 0 ? 12 : d.hour % 12;
+      final minute = d.minute.toString().padLeft(2, '0');
+      final ampm = d.hour >= 12 ? 'pm' : 'am';
+      return '$hour:$minute$ampm';
+    } catch (_) {
+      return '';
+    }
   }
 
   void addMessage(String conversationId, String content, bool isFromMe) {
-    final convIndex = _conversations.indexWhere((c) => c.id == conversationId);
+    final convIndex = conversations.indexWhere((c) => c.id == conversationId);
     if (convIndex != -1) {
       final newMessage = Message(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
-        senderName: isFromMe ? 'You' : _conversations[convIndex].name,
-        senderAvatar: _conversations[convIndex].avatar,
+        senderName: isFromMe ? 'You' : conversations[convIndex].name,
+        senderAvatar: conversations[convIndex].avatar,
         content: content,
         timestamp: DateTime.now().toString(),
         isFromMe: isFromMe,
       );
       
-      _conversations[convIndex].messages.add(newMessage);
-      notifyListeners();
+      conversations[convIndex].messages.add(newMessage);
+      conversations.refresh();
     }
   }
 
   Conversation? getConversation(String id) {
     try {
-      return _conversations.firstWhere((c) => c.id == id);
+      return conversations.firstWhere((c) => c.id == id);
     } catch (e) {
       return null;
     }
