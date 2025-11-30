@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../core/network/api_client.dart';
@@ -5,6 +6,7 @@ import '../../../../core/network/constants/api_constants.dart';
 import '../../../../core/network/services/auth_storage_service.dart';
 import '../../../chat/data/chat_repository.dart';
 import '../../../home/data/models/load_model.dart';
+import '../../../home/presentations/screens/driver_home_screen.dart';
 import '../../../notification/presentation/screens/chat_detail_screen.dart';
 import '../../data/services/geocoding_service.dart';
 
@@ -31,6 +33,9 @@ class DeliveryDetailsController extends GetxController {
 
   /// Local loading flag for price-action calls
   final isActionLoading = false.obs;
+
+  /// Loading flag when marking delivery as complete
+  final isCompletingDelivery = false.obs;
 
   /// Payment-related fields
   final price = 0.0.obs;
@@ -664,6 +669,97 @@ class DeliveryDetailsController extends GetxController {
       print('❌ Exception confirming payment: $e');
       // Don't show error to user since payment was successful on Stripe side
       return false;
+    }
+  }
+
+  /// Mark the current load as delivered by calling the backend endpoint
+  Future<void> completeDelivery() async {
+    // Determine load id: prefer initialLoadId, otherwise use Delivered ID from deliveryList
+    final loadId =
+        initialLoadId ?? (deliveryList.isNotEmpty ? deliveryList[0]['Delivered ID'] : null);
+    if (loadId == null || loadId.isEmpty) {
+      print('No load id available to complete delivery');
+      Get.snackbar(
+        'Error',
+        'Load ID not found',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 3),
+      );
+      return;
+    }
+
+    try {
+      isCompletingDelivery.value = true;
+      final apiClient = ApiClient();
+      final endpoint = ApiConstants.load.compete(loadId);
+      final payload = {'orderStatus': 'delivered'};
+
+      print('Completing delivery -> endpoint: $endpoint payload: $payload');
+
+      final result = await apiClient.patch<Map<String, dynamic>>(
+        endpoint,
+        data: payload,
+        fromJsonT: (json) => json as Map<String, dynamic>,
+      );
+
+      result.fold(
+        (failure) {
+          print('Failed to complete delivery: ${failure.message}');
+          Get.snackbar(
+            'Error',
+            failure.message.isNotEmpty ? failure.message : 'Failed to complete delivery',
+            snackPosition: SnackPosition.BOTTOM,
+            duration: const Duration(seconds: 3),
+          );
+        },
+        (success) async {
+          // success.data is expected to be the updated load object or data wrapper
+          final raw = success.data;
+          // Try to extract the object directly
+          final data = raw.containsKey('data') && raw['data'] is Map<String, dynamic>
+              ? Map<String, dynamic>.from(raw['data'] as Map)
+              : Map<String, dynamic>.from(raw as Map);
+
+          // Update local orderStatus if present
+          if (data['orderStatus'] != null) {
+            orderStatus.value = data['orderStatus'].toString();
+          }
+
+          // Show success snack
+          Get.snackbar(
+            'Success',
+            'Delivery marked as delivered',
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.green,
+            colorText: Colors.white,
+            duration: const Duration(seconds: 3),
+          );
+
+          // Redirect driver back to DriverHomeScreen
+          try {
+            // Navigate directly to DriverHomeScreen and clear navigation stack
+            Get.offAll(() => DriverHomeScreen());
+          } catch (_) {
+            // Fallback: navigate to named route or pop until root
+            try {
+              Get.offAllNamed('/DriverHomeScreen');
+            } catch (_) {
+              // As a last resort, just pop all routes
+              Get.until((route) => route.isFirst);
+            }
+          }
+        },
+      );
+    } catch (e) {
+      print('Exception completing delivery: $e');
+      Get.snackbar(
+        'Error',
+        'Failed to complete delivery: $e',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 3),
+      );
+    } finally {
+      isCompletingDelivery.value = false;
     }
   }
 

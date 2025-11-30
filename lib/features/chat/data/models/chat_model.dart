@@ -39,10 +39,10 @@ class ChatModel {
     try {
       if (messages.isNotEmpty) {
         final url = messages.last.user.avatar.url;
-        return url.isNotEmpty ? url : 'https://i.pravatar.cc/150'; // fallback
+        return url.isNotEmpty ? url : ''; // fallback to empty string to show first letter
       }
     } catch (_) {}
-    return 'https://i.pravatar.cc/150';
+    return ''; // fallback to empty string to show first letter
   }
 
   String get time {

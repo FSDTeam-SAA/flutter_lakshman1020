@@ -129,6 +129,58 @@ class DriverDeliveryDetailsScreen extends StatelessWidget {
                     height: 1.6,
                   ),
                 ),
+                const SizedBox(height: 20),
+
+                // Complete Delivery button for driver when not delivered
+                if (controller.orderStatus.value.toLowerCase() != 'delivered') ...[
+                  Obx(
+                    () => Center(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 32),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                        onPressed: controller.isCompletingDelivery.value
+                            ? null
+                            : () async {
+                                // show confirmation dialog
+                                final confirmed = await showDialog<bool>(
+                                  context: context,
+                                  builder: (ctx) => AlertDialog(
+                                    title: const Text('Confirm'),
+                                    content: const Text('Do you want to complete this delivery?'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.of(ctx).pop(false),
+                                        child: const Text('No'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () => Navigator.of(ctx).pop(true),
+                                        child: const Text('Yes'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                      
+                                if (confirmed == true) {
+                                  await controller.completeDelivery();
+                                }
+                              },
+                        child: controller.isCompletingDelivery.value
+                            ? const SizedBox(
+                                height: 16,
+                                width: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation(Colors.white),
+                                ),
+                              )
+                            : const Text('Complete Delivery', style: TextStyle(color: Colors.white)),
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           );

@@ -69,10 +69,10 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-
   flutter_lints: ^5.0.0
   build_runner: ^2.10.1
   json_serializable: ^6.11.1
+  flutter_launcher_icons: ^0.14.1
 
 
 flutter:
@@ -83,4 +83,11 @@ flutter:
     - assets/images/
     - assets/icons/
   #   - images/a_dot_ham.jpeg
+
+
+flutter_launcher_icons:
+  image_path: "assets/images/appLogoMain.jpeg"
+  android:
+    notification_icon: "launcher_icon"
+  ios: true
 

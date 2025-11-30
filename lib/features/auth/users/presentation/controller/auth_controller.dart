@@ -70,7 +70,9 @@ class AuthController extends BaseController {
           refreshToken: success.data.refreshToken,
           userId: success.data.user.id,
           role: success.data.role,
-          companyId: success.data.role == 'company' ? success.data.id : null,
+          companyId: (success.data.role == 'company' || success.data.role == 'dispatcher' || success.data.role == 'driver') 
+              ? success.data.id 
+              : null,
         );
 
         // Optional: show success Snackbar
@@ -275,7 +277,9 @@ class AuthController extends BaseController {
           refreshToken: success.data.refreshToken,
           userId: success.data.id,
           role: success.data.role,
-          companyId: role == 'company' ? success.data.id : null,
+          companyId: (role == 'company' || role == 'dispatcher' || role == 'driver') 
+              ? success.data.id 
+              : null,
         );
         
         DPrint.log("✅ Auth tokens stored from signup response");
