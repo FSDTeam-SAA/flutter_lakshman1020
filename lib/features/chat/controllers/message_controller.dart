@@ -1,6 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:flutter/material.dart';
+
 import '../../../core/network/services/auth_storage_service.dart';
 import '../data/message_repository.dart';
 import '../data/models/message_model.dart';

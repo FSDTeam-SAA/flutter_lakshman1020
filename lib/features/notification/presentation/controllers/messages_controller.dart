@@ -1,7 +1,7 @@
-import 'package:get/get.dart';
-import 'package:flutter_lakshman1020/features/notification/models/message_model.dart';
 import 'package:flutter_lakshman1020/features/chat/data/chat_repository.dart';
 import 'package:flutter_lakshman1020/features/chat/data/models/chat_model.dart';
+import 'package:flutter_lakshman1020/features/notification/models/message_model.dart';
+import 'package:get/get.dart';
 
 class MessagesController extends GetxController {
   final ChatRepository _chatRepository = ChatRepository();

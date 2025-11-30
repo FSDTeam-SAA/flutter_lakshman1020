@@ -1,7 +1,8 @@
-import 'package:get/get.dart';
 import 'package:flutter_lakshman1020/core/network/services/auth_storage_service.dart';
 import 'package:flutter_lakshman1020/features/chat/data/chat_repository.dart';
 import 'package:flutter_lakshman1020/features/chat/data/models/chat_model.dart';
+import 'package:flutter_lakshman1020/features/notification/presentation/controllers/messages_controller.dart';
+import 'package:get/get.dart';
 
 class ChatDetailController extends GetxController {
   final ChatRepository _chatRepository = ChatRepository();
@@ -9,6 +10,7 @@ class ChatDetailController extends GetxController {
 
   var chatModel = Rxn<ChatModel>();
   var isLoading = false.obs;
+  var isSending = false.obs;
   var currentUserId = ''.obs;
   final messageInput = ''.obs;
 
@@ -44,6 +46,54 @@ class ChatDetailController extends GetxController {
         print('✅ Loaded chat with ${chat.messages.length} messages');
         chatModel.value = chat;
         isLoading.value = false;
+      },
+    );
+  }
+
+  Future<void> sendMessage(String chatId, String message) async {
+    if (message.trim().isEmpty) return;
+
+    isSending.value = true;
+    print('📤 Sending message: $message');
+
+    final result = await _chatRepository.sendMessage(
+      chatId: chatId,
+      message: message.trim(),
+    );
+
+    result.fold(
+      (failure) {
+        print('❌ Failed to send message: ${failure.message}');
+        Get.snackbar('Error', 'Failed to send message');
+        isSending.value = false;
+      },
+      (newMessage) {
+        print('✅ Message sent successfully');
+        
+        // Add the new message to the current chat model
+        if (chatModel.value != null) {
+          final updatedMessages = [...chatModel.value!.messages, newMessage];
+          chatModel.value = ChatModel(
+            id: chatModel.value!.id,
+            name: chatModel.value!.name,
+            seller: chatModel.value!.seller,
+            user: chatModel.value!.user,
+            messages: updatedMessages,
+            createdAt: chatModel.value!.createdAt,
+            updatedAt: DateTime.now().toIso8601String(),
+          );
+        }
+        
+        // Update the messages list in the messages screen
+        try {
+          final messagesController = Get.find<MessagesController>();
+          messagesController.fetchConversations(); // Refresh the list
+        } catch (e) {
+          print('⚠️ MessagesController not found: $e');
+        }
+        
+        isSending.value = false;
+        messageInput.value = '';
       },
     );
   }

@@ -1,8 +1,9 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_lakshman1020/core/network/api_client.dart';
+import 'package:flutter_lakshman1020/core/network/constants/api_constants.dart';
 import 'package:flutter_lakshman1020/core/network/models/network_failure.dart';
 import 'package:flutter_lakshman1020/core/network/models/network_success.dart';
-import 'package:flutter_lakshman1020/core/network/constants/api_constants.dart';
+
 import 'models/chat_model.dart';
 
 class ChatApi {
@@ -31,6 +32,31 @@ class ChatApi {
         print('📦 Received single chat response');
         if (json is Map<String, dynamic>) {
           return ChatModel.fromJson(json);
+        }
+        throw Exception('Invalid response format');
+      },
+    );
+    return result;
+  }
+
+  /// 🔹 Send Message to Chat
+  Future<Either<NetworkFailure, NetworkSuccess<ChatMessageModel>>> sendMessage({
+    required String chatId,
+    required String message,
+  }) async {
+    print('📤 Sending message to chat: $chatId');
+    final data = {
+      'chatId': chatId,
+      'message': message,
+    };
+
+    final result = await _apiClient.post<ChatMessageModel>(
+      ApiConstants.chat.sendMessage,
+      data: data,
+      fromJsonT: (json) {
+        print('✅ Message sent successfully');
+        if (json is Map<String, dynamic>) {
+          return ChatMessageModel.fromJson(json);
         }
         throw Exception('Invalid response format');
       },

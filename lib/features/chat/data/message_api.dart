@@ -1,8 +1,9 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_lakshman1020/core/network/api_client.dart';
+import 'package:flutter_lakshman1020/core/network/constants/api_constants.dart';
 import 'package:flutter_lakshman1020/core/network/models/network_failure.dart';
 import 'package:flutter_lakshman1020/core/network/models/network_success.dart';
-import 'package:flutter_lakshman1020/core/network/constants/api_constants.dart';
+
 import 'models/message_model.dart';
 
 class MessageApi {
