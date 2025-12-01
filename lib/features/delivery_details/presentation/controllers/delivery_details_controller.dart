@@ -736,24 +736,19 @@ class DeliveryDetailsController extends GetxController {
             duration: const Duration(seconds: 3),
           );
 
-          // Redirect driver back to DriverHomeScreen
+          // Small delay to ensure snackbar is visible and controller is ready
+          await Future.delayed(const Duration(milliseconds: 500));
+
+          // Refresh the driver home controller to reload loads
           try {
-            // Ensure DriverHomeController is initialized before navigating
-            if (!Get.isRegistered<DriverHomeController>()) {
-              Get.put(DriverHomeController());
-            }
-            
-            // Navigate directly to DriverHomeScreen and clear navigation stack
-            Get.offAll(() => DriverHomeScreen());
-          } catch (_) {
-            // Fallback: navigate to named route or pop until root
-            try {
-              Get.offAllNamed('/DriverHomeScreen');
-            } catch (_) {
-              // As a last resort, just pop all routes
-              Get.until((route) => route.isFirst);
-            }
+            final driverHomeController = Get.find<DriverHomeController>();
+            await driverHomeController.refreshLoads();
+          } catch (e) {
+            print('⚠️ Could not refresh driver home loads: $e');
           }
+
+          // Navigate directly to DriverHomeScreen and clear navigation stack
+          Get.offAll(() => const DriverHomeScreen());
         },
       );
     } catch (e) {

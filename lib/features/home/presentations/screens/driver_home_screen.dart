@@ -31,11 +31,6 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> with WidgetsBinding
     // Initialize LoadBinding for LoadRepository and LoadController
     LoadBinding().dependencies();
     
-    // Initialize DriverHomeController if not already registered
-    if (!Get.isRegistered<DriverHomeController>()) {
-      Get.put(DriverHomeController());
-    }
-    
     // Ensure AccountController is initialized and fetches profile
     Future.delayed(const Duration(milliseconds: 200), () {
       final accountController = Get.find<AccountController>();
