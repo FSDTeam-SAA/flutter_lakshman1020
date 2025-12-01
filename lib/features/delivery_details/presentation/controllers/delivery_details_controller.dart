@@ -5,6 +5,7 @@ import '../../../../core/network/api_client.dart';
 import '../../../../core/network/constants/api_constants.dart';
 import '../../../../core/network/services/auth_storage_service.dart';
 import '../../../chat/data/chat_repository.dart';
+import '../../../home/controller/driver_home_controller.dart';
 import '../../../home/data/models/load_model.dart';
 import '../../../home/presentations/screens/driver_home_screen.dart';
 import '../../../notification/presentation/screens/chat_detail_screen.dart';
@@ -737,6 +738,11 @@ class DeliveryDetailsController extends GetxController {
 
           // Redirect driver back to DriverHomeScreen
           try {
+            // Ensure DriverHomeController is initialized before navigating
+            if (!Get.isRegistered<DriverHomeController>()) {
+              Get.put(DriverHomeController());
+            }
+            
             // Navigate directly to DriverHomeScreen and clear navigation stack
             Get.offAll(() => DriverHomeScreen());
           } catch (_) {

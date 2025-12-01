@@ -131,8 +131,8 @@ class DriverDeliveryDetailsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
 
-                // Complete Delivery button for driver when not delivered
-                if (controller.orderStatus.value.toLowerCase() != 'delivered') ...[
+                // Complete Delivery button for driver only when status is 'processing'
+                if (controller.orderStatus.value.toLowerCase() == 'processing') ...[
                   Obx(
                     () => Center(
                       child: ElevatedButton(
